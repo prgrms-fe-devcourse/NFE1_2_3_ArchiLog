@@ -1,4 +1,4 @@
-import { GITHUB_CONFIG } from '../../config/github';
+import { GITHUB_CONFIG } from '../src/config/github';
 
   
 
