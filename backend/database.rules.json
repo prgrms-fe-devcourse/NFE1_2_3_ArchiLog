@@ -1,7 +1,7 @@
 {
   "rules": {
-    ".read": true,  // 기본 읽기 권한
-      // ".write": false
+    ".read": true,  
+      
     
     "users": {
       "$userId": {
