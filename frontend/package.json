@@ -4,25 +4,30 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "next dev",
+    "build": "next build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "next start",
+    "next": "next"
   },
   "dependencies": {
+    "@uiw/react-md-editor": "^3.6.0",
     "@vitejs/plugin-react-swc": "^3.7.1",
     "autoprefixer": "^10.4.20",
     "next": "^14.2.15",
+    "next-remove-imports": "^1.0.12",
     "postcss": "^8.4.47",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-file-drop": "^3.1.6",
     "tailwind": "^4.0.0",
     "tailwindcss": "^3.4.14",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
-    "@types/react": "^18.3.10",
+    "@types/node": "^22.7.8",
+    "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
     "eslint": "^9.11.1",
