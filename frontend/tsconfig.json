@@ -1,7 +1,7 @@
 {
+  "compilerOptions": {
+    "jsx": "react-jsx" // 또는 "react" (React 17 이전)
+  },
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }
