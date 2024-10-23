@@ -1,22 +1,13 @@
 import React, { useState } from "react";
 import { MdOutlineAccountCircle } from "react-icons/md";
 
-const Header: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+interface HeaderProps {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+}
 
-  // 다크모드 전환 함수
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
-      const newMode = !prevMode;
-      if (newMode) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-      return newMode;
-    });
-  };
+const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // 사이드바 토글 함수
   const toggleSidebar = () => {
@@ -29,25 +20,18 @@ const Header: React.FC = () => {
         darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
       }`}
     >
-      <div
-        className="flex justify-between items-center mx-auto"
-        style={{ height: "80px" }}
-      >
+      <div className="flex justify-between items-center mx-auto" style={{ height: "80px" }}>
         {/* 왼쪽 로고 */}
         <div className="flex items-center">
-          <span className="text-2xl md:text-xl lg:text-3xl font-bold">
-            ArchiLog
-          </span>
+          <span className="text-2xl md:text-xl lg:text-3xl font-bold">ArchiLog</span>
         </div>
 
-        {/* 네비게이션 메뉴 및 계정 아이콘 */}
+        {/* 네비게이션 메뉴 */}
         <nav className="hidden md:flex space-x-3 md:space-x-5 lg:space-x-8 ml-auto">
           <a
             href="#"
             className={`text-sm md:text-base lg:text-lg ${
-              darkMode
-                ? "text-white hover:text-[#FDAD00]"
-                : "text-black hover:text-[#4CAF50]"
+              darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
             }`}
           >
             AboutMe
@@ -55,9 +39,7 @@ const Header: React.FC = () => {
           <a
             href="#"
             className={`text-sm md:text-base lg:text-lg ${
-              darkMode
-                ? "text-white hover:text-[#FDAD00]"
-                : "text-black hover:text-[#4CAF50]"
+              darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
             }`}
           >
             Projects
@@ -65,9 +47,7 @@ const Header: React.FC = () => {
           <a
             href="#"
             className={`text-sm md:text-base lg:text-lg ${
-              darkMode
-                ? "text-white hover:text-[#FDAD00]"
-                : "text-black hover:text-[#4CAF50]"
+              darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
             }`}
           >
             Blog
@@ -81,21 +61,15 @@ const Header: React.FC = () => {
           />
         </div>
 
-        {/* 다크모드 아이콘 */}
+        {/* 다크모드 전환 버튼 */}
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>
-          <span className="text-2xl md:text-xl lg:text-3xl">
-            {darkMode ? "🌙" : "🌞"}
-          </span>
+          <span className="text-2xl md:text-xl lg:text-3xl">{darkMode ? "🌙" : "🌞"}</span>
         </div>
 
         {/* 모바일 햄버거 메뉴 */}
         <div className="md:hidden flex items-center ml-auto">
           <button onClick={toggleSidebar}>
-            <span
-              className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
-            >
-              ☰
-            </span>
+            <span className={`${darkMode ? "text-white" : "text-black"} text-3xl`}>☰</span>
           </button>
         </div>
       </div>
@@ -107,10 +81,7 @@ const Header: React.FC = () => {
             darkMode ? "bg-black text-white" : "bg-white text-black"
           } z-50 border ${darkMode ? "border-white" : "border-black"}`}
         >
-          <button
-            onClick={toggleSidebar}
-            className="absolute top-4 right-4 text-2xl"
-          >
+          <button onClick={toggleSidebar} className="absolute top-4 right-4 text-2xl">
             ✕
           </button>
 
@@ -128,9 +99,7 @@ const Header: React.FC = () => {
             <a
               href="#"
               className={`${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
+                darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
               }`}
             >
               AboutMe
@@ -138,9 +107,7 @@ const Header: React.FC = () => {
             <a
               href="#"
               className={`${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
+                darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
               }`}
             >
               Projects
@@ -148,9 +115,7 @@ const Header: React.FC = () => {
             <a
               href="#"
               className={`${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
+                darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
               }`}
             >
               Blog
