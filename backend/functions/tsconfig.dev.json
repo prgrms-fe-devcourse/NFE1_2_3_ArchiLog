@@ -1,5 +1,15 @@
 {
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": true
+  },
+  "compileOnSave": true,
   "include": [
-    ".eslintrc.js"
+    "src"
   ]
 }

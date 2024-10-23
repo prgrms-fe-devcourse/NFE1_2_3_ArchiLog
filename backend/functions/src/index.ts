@@ -1,6 +1,5 @@
-import { onRequest } from "firebase-functions/v2/https";
+import { onRequest , HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { HttpsError } from "firebase-functions/v2/https";
 
 // Types
 interface UserData {
@@ -23,10 +22,10 @@ const db = admin.firestore();
 
 // Error Handler
 const handleApiError = (error: any): ApiResponse<null> => {
-  console.error('API Error:', error);
+  console.error("API Error:", error);
   return {
     success: false,
-    error: error instanceof Error ? error.message : 'An unknown error occurred'
+    error: error instanceof Error ? error.message : "An unknown error occurred"
   };
 };
 
@@ -34,13 +33,13 @@ const handleApiError = (error: any): ApiResponse<null> => {
 export const registerUser = onRequest(async (req, res) => {
   try {
     if (req.method !== "POST") {
-      throw new HttpsError('invalid-argument', 'Method Not Allowed');
+      throw new HttpsError("invalid-argument", "Method Not Allowed");
     }
 
     const { userId, name, passwd } = req.body as Partial<UserData>;
 
     if (!userId || !name || !passwd) {
-      throw new HttpsError('invalid-argument', 'Missing required fields');
+      throw new HttpsError("invalid-argument", "Missing required fields");
     }
 
     const userRef = db.collection("users").doc(userId);
@@ -63,25 +62,25 @@ export const registerUser = onRequest(async (req, res) => {
 export const loginUser = onRequest(async (req, res) => {
   try {
     if (req.method !== "POST") {
-      throw new HttpsError('invalid-argument', 'Method Not Allowed');
+      throw new HttpsError("invalid-argument", "Method Not Allowed");
     }
 
     const { userId, passwd } = req.body as Partial<UserData>;
 
     if (!userId || !passwd) {
-      throw new HttpsError('invalid-argument', 'Missing credentials');
+      throw new HttpsError("invalid-argument", "Missing credentials");
     }
 
     const userRef = db.collection("users").doc(userId);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
-      throw new HttpsError('not-found', 'User not found');
+      throw new HttpsError("not-found", "User not found");
     }
 
     const userData = userDoc.data() as UserData;
     if (userData.passwd !== passwd) {
-      throw new HttpsError('unauthenticated', 'Invalid password');
+      throw new HttpsError("unauthenticated", "Invalid password");
     }
 
     const token = "dummy-token"; // JWT 토큰 로직 구현 필요
@@ -100,19 +99,19 @@ export const loginUser = onRequest(async (req, res) => {
 export const getUserInfo = onRequest(async (req, res) => {
   try {
     if (req.method !== "GET") {
-      throw new HttpsError('invalid-argument', 'Method Not Allowed');
+      throw new HttpsError("invalid-argument", "Method Not Allowed");
     }
 
     const id = req.query.id as string;
     if (!id) {
-      throw new HttpsError('invalid-argument', 'User ID is required');
+      throw new HttpsError("invalid-argument", "User ID is required");
     }
 
     const userRef = db.collection("users").doc(id);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
-      throw new HttpsError('not-found', 'User not found');
+      throw new HttpsError("not-found", "User not found");
     }
 
     const userData = userDoc.data() as UserData;
@@ -134,12 +133,12 @@ export const getUserInfo = onRequest(async (req, res) => {
 export const getPostsByAuthor = onRequest(async (req, res) => {
   try {
     if (req.method !== "GET") {
-      throw new HttpsError('invalid-argument', 'Method Not Allowed');
+      throw new HttpsError("invalid-argument", "Method Not Allowed");
     }
 
     const id = req.query.id as string;
     if (!id) {
-      throw new HttpsError('invalid-argument', 'Author ID is required');
+      throw new HttpsError("invalid-argument", "Author ID is required");
     }
 
     const postsSnapshot = await db.collection("posts")
