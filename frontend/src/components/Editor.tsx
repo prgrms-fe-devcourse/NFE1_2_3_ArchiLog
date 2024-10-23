@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { useState, useCallback } from "react";
 import pasteImage from '../utils/pasteImage';
 
-// MDEditor를 동적으로 import하여 서버 사이드 렌더링을 방지
 const MDEditor = dynamic<MDEditorProps>(() => import("@uiw/react-md-editor"), {
   ssr: false,
 });
@@ -19,15 +18,16 @@ const Editor = ({ handleImage }: EditorProps) => {
     setValue(newValue || "");
   }, []);
 
-  const handlePaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    event.preventDefault(); // 기본 동작 방지 (예: 텍스트 붙여넣기)
-    await pasteImage(event.clipboardData, setValue);
-  };
+ 
+  const handlePaste = useCallback((event: React.ClipboardEvent) => {
+    event.preventDefault();
+    pasteImage(event.clipboardData, setValue);
+  }, []);
 
-  const handleDrop = async (event: DragEvent) => {
-    event.preventDefault(); // 기본 동작 방지 (예: 파일 열기)
-    await pasteImage(event.dataTransfer, setValue);
-  };
+  const handleDrop = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    pasteImage(event.dataTransfer, setValue);
+  }, []);
 
   return (
     <div>
