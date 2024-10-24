@@ -1,7 +1,7 @@
 {
   "rules": {
-    ".read": true,  
-      
+    ".read": true, 
+
     
     "users": {
       "$userId": {

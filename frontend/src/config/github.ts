@@ -1,6 +1,7 @@
 export const GITHUB_CONFIG = {
-    CLIENT_ID: import.meta.env.VITE_GITHUB_CLIENT_ID || '',
-    REDIRECT_URI: import.meta.env.VITE_GITHUB_REDIRECT_URI || '',
-    OAUTH_URL: 'https://github.com/login/oauth/authorize',
-    API_URL: 'https://api.github.com'
-  } as const;
+  API_URL: 'https://api.github.com',
+  OAUTH_URL: 'https://github.com/login/oauth/authorize',
+  CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+  CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+  REDIRECT_URI: process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI
+};
