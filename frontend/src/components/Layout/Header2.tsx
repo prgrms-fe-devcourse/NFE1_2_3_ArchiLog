@@ -43,7 +43,8 @@ const Header: FC<Header> = ({ isDarkMode, DarkMode }) => {
           >
             AboutMe
           </a>
-          <a href="/project"
+          <a
+            href="/project"
             className={`cursor-pointer hover:scale-105 ${isDarkMode ? "hover:text-headerDarkHover" : "hover:text-blue-500"} hidden lg:block`}
           >
             Projects
@@ -78,14 +79,29 @@ const Header: FC<Header> = ({ isDarkMode, DarkMode }) => {
       {/* 메뉴 */}
       <div
         className={` fixed transition-transform  bg-white min-w-full top-16
-      ${menu ? "translate-y-0" : "-translate-y-full"} dark:bg-black dark:text-white lg:hidden border-b-2 border-black dark:border-white z-10`} 
+      ${menu ? "translate-y-0" : "-translate-y-full"} dark:bg-black dark:text-white lg:hidden border-b-2 border-black dark:border-white z-10`}
       >
         <div className="pl-6 pb-3 space-y-3 font-bold text-[20px] flex-col flex">
-          <a href="/" className="cursor-pointer hover:text-blue-500 dark:hover:text-headerDarkHover">AboutMe</a>
-          <a href="/project" className="cursor-pointer hover:text-blue-500
-          dark:hover:text-headerDarkHover">Projects</a>
-          <a href="/blog" className="cursor-pointer hover:text-blue-500
-          dark:hover:text-headerDarkHover">Blog</a>
+          <a
+            href="/"
+            className="cursor-pointer hover:text-blue-500 dark:hover:text-headerDarkHover"
+          >
+            AboutMe
+          </a>
+          <a
+            href="/project"
+            className="cursor-pointer hover:text-blue-500
+          dark:hover:text-headerDarkHover"
+          >
+            Projects
+          </a>
+          <a
+            href="/blog"
+            className="cursor-pointer hover:text-blue-500
+          dark:hover:text-headerDarkHover"
+          >
+            Blog
+          </a>
         </div>
       </div>
     </>

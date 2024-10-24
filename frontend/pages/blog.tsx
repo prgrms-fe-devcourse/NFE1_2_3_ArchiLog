@@ -2,7 +2,6 @@ import { useState } from "react";
 import Header2 from "../src/components/Layout/Header2";
 import Blog from "../src/components/blog/Bloginven";
 
-
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
