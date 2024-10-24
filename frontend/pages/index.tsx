@@ -1,4 +1,5 @@
 import React from 'react';
+import ProjectGallery from "../src/components/project/Project";
 
 const Index = () => {
   return (

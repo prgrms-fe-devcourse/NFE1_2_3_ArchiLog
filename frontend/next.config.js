@@ -1,10 +1,23 @@
 import nextRemoveImports from "next-remove-imports";
 
+
+// NO배포
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   reactStrictMode: true,
+// };
+
+// const removeImports = nextRemoveImports();
+
+// export default removeImports(nextConfig);
+
+// 배포용
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-};
+  output: 'export',  
+  images: {
+    unoptimized: true  
+  }
+}
 
-const removeImports = nextRemoveImports();
-
-export default removeImports(nextConfig);
+module.exports = nextConfig

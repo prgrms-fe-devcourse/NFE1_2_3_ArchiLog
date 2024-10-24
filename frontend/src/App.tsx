@@ -2,8 +2,8 @@ import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
 import "./App.css";
-import Header2 from "./components/Layout/Header2.tsx";
-import Blog from "./components/blog/Blog.tsx";
+import Header2 from "./components/Layout/Header2";
+import Blog from "./components/blog/Blog";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
