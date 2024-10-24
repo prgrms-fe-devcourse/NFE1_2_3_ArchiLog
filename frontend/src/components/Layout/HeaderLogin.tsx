@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link"; 
 import { MdOutlineAccountCircle } from "react-icons/md"; 
 
 interface HeaderProps {
@@ -6,7 +7,7 @@ interface HeaderProps {
   toggleDarkMode: () => void;
 }
 
-const Header2: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
+const HeaderLogin: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
   return (
     <header
       className={`w-screen px-5 border-b border-gray-700 ${
@@ -15,7 +16,9 @@ const Header2: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
     >
       <div className="flex justify-between items-center mx-auto" style={{ height: "80px" }}>
         <div className="flex items-center">
-          <span className="text-2xl md:text-xl lg:text-3xl font-bold">ArchiLog</span>
+          <Link href="/">
+            <span className="text-2xl md:text-xl lg:text-3xl font-bold">ArchiLog</span>
+          </Link>
         </div>
 
         <nav className="hidden md:flex space-x-3 md:space-x-5 lg:space-x-8 ml-auto">
@@ -38,4 +41,4 @@ const Header2: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
   );
 };
 
-export default Header2;
+export default HeaderLogin;
