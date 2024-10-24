@@ -22,7 +22,6 @@
     "react-dom": "^18.3.1",
     "react-file-drop": "^3.1.6",
     "tailwind": "^4.0.0",
-    "vite-tsconfig-paths": "^5.0.1",
     "tailwindcss": "^3.4.14"
   },
   "devDependencies": {
@@ -32,7 +31,6 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
     "@vitejs/plugin-react-swc": "^3.7.1",
-    "autoprefixer": "^10.4.20",
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",

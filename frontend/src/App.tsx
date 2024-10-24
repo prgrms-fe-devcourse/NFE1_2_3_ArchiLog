@@ -3,6 +3,7 @@
 import "./App.css";
 import Header2 from "./components/Layout/Header2";
 import Blog from "./components/blog/Blog";
+
 function App() {
   return {
     /* <div>
