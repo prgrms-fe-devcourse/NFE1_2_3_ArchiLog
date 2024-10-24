@@ -1,0 +1,52 @@
+{
+  "rules": {
+    ".read": true, 
+
+    
+    "users": {
+      "$userId": {
+        ".write": "auth != null && auth.uid === $userId",
+        ".validate": "newData.hasChildren(['userId', 'name'])"
+      }
+    },
+    
+    "posts": {
+      "$postId": {
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['authorId', 'title', 'content'])",
+        "authorId": {
+          ".validate": "auth != null && auth.uid === newData.val()"
+        }
+      }
+    },
+    
+    "comments": {
+      "$postId": {
+        "$commentId": {
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['authorId', 'content'])",
+          "authorId": {
+            ".validate": "auth != null && auth.uid === newData.val()"
+          }
+        }
+      }
+    },
+    
+    "projects": {
+      "$userId": {
+        ".write": "auth != null && auth.uid === $userId",
+        "$projectId": {
+          ".validate": "newData.hasChildren(['projectUrl'])"
+        }
+      }
+    },
+    
+    "attachments": {
+      "$attachmentId": {
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['url', 'filename'])"
+      }
+    }
+  }
+}
+
