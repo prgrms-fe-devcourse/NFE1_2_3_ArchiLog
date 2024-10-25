@@ -53,7 +53,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     >
       <header>
         {/* 로그인 전 로그인 후 상태를 보기 위해서 */}
-        <Header isLoggedIn={false} />
+        <Header isLoggedIn={true} />
       </header>
       <main className="pt-10">{children}</main>
     </div>
