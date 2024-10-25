@@ -1,4 +1,4 @@
-// contexts/DarkModeContext.tsx
+// 다크모드 context API 관리
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface DarkModeContextProps {
