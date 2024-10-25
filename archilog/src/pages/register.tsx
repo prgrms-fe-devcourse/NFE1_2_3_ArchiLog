@@ -13,6 +13,8 @@ const RegisterLayout: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const router = useRouter();
 
+
+  
   useEffect(() => {
     if (router.query.darkMode === "true") {
       setDarkMode(true);
