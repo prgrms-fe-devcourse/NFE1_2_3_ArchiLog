@@ -29,7 +29,10 @@ export const signUp = async (email: string, password: string, username: string) 
     return user;
   } catch (error: any) {
     console.error('Signup error:', error);
-    throw new Error(error.message);
+    if (error.code === 'auth/email-already-in-use') {
+      throw new Error("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
+    }
+    throw new Error("회원가입에 실패했습니다. 다시 시도해주세요.");
   }
 };
 
@@ -39,7 +42,12 @@ export const signIn = async (email: string, password: string) => {
     return userCredential.user;
   } catch (error: any) {
     console.error('Login error:', error);
-    throw new Error(error.message);
+    if (error.code === 'auth/user-not-found') {
+      throw new Error("사용자를 찾을 수 없습니다. 회원가입을 해주세요.");
+    } else if (error.code === 'auth/wrong-password') {
+      throw new Error("잘못된 비밀번호입니다. 다시 시도해주세요.");
+    }
+    throw new Error("로그인에 실패했습니다. 다시 시도해주세요.");
   }
 };
 
