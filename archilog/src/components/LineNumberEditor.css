@@ -1,0 +1,34 @@
+.ql-editor {
+    height: 300px;
+  }
+  
+  /* 다크모드에서 툴바 및 에디터 텍스트 스타일을 맞춤 */
+  .quill-dark .ql-toolbar {
+    background-color: #222121;
+    color: #ffffff;
+  }
+  
+  .quill-dark .ql-container {
+    background-color: #222121;
+    color: #ffffff;
+  }
+  
+  .quill-dark .ql-toolbar button svg {
+    fill: #ffffff;
+  }
+  
+  .quill-dark .ql-toolbar button:hover svg {
+    fill: #cccccc;
+  }
+  
+  /* Placeholder 텍스트 색상을 다크모드에서 하얀색으로 설정 */
+  .quill-dark .ql-editor::before {
+    color: #ffffff;
+    opacity: 0.6;
+  }
+  
+  /* 다크모드에서 툴바 텍스트 색상 */
+  .quill-dark .ql-toolbar button.ql-bold::before,
+  .quill-dark .ql-toolbar button.ql-underline::before {
+    color: #ffffff;
+  }

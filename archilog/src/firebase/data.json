@@ -1,0 +1,76 @@
+{
+    "users": {
+      "userId": {
+        "profile": {
+          "userId": "string",
+          "name": "string",
+          "resume": "string",
+          "createdAt": "timestamp"
+        }
+      }
+    },
+    
+    "posts": {
+      "postId": {
+        "authorId": "string",
+        "title": "string",
+        "content": "string",
+        "tags": {
+          "tagId": "string"
+        },
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp",
+        "searchKeywords": {    
+          "keyword1": true,
+          "keyword2": true
+        }
+      }
+    },
+    
+    "comments": {
+      "postId": {
+        "commentId": {
+          "authorId": "string",
+          "content": "string",
+          "createdAt": "timestamp"
+        }
+      }
+    },
+    
+    "projects": {
+      "userId": {
+        "projectId": {
+          "projectUrl": "string",
+          "createdAt": "timestamp"
+        }
+      }
+    },
+    
+    "attachments": {
+      "attachmentId": {
+        "url": "string",
+        "filename": "string",
+        "contentType": "string",
+        "size": "number",
+        "createdAt": "timestamp"
+      }
+    },
+  
+    "user-posts": {           
+      "userId": {
+        "postId": "timestamp"  
+      }
+    },
+    
+    "post-tags": {             
+      "tagName": {
+        "postId": "timestamp"  
+      }
+    },
+  
+    "post-timeline": {        
+      "timestamp": {
+        "postId": true
+      }
+    }
+  }
