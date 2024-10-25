@@ -37,29 +37,46 @@
 
 // export default MainLayout;
 
-import React, { useState } from "react";
+// import React, { useState } from "react";
+// import Header from "./Header";
+
+// const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+//   const [darkMode, setDarkMode] = useState(false);
+
+//   // 다크 모드 상태 전환 함수
+//   const toggleDarkMode = () => {
+//     setDarkMode((prevMode) => !prevMode);
+//   };
+
+//   return (
+//     <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen`}>
+//       <header>
+//         <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+//       </header>
+//       <main className="pt-10">
+//         {children} {/* 여기에 페이지의 콘텐츠가 렌더링됩니다. */}
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default MainLayout;
+
+// MainLayout.tsx _ 3
+import React from "react";
 import Header from "./Header";
 
-const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+interface MainLayoutProps {
+  children: React.ReactNode;
+  isLoggedIn: boolean;
+}
 
-  // 다크 모드 상태 전환 함수
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
-  };
-
+const MainLayout: React.FC<MainLayoutProps> = ({ children, isLoggedIn }) => {
   return (
-    <div
-      className={`${
-        darkMode ? "dark bg-black text-white" : "bg-white text-black"
-      } min-h-screen`}
-    >
-      <header>
-        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      </header>
-      <main className="pt-10">
-        {children} {/* 여기에 페이지의 콘텐츠가 렌더링됩니다. */}
-      </main>
+    <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
+      {/* 다크모드와 로그인 상태는 Header 내부에서 관리 */}
+      <Header isLoggedIn={isLoggedIn} />
+      <main className="pt-10">{children}</main>
     </div>
   );
 };
