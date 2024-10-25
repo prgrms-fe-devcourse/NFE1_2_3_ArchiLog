@@ -1,21 +1,18 @@
-// src/pages/api/github/repos.ts
+// src/pages/api/github.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { parse } from 'cookie';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
   try {
-    const cookies = parse(req.headers.cookie || '');
-    const token = cookies.github_token;
-
-    if (!token) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    const response = await fetch('https://api.github.com/user/repos', {
+    // GitHub API로 데이터를 직접 가져오기
+    const response = await fetch('https://api.github.com/users/tree0000/repos', {
       headers: {
-        'Authorization': `token ${token}`,
         'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Project Gallery'
+        'User-Agent': 'archilog'
       }
     });
 
@@ -23,17 +20,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error('Failed to fetch repositories');
     }
 
-    const repos = await response.json();
+    const data = await response.json();
     
-    const filteredRepos = repos
+    // 포크된 저장소 제외하고 필요한 데이터만 필터링
+    const repos = data
       .filter((repo: any) => !repo.fork)
+      .map((repo: any) => ({
+        id: repo.id,
+        name: repo.name,
+        description: repo.description,
+        html_url: repo.html_url,
+        stargazers_count: repo.stargazers_count,
+        forks_count: repo.forks_count,
+        language: repo.language,
+        topics: repo.topics || [],
+        updated_at: repo.updated_at
+      }))
       .sort((a: any, b: any) => 
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
       );
 
-    res.status(200).json(filteredRepos);
+    res.status(200).json(repos);
   } catch (error) {
     console.error('Error fetching repositories:', error);
-    res.status(500).json({ error: 'Failed to fetch repositories' });
+    res.status(500).json({ message: 'Failed to fetch repositories' });
   }
 }

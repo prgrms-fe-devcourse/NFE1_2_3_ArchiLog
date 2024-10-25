@@ -19,4 +19,5 @@ export const auth = getAuth(firebaseApp);
 // Database 인스턴스
 export const database = getDatabase(firebaseApp);
 
+
 export default firebaseApp;
