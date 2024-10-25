@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface HeaderProps {
   isLoggedIn: boolean; // 로그인 여부를 나타냄
 }
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { darkMode, toggleDarkMode } = useDarkMode();
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const router = useRouter();
-
-  // 다크모드 상태를 로컬 스토리지에서 불러오기
-  useEffect(() => {
-    const storedDarkMode = localStorage.getItem("darkMode") === "true";
-    setDarkMode(storedDarkMode);
-  }, []);
-
-  // 다크모드 토글 함수
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    localStorage.setItem("darkMode", (!darkMode).toString()); // 상태를 로컬 스토리지에 저장
-  };
 
   // 사이드바 토글 함수
   const toggleSidebar = () => {
