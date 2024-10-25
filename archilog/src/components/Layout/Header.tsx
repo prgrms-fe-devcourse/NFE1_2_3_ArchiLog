@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { useDarkMode } from "@/contexts/DarkModeContext";
+import Link from "next/link"; // Link 추가
 
 interface HeaderProps {
   isLoggedIn: boolean; // 로그인 여부를 나타냄
@@ -34,15 +35,15 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
       >
         {/* 왼쪽 로고 */}
         <div className="flex items-center">
-          <span className="text-2xl md:text-xl lg:text-3xl font-bold">
+          <Link href="/" className="text-2xl md:text-xl lg:text-3xl font-bold">
             ArchiLog
-          </span>
+          </Link>
         </div>
 
         {/* 로그인 여부에 따른 네비게이션 메뉴 */}
         {isLoggedIn ? (
           <nav className="hidden md:flex space-x-5 ml-auto">
-            <a
+            <Link
               href="/aboutme"
               className={`text-sm md:text-base lg:text-lg ${
                 darkMode
@@ -51,8 +52,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               }`}
             >
               About Me
-            </a>
-            <a
+            </Link>
+            <Link
               href="/project"
               className={`text-sm md:text-base lg:text-lg ${
                 darkMode
@@ -61,8 +62,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               }`}
             >
               Projects
-            </a>
-            <a
+            </Link>
+            <Link
               href="/blog"
               className={`text-sm md:text-base lg:text-lg ${
                 darkMode
@@ -71,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               }`}
             >
               Blog
-            </a>
+            </Link>
           </nav>
         ) : (
           <button
@@ -138,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
           {/* <div className="border-b my-4"></div> */}
 
           <nav className="flex flex-col p-5 space-y-4">
-            <a
+            <Link
               href="/aboutme"
               className={`${
                 darkMode
@@ -147,8 +148,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               }`}
             >
               About Me
-            </a>
-            <a
+            </Link>
+            <Link
               href="/project"
               className={`${
                 darkMode
@@ -157,8 +158,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               }`}
             >
               Projects
-            </a>
-            <a
+            </Link>
+            <Link
               href="/blog"
               className={`${
                 darkMode
@@ -167,7 +168,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               }`}
             >
               Blog
-            </a>
+            </Link>
           </nav>
         </div>
       )}
