@@ -1,4 +1,4 @@
-import { FC, useEffect} from "react";
+import { FC, useEffect } from "react";
 import Search from "../../../public/images/search.svg";
 import Image from "next/image";
 
@@ -6,10 +6,7 @@ interface Darkmode {
   darkMode: boolean;
 }
 
-
 const Blog: FC<Darkmode> = ({ darkMode }) => {
-
-
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.remove("dark");
@@ -17,8 +14,6 @@ const Blog: FC<Darkmode> = ({ darkMode }) => {
       document.documentElement.classList.add("dark");
     }
   }, [darkMode]);
-
-
 
   return (
     <div className="dark:text-white mt-4 dark:bg-black">
