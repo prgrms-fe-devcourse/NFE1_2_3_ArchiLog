@@ -1,4 +1,3 @@
-
 // import React, { useState } from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import PostForm from "../PostForm";
@@ -62,4 +61,3 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export default MainLayout;
-
