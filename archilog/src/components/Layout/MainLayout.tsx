@@ -49,7 +49,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen`}>
+    <div
+      className={`${
+        darkMode ? "dark bg-black text-white" : "bg-white text-black"
+      } min-h-screen`}
+    >
       <header>
         <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       </header>
