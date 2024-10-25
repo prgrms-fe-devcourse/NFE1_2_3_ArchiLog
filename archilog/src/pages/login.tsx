@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import HeaderLogin from "@/components/Layout/HeaderLogin";
+import HeaderLogin from "../components/Layout/HeaderLogin";
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
