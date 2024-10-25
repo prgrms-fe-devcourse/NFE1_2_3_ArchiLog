@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import axios from 'axios';  
 import HeaderLogin from "../src/components/Layout/HeaderLogin"; 
 
 const LoginLayout: React.FC = () => {
@@ -12,7 +11,6 @@ const LoginLayout: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // URL 쿼리 파라미터로 다크 모드 상태 가져오기
     if (router.query.darkMode === "true") {
       setDarkMode(true);
     }
@@ -53,19 +51,15 @@ const LoginLayout: React.FC = () => {
       return;
     }
 
-    try {
-      const response = await axios.post('http://localhost:5005/api/login', {
-        email,
-        password
-      });
-
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        router.push('/');
+    // 로그인 처리
+    setTimeout(() => {
+      if (email === "test@example.com" && password === "password") {
+        alert("로그인 되었습니다.");
+        router.push('/'); 
+      } else {
+        setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
       }
-    } catch (error) {
-      setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
-    }
+    }, 1000);
   };
 
   return (
@@ -86,7 +80,7 @@ const LoginLayout: React.FC = () => {
                 Sign in
               </button>
               <button 
-                onClick={handleSignup}  // 다크 모드 상태 유지
+                onClick={handleSignup}  
                 className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg bg-white text-black hover:bg-gray-200`} 
                 style={{ zIndex: 1 }}
               >
@@ -115,11 +109,7 @@ const LoginLayout: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
                 />
-                <button 
-                  type="button" 
-                  onClick={togglePasswordVisibility} 
-                  className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-full"
-                >
+                <button className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-full" onClick={togglePasswordVisibility}>
                   <img src="/images/eye.svg" alt="Show Password" className="h-6 w-6" />
                 </button>
               </div>
@@ -129,7 +119,6 @@ const LoginLayout: React.FC = () => {
               <a href="#" className="text-sm hover:underline">Forgot password?</a>
             </div>
 
-            {/* 오류 메시지 */}
             {errorMessage && <p className="text-red-500 text-center mb-2">{errorMessage}</p>}
 
             <button onClick={handleLogin} className="w-full py-3 bg-black text-white rounded-md hover:bg-gray-800 mt-4 text-lg">Login</button>
