@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import HeaderLogin from "@/components/Layout/HeaderLogin";
+import { signIn } from "@/firebase/auth";
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -51,15 +52,13 @@ const LoginLayout: React.FC = () => {
       return;
     }
 
-    // 로그인 처리
-    setTimeout(() => {
-      if (email === "test@example.com" && password === "password") {
-        alert("로그인 되었습니다.");
-        router.push('/'); 
-      } else {
-        setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
-      }
-    }, 1000);
+    try {
+      await signIn(email, password);
+      alert("로그인 되었습니다.");
+      router.push('/'); 
+    } catch (error) {
+      setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
+    }
   };
 
   return (

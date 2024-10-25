@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; 
-import axios from 'axios'; 
 import HeaderLogin from "@/components/Layout/HeaderLogin";
+import { signUp } from "@/firebase/auth";
 
 const RegisterLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -13,8 +13,6 @@ const RegisterLayout: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const router = useRouter();
 
-
-  
   useEffect(() => {
     if (router.query.darkMode === "true") {
       setDarkMode(true);
@@ -63,17 +61,14 @@ const RegisterLayout: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5005/api/register', {
-        username,
-        email,
-        password
-      });
-
-      if (response.status === 201) {
-        router.push("/login?darkMode=" + darkMode);
+      await signUp(email, password, username);
+      router.push("/login?darkMode=" + darkMode);
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        setErrorMessage("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
+      } else {
+        setErrorMessage("회원가입에 실패했습니다. 다시 시도해주세요.");
       }
-    } catch (error) {
-      setErrorMessage("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -107,7 +102,6 @@ const RegisterLayout: React.FC = () => {
               </button>
             </div>
 
-            {/* Username */}
             <div className="w-full mb-2">
               <label className="block text-sm font-medium mb-1">Username</label>
               <input
@@ -119,7 +113,6 @@ const RegisterLayout: React.FC = () => {
               />
             </div>
 
-            {/* Email */}
             <div className="w-full mb-2">
               <label className="block text-sm font-medium mb-1">Email address</label>
               <input
@@ -131,7 +124,6 @@ const RegisterLayout: React.FC = () => {
               />
             </div>
 
-            {/* Password */}
             <div className="w-full mb-2">
               <label className="block text-sm font-medium mb-1">Password</label>
               <div className="relative">
@@ -152,7 +144,6 @@ const RegisterLayout: React.FC = () => {
               </div>
             </div>
 
-            {/* Accept Policy */}
             <div className="w-full flex items-center mb-2">
               <input
                 type="checkbox"
@@ -166,10 +157,8 @@ const RegisterLayout: React.FC = () => {
               </label>
             </div>
 
-            {/* 오류 메시지 */}
             {errorMessage && <p className="text-red-500 text-center mb-2">{errorMessage}</p>}
 
-            {/* Create Account */}
             <button 
               onClick={handleRegister} 
               className="w-full py-3 bg-black text-white rounded-md hover:bg-gray-800 mt-4 text-lg"
