@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link"; 
-import { MdOutlineAccountCircle } from "react-icons/md"; 
 
 interface HeaderProps {
   darkMode: boolean;

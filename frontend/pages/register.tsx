@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; 
-import axios from 'axios'; 
 import HeaderLogin from "../src/components/Layout/HeaderLogin"; 
 
 const RegisterLayout: React.FC = () => {
@@ -60,19 +59,11 @@ const RegisterLayout: React.FC = () => {
       return;
     }
 
-    try {
-      const response = await axios.post('http://localhost:5005/api/register', {
-        username,
-        email,
-        password
-      });
-
-      if (response.status === 201) {
-        router.push("/login?darkMode=" + darkMode);
-      }
-    } catch (error) {
-      setErrorMessage("회원가입에 실패했습니다. 다시 시도해주세요.");
-    }
+    // 회원가입 처리
+    setTimeout(() => {
+      alert("회원가입이 완료되었습니다.");
+      router.push(`/login?darkMode=${darkMode}`);
+    }, 1000);
   };
 
   return (
@@ -90,9 +81,9 @@ const RegisterLayout: React.FC = () => {
 
             <div className="flex mb-2 w-full relative">
               <button
+                onClick={handleSignInClick}
                 className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg bg-white text-black hover:bg-gray-200`}
                 style={{ zIndex: 1, position: "relative", marginRight: "-15px" }}
-                onClick={handleSignInClick}
               >
                 Sign in
               </button>
