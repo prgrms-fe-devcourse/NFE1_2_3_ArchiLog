@@ -21,7 +21,6 @@ interface Project {
   };
 }
 
-// Modal Component
 function AddProjectModal({ isOpen, onClose, onSubmit }: {
   isOpen: boolean;
   onClose: () => void;
@@ -57,12 +56,12 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-gray-900 rounded-lg w-full max-w-md p-6 shadow-xl">
-        <h2 className="text-xl font-semibold text-white mb-6">Add New Project</h2>
+      <div className="relative bg-white rounded-lg w-full max-w-md p-6 shadow-xl">
+        <h2 className="text-xl font-semibold text-black mb-6">프로젝트</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               GitHub Repository URL
             </label>
             <input
@@ -70,20 +69,20 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
               placeholder="https://github.com/username/repository"
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 rounded-lg bg-white text-black border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1">
-              Description
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              설명
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add a brief description of your project"
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="프로젝트에 대한 간단한 설명"
+              className="w-full px-4 py-2 rounded-lg bg-white text-black border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
             />
           </div>
@@ -91,9 +90,9 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
-            {loading ? 'Adding Project...' : 'Add Project'}
+            {loading ? '프로젝트 추가 중...' : '프로젝트 추가'}
           </button>
 
           {error && (
@@ -116,7 +115,7 @@ export default function ProjectPage() {
       const data = await getProjects();
       setProjects(data);
     } catch (err) {
-      setError('Failed to load projects');
+      setError('프로젝트를 불러오는데 실패했습니다');
     } finally {
       setLoading(false);
     }
@@ -138,7 +137,7 @@ export default function ProjectPage() {
   const handleDeleteProject = async (projectId: string, e: React.MouseEvent) => {
     e.preventDefault();
     
-    if (!window.confirm('Are you sure you want to delete this project?')) {
+    if (!window.confirm('이 프로젝트를 삭제하시겠습니까?')) {
       return;
     }
     
@@ -147,8 +146,8 @@ export default function ProjectPage() {
       const updatedProjects = projects.filter(project => project.id !== projectId);
       setProjects(updatedProjects);
     } catch (error) {
-      console.error('Failed to delete project:', error);
-      alert('Failed to delete project');
+      console.error('프로젝트 삭제 실패:', error);
+      alert('프로젝트 삭제에 실패했습니다');
     }
   };
 
@@ -162,20 +161,20 @@ export default function ProjectPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">Project Gallery</h1>
+          <h1 className="text-3xl font-bold text-black">Project</h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
             <Plus className="w-5 h-5" />
             <span>Add Project</span>
@@ -192,12 +191,12 @@ export default function ProjectPage() {
                 href={project.repoInfo.html_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative group overflow-hidden rounded-xl p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-gray-800 hover:border-gray-700 transition-all duration-300"
+                className="relative group overflow-hidden rounded-xl p-6 bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm"
               >
                 {project.userId === 'user123' && (
                   <button
                     onClick={(e) => handleDeleteProject(project.id, e)}
-                    className="absolute top-3 right-3 p-2 rounded-full bg-gray-800/50 text-gray-400 hover:bg-red-500/20 hover:text-red-500 transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
+                    className="absolute top-3 right-3 p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -205,17 +204,17 @@ export default function ProjectPage() {
 
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Github className="w-5 h-5 text-gray-400" />
-                    <h3 className="text-lg font-semibold text-white truncate">
+                    <Github className="w-5 h-5 text-gray-600" />
+                    <h3 className="text-lg font-semibold text-black truncate">
                       {project.repoInfo.name}
                     </h3>
                   </div>
                   
-                  <p className="text-sm text-gray-400 line-clamp-2">
+                  <p className="text-sm text-gray-600 line-clamp-2">
                     {project.customDescription || project.repoInfo.description}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                     {project.repoInfo.language && (
                       <span className="flex items-center space-x-1">
                         <span className={`w-3 h-3 rounded-full bg-${getLanguageColor(project.repoInfo.language)}`} />
@@ -239,7 +238,7 @@ export default function ProjectPage() {
                       {project.repoInfo.topics.map((topic) => (
                         <span 
                           key={topic}
-                          className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300"
+                          className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600 border border-gray-200"
                         >
                           {topic}
                         </span>
