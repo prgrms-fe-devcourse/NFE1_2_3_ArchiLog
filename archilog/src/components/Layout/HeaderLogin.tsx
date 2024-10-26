@@ -1,3 +1,4 @@
+// HeaderLogin.tsx
 import React from "react";
 import Link from "next/link"; 
 import { MdOutlineAccountCircle } from "react-icons/md"; 
@@ -32,7 +33,6 @@ const HeaderLogin: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
           </a>
         </nav>
 
-        {/* 다크모드 전환 버튼 */}
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>
           <span className="text-2xl md:text-xl lg:text-3xl">{darkMode ? "🌙" : "🌞"}</span>
         </div>
@@ -41,4 +41,4 @@ const HeaderLogin: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
   );
 };
 
-export default HeaderLogin;
+export default HeaderLogin; 
