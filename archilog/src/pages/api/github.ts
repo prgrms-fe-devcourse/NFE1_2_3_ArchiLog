@@ -1,5 +1,6 @@
 // src/pages/api/github.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { parse } from 'cookie';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -7,6 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    // GitHub API로 데이터를 직접 가져오기
     const response = await fetch('https://api.github.com/users/tree0000/repos', {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
