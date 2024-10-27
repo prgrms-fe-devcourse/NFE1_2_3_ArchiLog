@@ -39,9 +39,11 @@
 
 import React, { useState } from "react";
 import Header from "./Header";
+import { useRouter } from 'next/router';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
+  const router = useRouter();
 
   // 다크 모드 상태 전환 함수
   const toggleDarkMode = () => {
@@ -50,11 +52,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen`}>
-      <header>
-        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      </header>
-      <main className="pt-10">
-        {children} {/* 여기에 페이지의 콘텐츠가 렌더링됩니다. */}
+      {router.pathname !== '/login' && router.pathname !== '/register' && (
+        <header>
+          <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        </header>
+      )}
+      <main className="pt-0"> 
+        {children}
       </main>
     </div>
   );
