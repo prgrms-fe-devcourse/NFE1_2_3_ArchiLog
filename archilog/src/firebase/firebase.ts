@@ -21,5 +21,3 @@ export const database = getDatabase(firebaseApp);
 
 
 export default firebaseApp;
-
-
