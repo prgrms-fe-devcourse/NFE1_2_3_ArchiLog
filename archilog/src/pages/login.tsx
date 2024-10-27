@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import HeaderLogin from "@/components/Layout/HeaderLogin";
+import HeaderLogin from "../components/Layout/HeaderLogin";
 import { signIn, signInWithGithub, signInWithGoogle, handleGithubRedirectResult, handleGoogleRedirectResult, getCurrentUser } from "@/firebase/auth"; // 필요한 함수들 추가
 
 const LoginLayout: React.FC = () => {

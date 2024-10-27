@@ -1,10 +1,11 @@
 import { getAuth } from "firebase/auth";
 import { getDatabase, ref, get, update } from "firebase/database";
+import { database } from "./firebase";
+
 
 // 마이페이지 불러오기 함수
 export const getAbout = async (userId: string) => {
-  const db = getDatabase();
-  const userRef = ref(db, `users/${userId}`);
+  const userRef = ref(database, `users/${userId}`);
 
   try {
     const snapshot = await get(userRef);
@@ -25,19 +26,19 @@ export const getAbout = async (userId: string) => {
 
 //마이페이지 수정 함수
 export const editAbout = async (userId: string, resume: string) => {
-  const db = getDatabase();
-  const auth = getAuth();
-  const user = auth.currentUser; // 현재 인증된 사용자 확인
+  // const auth = getAuth();
+  // const user = auth.currentUser; // 현재 인증된 사용자 확인
 
-  if (!user) {
-    throw new Error("User is not authenticated");
-  }
+  // if (!user) {
+  //   throw new Error("User is not authenticated");
+  // }
 
-  if (user.uid !== userId) {
-    throw new Error("Unauthorized access");
-  }
+  // if (user.uid !== userId) {
+  //   throw new Error("Unauthorized access");
+  // }
 
-  const userRef = ref(db, `users/${userId}`);
+  const userRef = ref(database, `users/${userId}`);
+
 
   try {
     await update(userRef, {
@@ -50,6 +51,3 @@ export const editAbout = async (userId: string, resume: string) => {
     throw new Error("Failed to update user information");
   }
 };
-
-
-
