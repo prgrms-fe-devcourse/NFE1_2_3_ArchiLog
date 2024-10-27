@@ -1,5 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
@@ -19,5 +21,7 @@ export const auth = getAuth(firebaseApp);
 // Database 인스턴스
 export const database = getDatabase(firebaseApp);
 
+export const db = getFirestore(firebaseApp);
+export const storage = getStorage(firebaseApp);
 
 export default firebaseApp;
