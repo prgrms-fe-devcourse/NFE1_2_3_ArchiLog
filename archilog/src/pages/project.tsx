@@ -2,8 +2,6 @@
 import { useEffect, useState } from 'react';
 import { Github, Star, GitFork, Clock, Trash2, Plus } from 'lucide-react';
 import { addProject, deleteProject, getProjects } from '../firebase/projects';
-import { useAuth } from '../components/contexts/AuthContext';
-import { useRouter } from 'next/router';
 
 interface Project {
   id: string;
@@ -94,7 +92,7 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
             disabled={loading}
             className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
-            {loading ? '추가 중...' : '추가하기'}
+            {loading ? '프로젝트 추가 중...' : '프로젝트 추가'}
           </button>
 
           {error && (
@@ -107,8 +105,6 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
 }
 
 export default function ProjectPage() {
-  const { user } = useAuth();
-  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -131,8 +127,7 @@ export default function ProjectPage() {
 
   const handleAddProject = async (data: { repoUrl: string; description: string }) => {
     try {
-      if (!user) throw new Error('로그인이 필요합니다');
-      await addProject(data.repoUrl, data.description, user.uid);
+      await addProject(data.repoUrl, data.description, 'user123');
       fetchProjects();
     } catch (error) {
       throw error;
@@ -142,13 +137,12 @@ export default function ProjectPage() {
   const handleDeleteProject = async (projectId: string, e: React.MouseEvent) => {
     e.preventDefault();
     
-    if (!user) return;
     if (!window.confirm('이 프로젝트를 삭제하시겠습니까?')) {
       return;
     }
     
     try {
-      await deleteProject(projectId, user.uid);
+      await deleteProject(projectId, 'user123');
       const updatedProjects = projects.filter(project => project.id !== projectId);
       setProjects(updatedProjects);
     } catch (error) {
@@ -177,25 +171,14 @@ export default function ProjectPage() {
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-black">Project Gallery</h1>
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Add Project</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => router.push('/login')}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <span>Login to Add Project</span>
-              </button>
-            )}
-          </div>
+          <h1 className="text-3xl font-bold text-black">Project</h1>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add Project</span>
+          </button>
         </div>
         
         {error ? (
@@ -210,7 +193,7 @@ export default function ProjectPage() {
                 rel="noopener noreferrer"
                 className="relative group overflow-hidden rounded-xl p-6 bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm"
               >
-                {user && project.userId === user.uid && (
+                {project.userId === 'user123' && (
                   <button
                     onClick={(e) => handleDeleteProject(project.id, e)}
                     className="absolute top-3 right-3 p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
@@ -275,14 +258,28 @@ export default function ProjectPage() {
           </div>
         )}
 
-        {user && (
-          <AddProjectModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleAddProject}
-          />
-        )}
+        <AddProjectModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleAddProject}
+        />
       </div>
     </div>
   );
 }
+
+const getLanguageColor = (language: string): string => {
+  const colors: Record<string, string> = {
+    JavaScript: 'yellow-500',
+    TypeScript: 'blue-500',
+    Python: 'green-500',
+    Java: 'red-500',
+    'C++': 'purple-500',
+    Ruby: 'red-600',
+    Go: 'cyan-500',
+    PHP: 'indigo-500',
+    default: 'gray-500'
+  };
+
+  return colors[language] || colors.default;
+};
