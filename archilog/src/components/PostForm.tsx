@@ -1,12 +1,11 @@
-
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // 에디터 기본 스타일
-import { collection, addDoc } from "firebase/firestore";
-import { db, auth } from '../firebase/firebase'
-import "./LineNumberEditer.css"; // 추가적인 커스텀 CSS 스타일
+import "react-quill/dist/quill.snow.css"; 
+import { ref, push } from 'firebase/database'; 
+import { database, auth } from '../firebase/firebase'
+import "./LineNumberEditer.css"; 
 
 interface PostFormInputs {
   title: string;
@@ -40,15 +39,18 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
 
     try {
       setLoading(true);
-      const postDoc = {
+      const postData = {
         title: data.title,
         content: content,
         tags: data.tags.split(",").map((tag) => tag.trim()),
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         userId: user.uid,
       };
 
-      await addDoc(collection(db, "posts"), postDoc);
+      // Realtime Database에 데이터 추가
+      const postsRef = ref(database, 'posts');
+      await push(postsRef, postData);
+      
       setLoading(false);
       alert("게시글이 성공적으로 등록되었습니다!");
     } catch (error) {
