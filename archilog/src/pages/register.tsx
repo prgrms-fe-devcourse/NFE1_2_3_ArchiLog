@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
 import HeaderLogin from "../components/Layout/HeaderLogin";
 import { signUp } from "@/firebase/auth";
 
@@ -62,13 +61,12 @@ const RegisterLayout: React.FC = () => {
     }
 
     try {
-      await signUp(email, password, username);
-      router.push("/login?darkMode=" + darkMode);
+      await signUp(email, password, username, router);
     } catch (error: any) {
-      if (error.code === "auth/email-already-in-use") {
-        setErrorMessage(
-          "이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요."
-        );
+      if (error.message.includes("닉네임")) {
+        setErrorMessage(error.message);
+      } else if (error.code === "auth/email-already-in-use") {
+        setErrorMessage("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
       } else {
         setErrorMessage("회원가입에 실패했습니다. 다시 시도해주세요.");
       }

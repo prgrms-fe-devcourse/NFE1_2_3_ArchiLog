@@ -5,14 +5,29 @@ import {
   signOut, 
   GithubAuthProvider, 
   GoogleAuthProvider, 
-  signInWithRedirect, 
-  getRedirectResult 
+  signInWithPopup 
 } from 'firebase/auth';
-import { ref, set } from 'firebase/database';
+import { ref, set, get, child } from 'firebase/database';
 import { auth, database } from './firebase';
+import { useRouter } from 'next/router';
 
-// 회원가입
-export const signUp = async (email: string, password: string, username: string) => {
+// 닉네임 중복 확인 
+export const checkUsernameExists = async (username: string) => {
+  const snapshot = await get(child(ref(database), 'users'));
+  if (snapshot.exists()) {
+    const users = snapshot.val();
+    return Object.values(users).some((user: any) => user.username === username);
+  }
+  return false;
+};
+
+// 회원가입 및 로그인
+export const signUp = async (email: string, password: string, username: string, router: ReturnType<typeof useRouter>) => {
+  const usernameExists = await checkUsernameExists(username);
+  if (usernameExists) {
+    throw new Error("이미 존재하는 닉네임입니다. 다른 닉네임을 사용해주세요.");
+  }
+
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -33,129 +48,70 @@ export const signUp = async (email: string, password: string, username: string) 
       });
     }
 
+    alert("회원가입이 완료되었습니다. 메인 페이지로 이동합니다.");
+    router.push("/"); 
     return user;
   } catch (error: any) {
     console.error('회원가입 오류:', error);
-    if (error.code === 'auth/email-already-in-use') {
-      throw new Error("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
-    }
-    throw new Error("회원가입에 실패했습니다. 다시 시도해주세요.");
+    throw error;
   }
 };
 
-// 로그인
+// 이메일과 비밀번호로 로그인
 export const signIn = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error: any) {
     console.error('로그인 오류:', error);
-    if (error.code === 'auth/user-not-found') {
-      throw new Error("사용자를 찾을 수 없습니다. 회원가입을 해주세요.");
-    } else if (error.code === 'auth/wrong-password') {
-      throw new Error("잘못된 비밀번호입니다. 다시 시도해주세요.");
-    }
-    throw new Error("로그인에 실패했습니다. 다시 시도해주세요.");
+    throw error;
   }
 };
 
-// 깃허브 로그인
-export const signInWithGithub = async () => {
+// 깃허브 팝업 로그인
+export const signInWithGithubPopup = async () => {
   const provider = new GithubAuthProvider();
   provider.setCustomParameters({
-    'allow_signup': 'false'
+    'prompt': 'select_account'
   });
 
   try {
-    await signInWithRedirect(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
   } catch (error: any) {
     console.error('깃허브 로그인 오류:', error);
-    throw new Error("깃허브 로그인에 실패했습니다. 다시 시도해주세요.");
+    throw error;
   }
 };
 
-// 구글 로그인
-export const signInWithGoogle = async () => {
+// 구글 팝업 로그인
+export const signInWithGooglePopup = async () => {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({
-    'login_hint': 'user@example.com'
+    'prompt': 'select_account'
   });
 
   try {
-    await signInWithRedirect(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
   } catch (error: any) {
     console.error('구글 로그인 오류:', error);
-    throw new Error("구글 로그인에 실패했습니다. 다시 시도해주세요.");
-  }
-};
-
-// 깃허브 리디렉션 처리
-export const handleGithubRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      const user = result.user;
-
-      await set(ref(database, `users/${user.uid}`), {
-        email: user.email,
-        username: user.displayName,
-        createdAt: Date.now(),
-        userId: user.uid,
-        profile: {
-          name: "",
-          resume: "",
-          createdAt: Date.now(),
-          userId: user.uid
-        }
-      });
-
-      return user;
-    }
-  } catch (error: any) {
-    console.error('깃허브 리디렉션 결과 처리 오류:', error);
-    throw new Error("깃허브 리디렉션 결과 처리에 실패했습니다.");
-  }
-};
-
-// 구글 리디렉션 처리
-export const handleGoogleRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      const user = result.user;
-
-      await set(ref(database, `users/${user.uid}`), {
-        email: user.email,
-        username: user.displayName,
-        createdAt: Date.now(),
-        userId: user.uid,
-        profile: {
-          name: "",
-          resume: "",
-          createdAt: Date.now(),
-          userId: user.uid
-        }
-      });
-
-      return user;
-    }
-  } catch (error: any) {
-    console.error('구글 리디렉션 결과 처리 오류:', error);
-    throw new Error("구글 리디렉션 결과 처리에 실패했습니다.");
+    throw error;
   }
 };
 
 // 로그아웃
-export const logOut = async () => {
+export const logOutAndRedirect = async (router: ReturnType<typeof useRouter>) => {
   try {
     await signOut(auth);
+    router.push("/login");
   } catch (error: any) {
-    console.error('로그아웃 오류:', error);
-    throw new Error("로그아웃에 실패했습니다.");
+    console.error("로그아웃 오류:", error);
+    throw error;
   }
 };
 
-// 현재 사용자 정보
+// 현재 사용자 정보 가져오기
 export const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(auth, 
@@ -166,24 +122,6 @@ export const getCurrentUser = () => {
       reject
     );
   });
-};
-
-// 현재 사용자 아이디
-export const getCurrentUserId = () => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error('로그인된 사용자가 없습니다.');
-  }
-  return user.uid;
-};
-
-// 인증 확인하기
-export const checkAuth = () => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error('사용자가 인증되지 않았습니다.');
-  }
-  return user;
 };
 
 export { auth };

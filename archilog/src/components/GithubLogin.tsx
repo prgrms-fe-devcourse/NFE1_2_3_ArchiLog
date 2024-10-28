@@ -1,10 +1,19 @@
-// src/components/project/GithubLogin.tsx
+import React from 'react';
 import { Github } from 'lucide-react';
+import { signInWithGithubPopup } from '@/firebase/auth'; 
+import { useRouter } from 'next/router';
 
 export default function GitHubLogin() {
-  const handleLogin = () => {
-    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`;
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    try {
+      await signInWithGithubPopup();
+      router.push('/'); 
+    } catch (error) {
+      console.error('GitHub 로그인 실패:', error);
+      alert('GitHub 로그인에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
