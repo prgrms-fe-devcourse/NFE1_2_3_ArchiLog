@@ -1,7 +1,8 @@
 // src/pages/project.tsx
-import { useEffect, useState } from 'react';
-import { Github, Star, GitFork, Clock, Trash2, Plus } from 'lucide-react';
-import { addProject, deleteProject, getProjects } from '../firebase/projects';
+import { useEffect, useState } from "react";
+import { Github, Star, GitFork, Clock, Trash2, Plus } from "lucide-react";
+import { addProject, deleteProject, getProjects } from "../firebase/projects";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface Project {
   id: string;
@@ -21,15 +22,20 @@ interface Project {
   };
 }
 
-function AddProjectModal({ isOpen, onClose, onSubmit }: {
+function AddProjectModal({
+  isOpen,
+  onClose,
+  onSubmit,
+}: {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: { repoUrl: string; description: string }) => Promise<void>;
 }) {
-  const [repoUrl, setRepoUrl] = useState('');
-  const [description, setDescription] = useState('');
+  const [repoUrl, setRepoUrl] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { darkMode } = useDarkMode();
 
   if (!isOpen) return null;
 
@@ -40,11 +46,11 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
 
     try {
       await onSubmit({ repoUrl, description });
-      setRepoUrl('');
-      setDescription('');
+      setRepoUrl("");
+      setDescription("");
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add project');
+      setError(err instanceof Error ? err.message : "Failed to add project");
     } finally {
       setLoading(false);
     }
@@ -52,13 +58,13 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
       <div className="relative bg-white rounded-lg w-full max-w-md p-6 shadow-xl">
         <h2 className="text-xl font-semibold text-black mb-6">프로젝트</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -92,12 +98,10 @@ function AddProjectModal({ isOpen, onClose, onSubmit }: {
             disabled={loading}
             className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
           >
-            {loading ? '프로젝트 추가 중...' : '프로젝트 추가'}
+            {loading ? "프로젝트 추가 중..." : "프로젝트 추가"}
           </button>
 
-          {error && (
-            <p className="text-red-500 text-sm">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
         </form>
       </div>
     </div>
@@ -115,7 +119,7 @@ export default function ProjectPage() {
       const data = await getProjects();
       setProjects(data);
     } catch (err) {
-      setError('프로젝트를 불러오는데 실패했습니다');
+      setError("프로젝트를 불러오는데 실패했습니다");
     } finally {
       setLoading(false);
     }
@@ -125,37 +129,45 @@ export default function ProjectPage() {
     fetchProjects();
   }, []);
 
-  const handleAddProject = async (data: { repoUrl: string; description: string }) => {
+  const handleAddProject = async (data: {
+    repoUrl: string;
+    description: string;
+  }) => {
     try {
-      await addProject(data.repoUrl, data.description, 'user123');
+      await addProject(data.repoUrl, data.description, "user123");
       fetchProjects();
     } catch (error) {
       throw error;
     }
   };
 
-  const handleDeleteProject = async (projectId: string, e: React.MouseEvent) => {
+  const handleDeleteProject = async (
+    projectId: string,
+    e: React.MouseEvent
+  ) => {
     e.preventDefault();
-    
-    if (!window.confirm('이 프로젝트를 삭제하시겠습니까?')) {
+
+    if (!window.confirm("이 프로젝트를 삭제하시겠습니까?")) {
       return;
     }
-    
+
     try {
-      await deleteProject(projectId, 'user123');
-      const updatedProjects = projects.filter(project => project.id !== projectId);
+      await deleteProject(projectId, "user123");
+      const updatedProjects = projects.filter(
+        (project) => project.id !== projectId
+      );
       setProjects(updatedProjects);
     } catch (error) {
-      console.error('프로젝트 삭제 실패:', error);
-      alert('프로젝트 삭제에 실패했습니다');
+      console.error("프로젝트 삭제 실패:", error);
+      alert("프로젝트 삭제에 실패했습니다");
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -180,7 +192,7 @@ export default function ProjectPage() {
             <span>Add Project</span>
           </button>
         </div>
-        
+
         {error ? (
           <div className="text-center text-red-500">{error}</div>
         ) : (
@@ -193,7 +205,7 @@ export default function ProjectPage() {
                 rel="noopener noreferrer"
                 className="relative group overflow-hidden rounded-xl p-6 bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm"
               >
-                {project.userId === 'user123' && (
+                {project.userId === "user123" && (
                   <button
                     onClick={(e) => handleDeleteProject(project.id, e)}
                     className="absolute top-3 right-3 p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
@@ -209,7 +221,7 @@ export default function ProjectPage() {
                       {project.repoInfo.name}
                     </h3>
                   </div>
-                  
+
                   <p className="text-sm text-gray-600 line-clamp-2">
                     {project.customDescription || project.repoInfo.description}
                   </p>
@@ -217,39 +229,47 @@ export default function ProjectPage() {
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                     {project.repoInfo.language && (
                       <span className="flex items-center space-x-1">
-                        <span className={`w-3 h-3 rounded-full bg-${getLanguageColor(project.repoInfo.language)}`} />
+                        <span
+                          className={`w-3 h-3 rounded-full bg-${getLanguageColor(
+                            project.repoInfo.language
+                          )}`}
+                        />
                         <span>{project.repoInfo.language}</span>
                       </span>
                     )}
-                    
+
                     <span className="flex items-center space-x-1">
                       <Star className="w-4 h-4" />
                       <span>{project.repoInfo.stargazers_count}</span>
                     </span>
-                    
+
                     <span className="flex items-center space-x-1">
                       <GitFork className="w-4 h-4" />
                       <span>{project.repoInfo.forks_count}</span>
                     </span>
                   </div>
 
-                  {project.repoInfo.topics && project.repoInfo.topics.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {project.repoInfo.topics.map((topic) => (
-                        <span 
-                          key={topic}
-                          className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600 border border-gray-200"
-                        >
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  {project.repoInfo.topics &&
+                    project.repoInfo.topics.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {project.repoInfo.topics.map((topic) => (
+                          <span
+                            key={topic}
+                            className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600 border border-gray-200"
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span className="flex items-center space-x-1">
                       <Clock className="w-4 h-4" />
-                      <span>Added {formatDate(new Date(project.createdAt).toString())}</span>
+                      <span>
+                        Added{" "}
+                        {formatDate(new Date(project.createdAt).toString())}
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -270,15 +290,15 @@ export default function ProjectPage() {
 
 const getLanguageColor = (language: string): string => {
   const colors: Record<string, string> = {
-    JavaScript: 'yellow-500',
-    TypeScript: 'blue-500',
-    Python: 'green-500',
-    Java: 'red-500',
-    'C++': 'purple-500',
-    Ruby: 'red-600',
-    Go: 'cyan-500',
-    PHP: 'indigo-500',
-    default: 'gray-500'
+    JavaScript: "yellow-500",
+    TypeScript: "blue-500",
+    Python: "green-500",
+    Java: "red-500",
+    "C++": "purple-500",
+    Ruby: "red-600",
+    Go: "cyan-500",
+    PHP: "indigo-500",
+    default: "gray-500",
   };
 
   return colors[language] || colors.default;
