@@ -1,14 +1,13 @@
+import React from "react";
 import Edit_W from "../../../public/images/edit_W.svg";
 import Edit_B from "../../../public/images/edit_B.svg";
 import Search from "../../../public/images/search.svg";
 import Image from "next/image";
-import { FC } from "react";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
-interface Blog {
-  isDarkMode: boolean;
-}
+const Blog: React.FC = () => {
+  const { darkMode } = useDarkMode();
 
-const Blog: FC<Blog> = ({ isDarkMode }) => {
   return (
     <div className="dark:text-white pt-16 dark:bg-black">
       {/* 검색창 */}
@@ -16,12 +15,15 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
       <div className="flex items-center mx-auto mt-7 w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
         <Image
-          src={isDarkMode ? Edit_W : Edit_B}
+          src={darkMode ? Edit_W : Edit_B}
           alt="edit"
           className="ml-5 cursor-pointer w-[25px] h-[25px] transition-transform duration-300 hover:scale-110"
         />
         <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-blue-500 border-2">
-          <input type="text" className="bg-gray-200 dark:bg-white dark:text-black outline-none " />
+          <input
+            type="text"
+            className="bg-gray-200 dark:bg-white dark:text-black outline-none "
+          />
           <Image src={Search} alt="search" className="w-[20px] h-[20px] ml-2" />
         </div>
       </div>
@@ -89,9 +91,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -109,9 +111,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -129,9 +131,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -149,9 +151,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -169,9 +171,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -189,9 +191,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -209,9 +211,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -229,9 +231,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -249,9 +251,9 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
           />
           <div className="ml-5">
             <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular
-              vacations in 2022. This vacation will make unforgettable memories and allow you to
-              explore beautiful places.
+              Tick one more destination off of your bucket list with one of our
+              most popular vacations in 2022. This vacation will make
+              unforgettable memories and allow you to explore beautiful places.
             </div>
             <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
               21 March 2021
@@ -274,9 +276,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -299,9 +302,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -324,9 +328,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -349,9 +354,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -374,9 +380,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -399,9 +406,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -424,9 +432,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -449,9 +458,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -474,9 +484,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -499,9 +510,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021
@@ -524,9 +536,10 @@ const Blog: FC<Blog> = ({ isDarkMode }) => {
                 className="font-regular text-[20px] mt-5 overflow-hidden
               max-w-[450px] line-clamp-2"
               >
-                Tick one more destination off of your bucket list with one of our most popular
-                vacations in 2022. This vacation will make unforgettable memories and allow you to
-                explore beautiful places.
+                Tick one more destination off of your bucket list with one of
+                our most popular vacations in 2022. This vacation will make
+                unforgettable memories and allow you to explore beautiful
+                places.
               </div>
               <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
                 21 March 2021

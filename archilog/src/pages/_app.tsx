@@ -1,17 +1,20 @@
-import { AppProps } from 'next/app';
-import './globals.css';
-import React from 'react'
-import MainLayout from '@/components/Layout/MainLayout';
-// import { AuthProvider } from '../components/contexts/AuthContext';
+import React from "react";
+import { AppProps } from "next/app";
+import MainLayout from "@/components/Layout/MainLayout";
+import { DarkModeProvider } from "@/contexts/DarkModeContext";
+import "./globals.css";
+import { AuthProvider } from '../components/contexts/AuthContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
-    return (
-        // <AuthProvider>
-        <MainLayout>
-            <Component {...pageProps} />
-        </MainLayout>
-        // </AuthProvider>
-    );
+  return (
+    <DarkModeProvider>
+      <MainLayout>
+      <AuthProvider>
+        <Component {...pageProps} />
+        </AuthProvider>
+      </MainLayout>
+    </DarkModeProvider>
+  );
 }
 
 export default MyApp;
