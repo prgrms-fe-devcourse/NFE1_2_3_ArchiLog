@@ -1,23 +1,27 @@
-import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
+import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
-  apiKey: process.env.VITE_FIREBASE_API_KEY,
-  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.VITE_FIREBASE_APP_ID,
-  measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyBqZhTzb2JZVJ98enUP00r-rDiUJDmxWcI",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  databaseURL: "https://archilog-7b615-default-rtdb.firebaseio.com"
 };
 
-const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+// Firebase 초기화
+const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Auth 인스턴스
+export const auth = getAuth(firebaseApp);
+// Database 인스턴스
+export const database = getDatabase(firebaseApp);
 
-export default app;
+export const db = getFirestore(firebaseApp);
+export const storage = getStorage(firebaseApp);
+
+export default firebaseApp;

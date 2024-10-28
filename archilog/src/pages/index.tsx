@@ -1,6 +1,4 @@
 import React from "react";
-import LoginLayout from "./login";
-// import ProjectGallery from "../src/components/project/Project";
 
 const Index = () => {
   return (

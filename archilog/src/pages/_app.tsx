@@ -1,3 +1,4 @@
+import React from "react";
 import { AppProps } from "next/app";
 import MainLayout from "@/components/Layout/MainLayout";
 import { DarkModeProvider } from "@/contexts/DarkModeContext";
