@@ -2,11 +2,10 @@ import React from "react";
 import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import Link from "next/link";
-import { logOut } from "../../firebase/auth"; // logOut 함수 import
+import Link from "next/link"; // Link 추가
 
 interface HeaderProps {
-  isLoggedIn: boolean;
+  isLoggedIn: boolean; // 로그인 여부를 나타냄
 }
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
@@ -14,22 +13,14 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const router = useRouter();
 
+  // 사이드바 토글 함수
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // 로그인 버튼 클릭 시 로그인 페이지로 이동
   const handleLogin = () => {
     router.push("/login");
-  };
-
-  // 로그아웃 핸들러 추가
-  const handleLogout = async () => {
-    try {
-      await logOut();
-      router.push("/login"); // 로그아웃 후 로그인 페이지로 이동
-    } catch (error) {
-      console.error("로그아웃 실패:", error);
-    }
   };
 
   return (
@@ -42,58 +33,47 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
         className="flex justify-between items-center mx-auto"
         style={{ height: "80px" }}
       >
+        {/* 왼쪽 로고 */}
         <div className="flex items-center">
           <Link href="/" className="text-2xl md:text-xl lg:text-3xl font-bold">
             ArchiLog
           </Link>
         </div>
 
+        {/* 로그인 여부에 따른 네비게이션 메뉴 */}
         {isLoggedIn ? (
-          <>
-            <nav className="hidden md:flex space-x-5 ml-auto">
-              <Link
-                href="/aboutme"
-                className={`text-sm md:text-base lg:text-lg ${
-                  darkMode
-                    ? "text-white hover:text-[#FDAD00]"
-                    : "text-black hover:text-[#4CAF50]"
-                }`}
-              >
-                About Me
-              </Link>
-              <Link
-                href="/project"
-                className={`text-sm md:text-base lg:text-lg ${
-                  darkMode
-                    ? "text-white hover:text-[#FDAD00]"
-                    : "text-black hover:text-[#4CAF50]"
-                }`}
-              >
-                Projects
-              </Link>
-              <Link
-                href="/blog"
-                className={`text-sm md:text-base lg:text-lg ${
-                  darkMode
-                    ? "text-white hover:text-[#FDAD00]"
-                    : "text-black hover:text-[#4CAF50]"
-                }`}
-              >
-                Blog
-              </Link>
-              {/* 로그아웃 버튼 추가 */}
-              <button
-                onClick={handleLogout}
-                className={`text-sm md:text-base lg:text-lg ${
-                  darkMode
-                    ? "text-white hover:text-[#FDAD00]"
-                    : "text-black hover:text-[#4CAF50]"
-                }`}
-              >
-                Logout
-              </button>
-            </nav>
-          </>
+          <nav className="hidden md:flex space-x-5 ml-auto">
+            <Link
+              href="/aboutme"
+              className={`text-sm md:text-base lg:text-lg ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              About Me
+            </Link>
+            <Link
+              href="/project"
+              className={`text-sm md:text-base lg:text-lg ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Projects
+            </Link>
+            <Link
+              href="/blog"
+              className={`text-sm md:text-base lg:text-lg ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Blog
+            </Link>
+          </nav>
         ) : (
           <button
             onClick={handleLogin}
@@ -107,12 +87,21 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
           </button>
         )}
 
+        {/* 계정 아이콘 */}
+        {/* <div className="hidden md:flex items-center ml-5">
+          <MdOutlineAccountCircle
+            className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
+          />
+        </div> */}
+
+        {/* 다크모드 전환 버튼 */}
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>
           <span className="text-2xl md:text-xl lg:text-3xl">
             {darkMode ? "🌙" : "🌞"}
           </span>
         </div>
 
+        {/* 모바일 햄버거 메뉴 (로그인 후에만 표시) */}
         {isLoggedIn && (
           <div className="md:hidden flex items-center ml-auto">
             <button onClick={toggleSidebar}>
@@ -126,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
         )}
       </div>
 
-      {/* 모바일 사이드바에도 로그아웃 버튼 추가 */}
+      {/* 모바일 사이드바 (로그인 후에만 표시) */}
       {isLoggedIn && sidebarOpen && (
         <div
           className={`fixed top-0 right-0 w-64 h-full ${
@@ -139,6 +128,15 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
           >
             ✕
           </button>
+
+          {/* 계정 아이콘 */}
+          {/* <div className="flex flex-col items-center mt-8">
+            <MdOutlineAccountCircle className="text-5xl" />
+            <span className="mt-2 text-lg">My Account</span>
+          </div> */}
+
+          {/* 구분선 */}
+          {/* <div className="border-b my-4"></div> */}
 
           <nav className="flex flex-col p-5 space-y-4">
             <Link
@@ -171,17 +169,6 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
             >
               Blog
             </Link>
-            {/* 모바일 사이드바에 로그아웃 버튼 추가 */}
-            <button
-              onClick={handleLogout}
-              className={`text-left ${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
-              }`}
-            >
-              Logout
-            </button>
           </nav>
         </div>
       )}
