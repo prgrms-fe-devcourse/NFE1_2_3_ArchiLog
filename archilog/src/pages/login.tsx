@@ -3,12 +3,10 @@ import { useRouter } from "next/router";
 import HeaderLogin from "../components/Layout/HeaderLogin";
 import {
   signIn,
-  signInWithGithub,
-  signInWithGoogle,
-  handleGithubRedirectResult,
-  handleGoogleRedirectResult,
+  signInWithGithubPopup,
+  signInWithGooglePopup,
   getCurrentUser,
-} from "@/firebase/auth"; 
+} from "@/firebase/auth";
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -16,6 +14,7 @@ const LoginLayout: React.FC = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,43 +26,18 @@ const LoginLayout: React.FC = () => {
       try {
         const user = await getCurrentUser();
         if (user) {
-          router.push("/");
+          router.push("/"); 
+        } else {
+          setIsLoading(false); 
         }
       } catch (error) {
         console.error("User is not authenticated:", error);
+        setIsLoading(false);
       }
     };
 
     checkAuthStatus();
-
-    const handleRedirect = async () => {
-      try {
-        const user = await handleGithubRedirectResult();
-        if (user) {
-          alert("로그인 되었습니다.");
-          router.push("/");
-        }
-      } catch (error) {
-        console.error("GitHub redirect error:", error);
-      }
-    };
-
-    handleRedirect();
-
-    const handleGoogleRedirect = async () => {
-      try {
-        const user = await handleGoogleRedirectResult();
-        if (user) {
-          alert("로그인 되었습니다.");
-          router.push("/");
-        }
-      } catch (error) {
-        console.error("Google redirect error:", error);
-      }
-    };
-
-    handleGoogleRedirect();
-  }, [router.query.darkMode]);
+  }, [router]);
 
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
@@ -103,31 +77,31 @@ const LoginLayout: React.FC = () => {
     try {
       await signIn(email, password);
       alert("로그인 되었습니다.");
-      router.push("/");
+      router.push("/"); 
     } catch (error) {
-      setErrorMessage(
-        "로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요."
-      );
+      setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
     }
   };
 
-  // 깃허브 로그인
   const handleGithubLogin = async () => {
     try {
-      await signInWithGithub();
+      await signInWithGithubPopup();
+      router.push("/");
     } catch (error) {
       setErrorMessage("GitHub 로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
-  // 구글 로그인
   const handleGoogleLogin = async () => {
     try {
-      await signInWithGoogle();
+      await signInWithGooglePopup();
+      router.push("/");
     } catch (error) {
       setErrorMessage("Google 로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };
+
+  if (isLoading) return null;
 
   return (
     <div
@@ -153,9 +127,7 @@ const LoginLayout: React.FC = () => {
             <div className="flex mb-2 w-full relative">
               <button
                 className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-600 text-yellow-300"
-                    : "bg-gray-300 text-black"
+                  darkMode ? "bg-gray-600 text-yellow-300" : "bg-gray-300 text-black"
                 } hover:bg-gray-400`}
                 style={{
                   position: "relative",
