@@ -1,17 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
+import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
+import { useDarkMode } from "@/contexts/DarkModeContext";
+import Link from "next/link"; // Link 추가
 
 interface HeaderProps {
-  darkMode: boolean;
-  toggleDarkMode: () => void;
+  isLoggedIn: boolean; // 로그인 여부를 나타냄
 }
 
-const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
+  const { darkMode, toggleDarkMode } = useDarkMode();
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const router = useRouter();
 
   // 사이드바 토글 함수
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  // 로그인 버튼 클릭 시 로그인 페이지로 이동
+  const handleLogin = () => {
+    router.push("/login");
   };
 
   return (
@@ -20,106 +29,146 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
         darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
       }`}
     >
-      <div className="flex justify-between items-center mx-auto" style={{ height: "80px" }}>
+      <div
+        className="flex justify-between items-center mx-auto"
+        style={{ height: "80px" }}
+      >
         {/* 왼쪽 로고 */}
         <div className="flex items-center">
-          <span className="text-2xl md:text-xl lg:text-3xl font-bold">ArchiLog</span>
+          <Link href="/" className="text-2xl md:text-xl lg:text-3xl font-bold">
+            ArchiLog
+          </Link>
         </div>
 
-        {/* 네비게이션 메뉴 */}
-        <nav className="hidden md:flex space-x-3 md:space-x-5 lg:space-x-8 ml-auto">
-          <a
-            href="#"
+        {/* 로그인 여부에 따른 네비게이션 메뉴 */}
+        {isLoggedIn ? (
+          <nav className="hidden md:flex space-x-5 ml-auto">
+            <Link
+              href="/aboutme"
+              className={`text-sm md:text-base lg:text-lg ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              About Me
+            </Link>
+            <Link
+              href="/project"
+              className={`text-sm md:text-base lg:text-lg ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Projects
+            </Link>
+            <Link
+              href="/blog"
+              className={`text-sm md:text-base lg:text-lg ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Blog
+            </Link>
+          </nav>
+        ) : (
+          <button
+            onClick={handleLogin}
             className={`text-sm md:text-base lg:text-lg ${
-              darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
+              darkMode
+                ? "text-white hover:text-[#FDAD00]"
+                : "text-black hover:text-[#4CAF50]"
             }`}
           >
-            AboutMe
-          </a>
-          <a
-            href="#"
-            className={`text-sm md:text-base lg:text-lg ${
-              darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
-            }`}
-          >
-            Projects
-          </a>
-          <a
-            href="#"
-            className={`text-sm md:text-base lg:text-lg ${
-              darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
-            }`}
-          >
-            Blog
-          </a>
-        </nav>
+            Login
+          </button>
+        )}
 
         {/* 계정 아이콘 */}
-        <div className="hidden md:flex items-center ml-5">
+        {/* <div className="hidden md:flex items-center ml-5">
           <MdOutlineAccountCircle
             className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
           />
-        </div>
+        </div> */}
 
         {/* 다크모드 전환 버튼 */}
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>
-          <span className="text-2xl md:text-xl lg:text-3xl">{darkMode ? "🌙" : "🌞"}</span>
+          <span className="text-2xl md:text-xl lg:text-3xl">
+            {darkMode ? "🌙" : "🌞"}
+          </span>
         </div>
 
-        {/* 모바일 햄버거 메뉴 */}
-        <div className="md:hidden flex items-center ml-auto">
-          <button onClick={toggleSidebar}>
-            <span className={`${darkMode ? "text-white" : "text-black"} text-3xl`}>☰</span>
-          </button>
-        </div>
+        {/* 모바일 햄버거 메뉴 (로그인 후에만 표시) */}
+        {isLoggedIn && (
+          <div className="md:hidden flex items-center ml-auto">
+            <button onClick={toggleSidebar}>
+              <span
+                className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
+              >
+                ☰
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* 모바일 사이드바 */}
-      {sidebarOpen && (
+      {/* 모바일 사이드바 (로그인 후에만 표시) */}
+      {isLoggedIn && sidebarOpen && (
         <div
           className={`fixed top-0 right-0 w-64 h-full ${
             darkMode ? "bg-black text-white" : "bg-white text-black"
           } z-50 border ${darkMode ? "border-white" : "border-black"}`}
         >
-          <button onClick={toggleSidebar} className="absolute top-4 right-4 text-2xl">
+          <button
+            onClick={toggleSidebar}
+            className="absolute top-4 right-4 text-2xl"
+          >
             ✕
           </button>
 
           {/* 계정 아이콘 */}
-          <div className="flex flex-col items-center mt-8">
+          {/* <div className="flex flex-col items-center mt-8">
             <MdOutlineAccountCircle className="text-5xl" />
             <span className="mt-2 text-lg">My Account</span>
-          </div>
+          </div> */}
 
           {/* 구분선 */}
-          <div className="border-b my-4"></div>
+          {/* <div className="border-b my-4"></div> */}
 
-          {/* 네비게이션 메뉴 */}
           <nav className="flex flex-col p-5 space-y-4">
-            <a
-              href="#"
+            <Link
+              href="/aboutme"
               className={`${
-                darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
               }`}
             >
-              AboutMe
-            </a>
-            <a
-              href="#"
+              About Me
+            </Link>
+            <Link
+              href="/project"
               className={`${
-                darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
               }`}
             >
               Projects
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/blog"
               className={`${
-                darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
               }`}
             >
               Blog
-            </a>
+            </Link>
           </nav>
         </div>
       )}

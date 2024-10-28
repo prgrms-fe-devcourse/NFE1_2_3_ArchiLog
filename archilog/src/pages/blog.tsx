@@ -1,9 +1,21 @@
-import React, { useState } from "react";
-import Header from "../components/Layout/Header2";
-import Blog from "../components/blog/Bloginven";
+import React from "react";
+import { useDarkMode } from "@/contexts/DarkModeContext";
+import Bloginven from "@/components/blog/Bloginven";
 
-function App() {
-  return <Blog darkMode />;
-}
+const BlogPage: React.FC = () => {
+  const { darkMode } = useDarkMode();
 
-export default App;
+  return (
+    <div
+      className={`duration-300 min-h-screen ${
+        darkMode ? "bg-black text-white" : "bg-white text-black"
+      }`}
+    >
+      <main className="pt-10">
+        <Bloginven />
+      </main>
+    </div>
+  );
+};
+
+export default BlogPage;

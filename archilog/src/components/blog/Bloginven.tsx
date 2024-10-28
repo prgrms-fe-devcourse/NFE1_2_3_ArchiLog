@@ -1,84 +1,211 @@
-import { FC, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Edit_W from "../../../public/images/edit_W.svg";
+import Edit_B from "../../../public/images/edit_B.svg";
 import Search from "../../../public/images/search.svg";
 import Image from "next/image";
+import { useDarkMode } from "@/contexts/DarkModeContext";
+import { addPost, getPost } from "@/firebase/posts";
+import { auth } from "@/firebase/firebase";
+import { useRouter } from 'next/router'; 
 
-interface Darkmode {
-  darkMode: boolean;
-}
+const Blog: React.FC = () => {
+  const { darkMode } = useDarkMode();
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter(); 
 
-const Blog: FC<Darkmode> = ({ darkMode }) => {
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.remove("dark");
-    } else {
-      document.documentElement.classList.add("dark");
+  // 로그인 상태 확인 함수
+  const checkAuthAndExecute = async (action: () => Promise<void>) => {
+    const user = auth.currentUser;
+    
+    if (!user) {
+      const confirmLogin = window.confirm(
+        "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
+      );
+      if (confirmLogin) {
+        router.push('/login');
+      }
+      return;
     }
-  }, [darkMode]);
+
+    try {
+      await action();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("작업 수행 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleAddPost = async () => {
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser) {
+      alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+  
+    try {
+      await addPost(
+        "테스트 제목입니다.", 
+        "테스트 내용입니다.", 
+        ["test"]
+      );
+      await fetchPosts();
+    } catch (error) {
+      console.error("Error adding post:", error);
+      alert("게시글 작성에 실패했습니다.");
+    }
+  };
+
+  const fetchPosts = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
+
+      const fetchedPosts = await getPost(currentUser.uid);
+      console.log("Fetched posts:", fetchedPosts);
+      setPosts(fetchedPosts || []);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 로그인 상태 확인
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchPosts();
+      } else {
+        setPosts([]);
+        setLoading(false);
+      }
+    });
+
+    // 클린업 함수
+    return () => unsubscribe();
+  }, []);
+
+  const handleEditClick = () => {
+    handleAddPost();
+  };
+
+  // 검색어가 있을 때만 필터링, 없으면 모든 게시글 반환
+  const displayedPosts = searchTerm
+    ? posts.filter((post) =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : posts;
 
   return (
-    <div className="dark:text-white mt-4 dark:bg-black">
+    <div className="dark:text-white dark:bg-black">
       {/* 검색창 */}
-
-      <div className="flex items-center mx-auto  w-full max-w-3xl px-4">
+      <div className="flex items-center mx-auto w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
-        <a href="/" className="cursor-pointer text-xl pl-4">
-          📝
-        </a>
-        <div
-          className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center 
-        focus-within:border-blue-500 border-2">
-          <input type="text" className="bg-gray-200 dark:bg-white dark:text-black outline-none " />
+        {auth.currentUser && (
+        <Image
+          src={darkMode ? Edit_W : Edit_B}
+          alt="edit"
+          className="ml-5 cursor-pointer w-[25px] h-[25px] transition-transform duration-300 hover:scale-110"
+          onClick={handleAddPost}
+        />
+      )}
+        <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-blue-500 border-2">
+          <input
+            type="text"
+            className="bg-gray-200 dark:bg-white dark:text-black outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="검색어를 입력하세요"
+          />
           <Image src={Search} alt="search" className="w-[20px] h-[20px] ml-2" />
         </div>
       </div>
 
       {/* 태그 */}
-
-      <div className="flex items-center justify-center text-white dark:text-black font-bold text-[15px] mt-7 w-full max-w-3xl mx-auto flex-wrap pb-7 ">
-        <div className="bg-[#4CAF50] dark:bg-[#FDAD00] mx-1 my-1 px-3 py-1 rounded-full cursor-pointer hover:bg-[#5faf63] dark:hover:bg-[#e4b44c] ">
+      <div className="flex items-center justify-center text-white dark:text-black font-bold text-[15px] mt-7 w-full max-w-3xl mx-auto flex-wrap pb-7">
+        <div className="bg-[#4CAF50] dark:bg-[#FDAD00] mx-1 my-1 px-3 py-1 rounded-full cursor-pointer hover:bg-[#5faf63] dark:hover:bg-[#e4b44c]">
           #JavaScript
         </div>
         <div className="border-b-[#E5E7EB] dark:border-b-white border-b-2 w-full max-w-[740px] pt-5 mx-5"></div>
       </div>
 
-      {/* 게시글 768px 이상*/}
-
+      {/* 게시글 768px 이상 */}
       <div className="flex flex-col items-center mx-auto my-8 max-w-3xl font-bold">
-        <div className="hidden md:flex w-full items-center px-4 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group">
-          <Image
-            className="w-[230px] h-[150px] sm:w-[230px] sm:h-[150px] lg:w-[230px] lg:h-[150px]"
-            src="/images/Example.png"
-            alt="Example"
-            width={500}
-            height={300}
-          />
-          <div className="ml-5">
-            <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
-              Tick one more destination off of your bucket list with one of our most popular vacations in 2022. This
-              vacation will make unforgettable memories and allow you to explore beautiful places.
-            </div>
-            <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
-              21 March 2021
-            </div>
-          </div>
-        </div>
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <>
+            {displayedPosts.length > 0 ? (
+              displayedPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="hidden md:flex w-full items-center px-4 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group">
+                  <Image
+                    className="w-[230px] h-[150px] sm:w-[230px] sm:h-[150px] lg:w-[230px] lg:h-[150px]"
+                    src="/images/Example.png"
+                    alt="Example"
+                    width={500}
+                    height={300}
+                  />
+                  <div className="ml-5">
+                    <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-2">
+                      {post.title}
+                    </div>
+                    <div className="font-light text-[14px] text-dateColor py-5 mb-3 group-hover:text-black dark:group-hover:text-white">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                {searchTerm ? "검색 결과가 없습니다." : "작성된 게시글이 없습니다."}
+              </div>
+            )}
+          </>
+        )}
 
-        {/* 반응형 게시글 768px 이하*/}
+        {/* 반응형 게시글 768px 이하 */}
         <div className="md:hidden flex flex-col items-center mx-auto mt-4">
-          <div className="items-center px-4 w-[450px] hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-y-1 transition-transform duration-300 ease-in-out group">
-            <Image className="w-[450px] h-[250px]" src="/images/Example.png" alt="Example" width={500} height={300} />
-            <div className="ml-5">
-              <div
-                className="font-regular text-[20px] mt-5 overflow-hidden
-              max-w-[450px] line-clamp-2">
-                Tick one more destination off of your bucket list with one of our most popular vacations in 2022. This
-                vacation will make unforgettable memories and allow you to explore beautiful places.
-              </div>
-              <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
-                21 March 2021
-              </div>
-            </div>
-          </div>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              {displayedPosts.length > 0 ? (
+                displayedPosts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="items-center px-4 w-[450px] hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-y-1 transition-transform duration-300 ease-in-out group">
+                    <Image
+                      className="w-[450px] h-[250px]"
+                      src="/images/Example.png"
+                      alt="Example"
+                      width={500}
+                      height={300}
+                    />
+                    <div className="ml-5">
+                      <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-2">
+                        {post.title}
+                      </div>
+                      <div className="font-light text-[14px] text-dateColor py-5 group-hover:text-black dark:group-hover:text-white">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  {searchTerm ? "검색 결과가 없습니다." : "작성된 게시글이 없습니다."}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
