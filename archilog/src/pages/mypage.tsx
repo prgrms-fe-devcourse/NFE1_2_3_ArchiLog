@@ -1,11 +1,30 @@
-// import Editor from "@/components/Editor";
+import React, { useEffect, useState } from 'react';
+import { getAbout } from "../firebase/users";
 
-// const MyPage = () => {
-//   return (
-//     <div>
-//       <Editor />
-//     </div>
-//   );
-// };
+const MyPage = () => {
+  const [userInfo, setUserInfo] = useState<{ name: string; resume: string } | null>(null);
+  const userId = process.env.USER_ID || '';
 
-// export default MyPage;
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getAbout(userId);
+      console.log(data);
+      setUserInfo(data);
+    };
+
+    fetchData();
+  }, [userId]);
+
+  if (!userInfo) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      {userInfo.name}
+      {userInfo.resume}
+    </div>
+  );
+};
+
+export default MyPage;

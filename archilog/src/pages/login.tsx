@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import HeaderLogin from "@/components/Layout/HeaderLogin";
-import { signIn } from "@/firebase/auth";
+import HeaderLogin from "../components/Layout/HeaderLogin";
+import { signIn, signInWithGithub, signInWithGoogle, handleGithubRedirectResult, handleGoogleRedirectResult, getCurrentUser } from "@/firebase/auth"; // 필요한 함수들 추가
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -15,6 +15,47 @@ const LoginLayout: React.FC = () => {
     if (router.query.darkMode === "true") {
       setDarkMode(true);
     }
+
+    const checkAuthStatus = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          router.push('/'); 
+        }
+      } catch (error) {
+        console.error("User is not authenticated:", error);
+      }
+    };
+
+    checkAuthStatus();
+
+    // 깃허브 리디렉션
+    const handleRedirect = async () => {
+      try {
+        const user = await handleGithubRedirectResult();
+        if (user) {
+          router.push('/');
+        }
+      } catch (error) {
+        console.error("GitHub redirect error:", error);
+      }
+    };
+
+    handleRedirect();
+
+    // 구글 리디렉션
+    const handleGoogleRedirect = async () => {
+      try {
+        const user = await handleGoogleRedirectResult();
+        if (user) {
+          router.push('/'); 
+        }
+      } catch (error) {
+        console.error("Google redirect error:", error);
+      }
+    };
+
+    handleGoogleRedirect();
   }, [router.query.darkMode]);
 
   const toggleDarkMode = () => {
@@ -58,6 +99,24 @@ const LoginLayout: React.FC = () => {
       router.push('/'); 
     } catch (error) {
       setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
+    }
+  };
+
+  // 깃허브 로그인
+  const handleGithubLogin = async () => {
+    try {
+      await signInWithGithub(); 
+    } catch (error) {
+      setErrorMessage("GitHub 로그인에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  // 구글 로그인
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      setErrorMessage("Google 로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -119,6 +178,13 @@ const LoginLayout: React.FC = () => {
             </div>
 
             {errorMessage && <p className="text-red-500 text-center mb-2">{errorMessage}</p>}
+
+            <div className="text-center text-sm text-gray-500 mt-1">
+              <p>
+                <span onClick={handleGithubLogin} className="cursor-pointer hover:underline">Login with GitHub</span> | 
+                <span onClick={handleGoogleLogin} className="cursor-pointer hover:underline"> Login with Google</span>
+              </p>
+            </div>
 
             <button onClick={handleLogin} className="w-full py-3 bg-black text-white rounded-md hover:bg-gray-800 mt-4 text-lg">Login</button>
           </div>

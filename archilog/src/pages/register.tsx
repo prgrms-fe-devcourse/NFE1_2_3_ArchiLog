@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; 
-import HeaderLogin from "@/components/Layout/HeaderLogin";
+import axios from 'axios'; 
+import HeaderLogin from "../components/Layout/HeaderLogin";
 import { signUp } from "@/firebase/auth";
 
 const RegisterLayout: React.FC = () => {

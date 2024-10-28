@@ -1,7 +1,7 @@
 // firebase/users.ts
 import { getDatabase, ref, set, get, update, remove } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import firebaseApp from './firebase';  // default export로 변경
+import firebaseApp from './firebase';  
 
 const db = getDatabase(firebaseApp);
 const auth = getAuth(firebaseApp);
