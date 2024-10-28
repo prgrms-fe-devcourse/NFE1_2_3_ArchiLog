@@ -8,7 +8,7 @@ import {
   handleGithubRedirectResult,
   handleGoogleRedirectResult,
   getCurrentUser,
-} from "@/firebase/auth"; // 필요한 함수들 추가
+} from "@/firebase/auth"; 
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -36,11 +36,11 @@ const LoginLayout: React.FC = () => {
 
     checkAuthStatus();
 
-    // 깃허브 리디렉션
     const handleRedirect = async () => {
       try {
         const user = await handleGithubRedirectResult();
         if (user) {
+          alert("로그인 되었습니다.");
           router.push("/");
         }
       } catch (error) {
@@ -50,11 +50,11 @@ const LoginLayout: React.FC = () => {
 
     handleRedirect();
 
-    // 구글 리디렉션
     const handleGoogleRedirect = async () => {
       try {
         const user = await handleGoogleRedirectResult();
         if (user) {
+          alert("로그인 되었습니다.");
           router.push("/");
         }
       } catch (error) {
