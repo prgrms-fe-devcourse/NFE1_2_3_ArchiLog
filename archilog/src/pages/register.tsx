@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
 import HeaderLogin from "../components/Layout/HeaderLogin";
 import { signUp } from "@/firebase/auth";
 
@@ -63,7 +62,8 @@ const RegisterLayout: React.FC = () => {
 
     try {
       await signUp(email, password, username);
-      router.push("/login?darkMode=" + darkMode);
+      alert("회원가입이 완료되었습니다.");
+      router.push(`/login?darkMode=${darkMode}`); 
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
         setErrorMessage(

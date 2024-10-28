@@ -18,7 +18,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <Header isLoggedIn={true} />
         </header>
       )}
-      <main className="pt-10">{children}</main>
+      <main className={router.pathname === "/login" || router.pathname === "/register" ? "" : "pt-10"}>
+        {children}
+      </main>
     </div>
   );
 };
