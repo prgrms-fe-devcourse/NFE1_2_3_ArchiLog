@@ -1,7 +1,7 @@
 import { MDEditorProps } from "@uiw/react-md-editor";
 import dynamic from "next/dynamic";
 import { useState, useCallback, useEffect } from "react";
-import pasteImage from '../utils/pasteImage';
+import  { pasteImage } from '../utils/uploadImage';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import React from 'react';
@@ -43,14 +43,18 @@ const Editor = () => {
         }
     }, [value]);
 
-    const handlePaste = useCallback((event: React.ClipboardEvent) => {
+    const handlePaste = useCallback(async (event: React.ClipboardEvent) => {
         event.preventDefault();
-        pasteImage(event.clipboardData, setValue);
+        const files: File[] = Array.from(event.clipboardData.files);
+        const imgUrl = await pasteImage(files);
+        setValue((prev) => `${prev}\n${imgUrl.join('\n')}`);
     }, []);
 
-    const handleDrop = useCallback((event: React.DragEvent) => {
+    const handleDrop = useCallback(async (event: React.DragEvent) => {
         event.preventDefault();
-        pasteImage(event.dataTransfer, setValue);
+        const files: File[] = Array.from(event.dataTransfer.files);
+        const imgUrl = await pasteImage(files);
+        setValue((prev) => `${prev}\n${imgUrl.join('\n')}`);
     }, []);
 
     const handleContent = async () => {

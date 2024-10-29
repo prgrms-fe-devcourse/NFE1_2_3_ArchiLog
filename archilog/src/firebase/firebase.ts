@@ -8,10 +8,10 @@ const firebaseConfig = {
   apiKey: "AIzaSyBqZhTzb2JZVJ98enUP00r-rDiUJDmxWcI",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  storageBucket: "archilog-7b615.appspot.com",
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  databaseURL: "https://archilog-7b615-default-rtdb.firebaseio.com"
+  databaseURL: "https://archilog-7b615-default-rtdb.firebaseio.com",
 };
 
 // Firebase 초기화
