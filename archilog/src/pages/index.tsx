@@ -3,7 +3,7 @@ import React from "react";
 const Index = () => {
   return (
     <div>
-      <h1>메인페이지 이건가?</h1>
+      <h1>메인페이지</h1>
     </div>
   );
 };

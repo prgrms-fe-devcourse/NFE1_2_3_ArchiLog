@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-quill .ql-editor {
+  min-height: 400px; /* 입력 공간의 최소 높이 */
+  padding: 15px; /* 패딩 추가 */
+  line-height: 1.5; /* 줄 간격 조정 */
+}
+
+.quill-dark .ql-toolbar .ql-picker-label,
+.quill-dark .ql-toolbar .ql-picker-item,
+.quill-dark .ql-toolbar .ql-button,
+.quill-dark .ql-editor::placeholder {
+  color: white; /* 버튼 및 선택기의 글자 색상 */
+}
