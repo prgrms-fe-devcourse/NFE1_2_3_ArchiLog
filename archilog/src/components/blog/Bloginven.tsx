@@ -98,7 +98,7 @@ const Blog: React.FC = () => {
   });
 
   const removeHtmlTags = (html: string) => {
-    return html.replace(/<[^>]*>/g, '');
+    return html.replace(/<[^>]*>/g, "");
   };
 
   return (
@@ -158,8 +158,7 @@ const Blog: React.FC = () => {
                     <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                       {post.title}
                     </div>
-                    <div className="font-light mt-2 overflow-hidden line-clamp-2"
-                    >{removeHtmlTags(post.content)}</div>
+                    <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
                     <div className="flex flex-wrap gap-2">
                       {post.tags.map((tag: string, index: number) => (
                         <span
@@ -172,12 +171,11 @@ const Blog: React.FC = () => {
                     <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
                       {new Date(post.createdAt).toLocaleDateString()}
                     </div>
-                    
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8">
+              <div className="text-center py-8 hidden md:flex">
                 {searchTerm || selectedTag ? "검색 결과가 없습니다." : "작성된 게시글이 없습니다."}
               </div>
             )}
@@ -199,20 +197,19 @@ const Blog: React.FC = () => {
                       <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
                         {post.title}
                       </div>
-                      <div className="font-light mt-2 overflow-hidden line-clamp-2"
-                    >{removeHtmlTags(post.content)}</div>
+                      <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
                       <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag: string, index: number) => (
-                        <span
-                          key={index}
-                          className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </div>
+                        {post.tags.map((tag: string, index: number) => (
+                          <span
+                            key={index}
+                            className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
                 ))

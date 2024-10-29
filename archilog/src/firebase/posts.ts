@@ -11,6 +11,16 @@ import {
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
 
+interface Post {
+    id: string;
+    title: string;
+    content: string;
+    tags: string[];
+    authorId: string;
+    createdAt: number;
+    updatedAt: number;
+  }
+
 // 사용자 인증
 export const checkAuthenticated = () => {
   const auth = getAuth();
@@ -47,7 +57,7 @@ export const getPost = async () => {
 
   try {
     const snapshot = await get(postsRef);
-    const posts: any[] = [];
+    const posts: Post[] = [];
 
     if (snapshot.exists()) {
       snapshot.forEach((childSnapshot) => {
