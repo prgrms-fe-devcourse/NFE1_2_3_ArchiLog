@@ -1,7 +1,7 @@
 // src/pages/project.tsx
 import { useEffect, useState } from "react";
 import { Github, Star, GitFork, Clock, Trash2, Plus } from "lucide-react";
-import { addProject, deleteProject, getProjects } from "../firebase/projects";
+import { addProject, deleteProject, getProjects } from "@/firebase/projects";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface Project {

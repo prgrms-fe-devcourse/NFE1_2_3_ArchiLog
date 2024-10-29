@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import Link from "next/link"; // Link 추가
+import { getCurrentUserInfo } from "@/firebase/users";
 
 interface HeaderProps {
   isLoggedIn: boolean; // 로그인 여부를 나타냄
@@ -12,6 +13,11 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const router = useRouter();
+  const currentUrl = router.asPath;
+  const splitUrl = currentUrl.split('/');
+  const basePath = router.asPath.split('/').slice(1, 2)[0];
+
+  const logo = splitUrl[1] ? splitUrl[1] : 'ArchiLog';
 
   // 사이드바 토글 함수
   const toggleSidebar = () => {
@@ -35,8 +41,8 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
       >
         {/* 왼쪽 로고 */}
         <div className="flex items-center">
-          <Link href="/" className="text-2xl md:text-xl lg:text-3xl font-bold">
-            ArchiLog
+          <Link href={`/${basePath}`} className="text-2xl md:text-xl lg:text-3xl font-bold">
+            {logo}
           </Link>
         </div>
 
@@ -44,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
         {isLoggedIn ? (
           <nav className="hidden md:flex space-x-5 ml-auto">
             <Link
-              href="/aboutme"
+              href={`/${basePath}`}
               className={`text-sm md:text-base lg:text-lg ${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
@@ -54,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               About Me
             </Link>
             <Link
-              href="/project"
+              href={`/${basePath}/project`}
               className={`text-sm md:text-base lg:text-lg ${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
@@ -64,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               Projects
             </Link>
             <Link
-              href="/blog"
+              href={`/${basePath}/blog`}
               className={`text-sm md:text-base lg:text-lg ${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
@@ -140,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
 
           <nav className="flex flex-col p-5 space-y-4">
             <Link
-              href="/aboutme"
+              href={`/${basePath}`}
               className={`${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
@@ -150,7 +156,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               About Me
             </Link>
             <Link
-              href="/project"
+              href={`/${basePath}/project`}
               className={`${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
@@ -160,7 +166,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               Projects
             </Link>
             <Link
-              href="/blog"
+              href={`/${basePath}/blog`}
               className={`${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"

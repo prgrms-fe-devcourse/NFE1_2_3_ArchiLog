@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import PostDetail from "../../components/PostDetail";
+import PostDetail from "@/components/PostDetail";
 const PostPage: React.FC = () => {
   const router = useRouter();
   const { postId } = router.query;

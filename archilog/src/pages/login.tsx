@@ -9,6 +9,7 @@ import {
   handleGoogleRedirectResult,
   getCurrentUser,
 } from "@/firebase/auth"; 
+import { getCurrentUserInfo } from "@/firebase/users";
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -25,9 +26,9 @@ const LoginLayout: React.FC = () => {
 
     const checkAuthStatus = async () => {
       try {
-        const user = await getCurrentUser();
+        const user = await getCurrentUserInfo();
         if (user) {
-          router.push("/");
+          router.push(`/${user.username}`);
         }
       } catch (error) {
         console.error("User is not authenticated:", error);
