@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; 
-import { ref, push } from 'firebase/database'; 
-import { database, auth } from '../firebase/firebase'
-import "./LineNumberEditer.css"; 
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import { addPost } from "../firebase/posts";
+import { auth } from "../firebase/firebase";
 
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 interface PostFormInputs {
   title: string;
   tags: string;
@@ -22,7 +22,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<PostFormInputs>();
-  const [content, setContent] = useState<string>(""); // 마크업 내용
+  const [content, setContent] = useState<string>("");
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
 
@@ -39,18 +39,12 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
 
     try {
       setLoading(true);
-      const postData = {
-        title: data.title,
-        content: content,
-        tags: data.tags.split(",").map((tag) => tag.trim()),
-        createdAt: new Date().toISOString(),
-        userId: user.uid,
-      };
+      await addPost(
+        data.title,
+        content,
+        data.tags.split(",").map((tag) => tag.trim())
+      );
 
-      // Realtime Database에 데이터 추가
-      const postsRef = ref(database, 'posts');
-      await push(postsRef, postData);
-      
       setLoading(false);
       alert("게시글이 성공적으로 등록되었습니다!");
     } catch (error) {
@@ -80,7 +74,9 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
             }`}
             placeholder="제목을 입력하세요"
           />
-          {errors.title && <span className="text-red-500 text-sm">{errors.title.message}</span>}
+          {errors.title && (
+            <span className="text-red-500 text-sm">{errors.title.message}</span>
+          )}
         </div>
 
         {/* 태그 입력 */}
@@ -94,19 +90,27 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
                 ? "bg-[#151B23] text-[#ffffff] focus:ring-yellow-500"
                 : "bg-gray-100 text-gray-900 focus:ring-blue-500"
             }`}
-            placeholder="#태그를 입력해주세요."
+            placeholder="태그를 입력해주세요. (태그1, 태그2, ...)"
           />
-          {errors.tags && <span className="text-red-500 text-sm">{errors.tags.message}</span>}
+          {errors.tags && (
+            <span className="text-red-500 text-sm">{errors.tags.message}</span>
+          )}
         </div>
 
         {/* 마크다운 에디터 (ReactQuill) */}
         <div className="mb-6">
-          <div className={`rounded-md p-2 ${darkMode ? "bg-[#222121]" : "bg-gray-100"}`}>
+          <div
+            className={`rounded-md p-2 ${
+              darkMode ? "bg-[#222121]" : "bg-gray-100"
+            }`}
+          >
             <ReactQuill
               value={content}
               onChange={setContent}
-              className={`${
-                darkMode ? "quill-dark bg-[#222121] text-[#ffffff]" : "bg-gray-100 text-gray-900"
+              className={`custom-quill ${
+                darkMode
+                  ? "quill-dark bg-[#222121] text-[#ffffff]"
+                  : "bg-gray-100 text-gray-900"
               }`}
               placeholder="내용을 입력하세요"
               theme="snow"

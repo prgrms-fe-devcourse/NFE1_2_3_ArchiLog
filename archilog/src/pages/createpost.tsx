@@ -1,8 +1,8 @@
 import React from "react";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import Bloginven from "@/components/blog/Bloginven";
+import PostForm from "@/components/PostForm";
 
-const BlogPage: React.FC = () => {
+const CreatePostPage: React.FC = () => {
   const { darkMode } = useDarkMode();
 
   return (
@@ -11,11 +11,11 @@ const BlogPage: React.FC = () => {
         darkMode ? "bg-black text-white" : "bg-white text-black"
       }`}
     >
-      <main>
-        <Bloginven />
+      <main className="pt-10">
+        <PostForm darkMode={darkMode} />
       </main>
     </div>
   );
 };
 
-export default BlogPage;
+export default CreatePostPage;
