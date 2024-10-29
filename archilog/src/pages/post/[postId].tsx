@@ -73,7 +73,7 @@ const PostDetail = () => {
   };
 
   const handleUpdatePost = () => {
-    router.push(`/posts/edit/${postId}`); // 수정 페이지로 이동
+    router.push(`/post/edit/${postId}`); // 수정 페이지로 이동
   };
 
   const handleDeleteComment = async (commentId: string) => {
