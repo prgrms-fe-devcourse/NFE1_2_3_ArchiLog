@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import Link from "next/link";
-import { logOut } from "../../firebase/auth"; // logOut 함수 import
+import { logOutAndRedirect } from "../../firebase/auth"; 
 
 interface HeaderProps {
   isLoggedIn: boolean;
@@ -22,11 +22,10 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
     router.push("/login");
   };
 
-  // 로그아웃 핸들러 추가
   const handleLogout = async () => {
     try {
-      await logOut();
-      router.push("/login"); // 로그아웃 후 로그인 페이지로 이동
+      await logOutAndRedirect(router);
+      alert("로그아웃 되었습니다."); 
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }
@@ -81,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
               >
                 Blog
               </Link>
-              {/* 로그아웃 버튼 추가 */}
+
               <button
                 onClick={handleLogout}
                 className={`text-sm md:text-base lg:text-lg ${
@@ -126,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
         )}
       </div>
 
-      {/* 모바일 사이드바에도 로그아웃 버튼 추가 */}
+
       {isLoggedIn && sidebarOpen && (
         <div
           className={`fixed top-0 right-0 w-64 h-full ${
@@ -171,7 +170,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
             >
               Blog
             </Link>
-            {/* 모바일 사이드바에 로그아웃 버튼 추가 */}
+
             <button
               onClick={handleLogout}
               className={`text-left ${
