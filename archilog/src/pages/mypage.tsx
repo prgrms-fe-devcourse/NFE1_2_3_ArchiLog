@@ -29,17 +29,20 @@ const MyPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
+}, [darkMode]);
+
   if (!userInfo) {
     return <div>Loading...</div>;
   }
-
 
   return (
     <div>
       {currentUserId === userInfo.id && (
         <div className="float-right mr-5">
           <Link href={'/mypage/edit'}>
-            <Image src='/images/edit.svg' alt="Edit" width={24} height={24} />
+            <img src='/images/edit.svg' alt="Edit" style={{ filter: darkMode ? 'invert(1)' : 'invert(0)' }} />
           </Link>
         </div>
       )}
