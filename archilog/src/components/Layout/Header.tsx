@@ -2,7 +2,8 @@ import React from "react";
 import { useRouter } from "next/router";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import Link from "next/link"; // Link 추가
+import Link from "next/link";
+import { logOutAndRedirect } from "../../firebase/auth"; 
 
 interface HeaderProps {
   isLoggedIn: boolean; // 로그인 여부를 나타냄
@@ -21,6 +22,15 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
   // 로그인 버튼 클릭 시 로그인 페이지로 이동
   const handleLogin = () => {
     router.push("/login");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logOutAndRedirect(router);
+      alert("로그아웃 되었습니다."); 
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+    }
   };
 
   return (
@@ -42,38 +52,51 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
 
         {/* 로그인 여부에 따른 네비게이션 메뉴 */}
         {isLoggedIn ? (
-          <nav className="hidden md:flex space-x-5 ml-auto">
-            <Link
-              href="/aboutme"
-              className={`text-sm md:text-base lg:text-lg ${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
-              }`}
-            >
-              About Me
-            </Link>
-            <Link
-              href="/project"
-              className={`text-sm md:text-base lg:text-lg ${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
-              }`}
-            >
-              Projects
-            </Link>
-            <Link
-              href="/blog"
-              className={`text-sm md:text-base lg:text-lg ${
-                darkMode
-                  ? "text-white hover:text-[#FDAD00]"
-                  : "text-black hover:text-[#4CAF50]"
-              }`}
-            >
-              Blog
-            </Link>
-          </nav>
+          <>
+            <nav className="hidden md:flex space-x-5 ml-auto">
+              <Link
+                href="/aboutme"
+                className={`text-sm md:text-base lg:text-lg ${
+                  darkMode
+                    ? "text-white hover:text-[#FDAD00]"
+                    : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                About Me
+              </Link>
+              <Link
+                href="/project"
+                className={`text-sm md:text-base lg:text-lg ${
+                  darkMode
+                    ? "text-white hover:text-[#FDAD00]"
+                    : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                Projects
+              </Link>
+              <Link
+                href="/blog"
+                className={`text-sm md:text-base lg:text-lg ${
+                  darkMode
+                    ? "text-white hover:text-[#FDAD00]"
+                    : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                Blog
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className={`text-sm md:text-base lg:text-lg ${
+                  darkMode
+                    ? "text-white hover:text-[#FDAD00]"
+                    : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                Logout
+              </button>
+            </nav>
+          </>
         ) : (
           <button
             onClick={handleLogin}
@@ -115,7 +138,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
         )}
       </div>
 
-      {/* 모바일 사이드바 (로그인 후에만 표시) */}
+
       {isLoggedIn && sidebarOpen && (
         <div
           className={`fixed top-0 right-0 w-64 h-full ${
@@ -169,6 +192,17 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
             >
               Blog
             </Link>
+
+            <button
+              onClick={handleLogout}
+              className={`text-left ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Logout
+            </button>
           </nav>
         </div>
       )}
