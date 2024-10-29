@@ -4,22 +4,20 @@ import Edit_B from "../../../public/images/edit_B.svg";
 import Search from "../../../public/images/search.svg";
 import Image from "next/image";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import { addPost, getPost } from "@/firebase/posts";
+import { getPost } from "@/firebase/posts";
 import { auth } from "@/firebase/firebase";
-import { useRouter } from 'next/router'; 
+import { useRouter } from 'next/router';
 
 const Blog: React.FC = () => {
   const { darkMode } = useDarkMode();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const router = useRouter(); 
+  const router = useRouter();
 
-  // 로그인 상태 확인 함수
-  const checkAuthAndExecute = async (action: () => Promise<void>) => {
-    const user = auth.currentUser;
-    
-    if (!user) {
+  const handleAddPost = () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
       const confirmLogin = window.confirm(
         "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"
       );
@@ -28,34 +26,7 @@ const Blog: React.FC = () => {
       }
       return;
     }
-
-    try {
-      await action();
-    } catch (error) {
-      console.error("Error:", error);
-      alert("작업 수행 중 오류가 발생했습니다.");
-    }
-  };
-
-  const handleAddPost = async () => {
-    const currentUser = auth.currentUser;
-    
-    if (!currentUser) {
-      alert("로그인이 필요한 서비스입니다.");
-      return;
-    }
-  
-    try {
-      await addPost(
-        "테스트 제목입니다.", 
-        "테스트 내용입니다.", 
-        ["test"]
-      );
-      await fetchPosts();
-    } catch (error) {
-      console.error("Error adding post:", error);
-      alert("게시글 작성에 실패했습니다.");
-    }
+    router.push('/createpost');
   };
 
   const fetchPosts = async () => {
@@ -77,7 +48,6 @@ const Blog: React.FC = () => {
   };
 
   useEffect(() => {
-    // 컴포넌트 마운트 시 로그인 상태 확인
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchPosts();
@@ -87,15 +57,10 @@ const Blog: React.FC = () => {
       }
     });
 
-    // 클린업 함수
     return () => unsubscribe();
   }, []);
 
-  const handleEditClick = () => {
-    handleAddPost();
-  };
 
-  // 검색어가 있을 때만 필터링, 없으면 모든 게시글 반환
   const displayedPosts = searchTerm
     ? posts.filter((post) =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -108,13 +73,13 @@ const Blog: React.FC = () => {
       <div className="flex items-center mx-auto w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
         {auth.currentUser && (
-        <Image
-          src={darkMode ? Edit_W : Edit_B}
-          alt="edit"
-          className="ml-5 cursor-pointer w-[25px] h-[25px] transition-transform duration-300 hover:scale-110"
-          onClick={handleAddPost}
-        />
-      )}
+          <Image
+            src={darkMode ? Edit_W : Edit_B}
+            alt="edit"
+            className="ml-5 cursor-pointer w-[25px] h-[25px] transition-transform duration-300 hover:scale-110"
+            onClick={handleAddPost}
+          />
+        )}
         <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-blue-500 border-2">
           <input
             type="text"
