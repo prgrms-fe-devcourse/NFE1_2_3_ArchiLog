@@ -24,12 +24,9 @@ export const signUp = async (email: string, password: string, username: string) 
         email,
         createdAt: timestamp,
         userId: user.uid,
-        profile: {
-          name: "",
-          resume: "",
-          createdAt: timestamp,
-          userId: user.uid
-        }
+        resume: "",
+        project: [],
+        posts: []
       });
     }
 
@@ -168,13 +165,17 @@ export const getCurrentUser = () => {
   });
 };
 
-// 현재 사용자 아이디
 export const getCurrentUserId = () => {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error('로그인된 사용자가 없습니다.');
-  }
-  return user.uid;
+  return new Promise<string>((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      if (user) {
+        resolve(user.uid);
+      } else {
+        reject(new Error('로그인된 사용자가 없습니다.'));
+      }
+    });
+  });
 };
 
 // 인증 확인하기

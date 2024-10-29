@@ -1,54 +1,81 @@
 import { MDEditorProps } from "@uiw/react-md-editor";
 import dynamic from "next/dynamic";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import pasteImage from '../utils/pasteImage';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
-import React from 'react'
-import { editAbout } from "../firebase/users";
+import React from 'react';
+import { editAbout, getCurrentUserInfo } from "../firebase/users";
+import { useDarkMode } from "../contexts/DarkModeContext";
+import { useRouter } from 'next/router';
 
 const MDEditor = dynamic<MDEditorProps>(() => import("@uiw/react-md-editor"), {
     ssr: false,
 });
 
-export type EditorProps = MDEditorProps;
-
 const Editor = () => {
-  const [value, setValue] = useState<string>("**Hello world!!!**");
+    const [value, setValue] = useState<string>("");
+    const router = useRouter();
 
-  const handleChange = useCallback((newValue?: string) => {
-    setValue(newValue || "");
-  }, []);
+    const { darkMode } = useDarkMode();
 
-  const handlePaste = useCallback((event: React.ClipboardEvent) => {
-    event.preventDefault();
-    pasteImage(event.clipboardData, setValue);
-  }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const user = await getCurrentUserInfo();
+                if (user) {
+                    const resume = user.resume || "";
+                    setValue(resume);
+                } else {
+                    console.error("로그인된 사용자가 없습니다.");
+                }
+            } catch (error) {
+                console.error("사용자 정보를 불러오는 중 오류 발생:", error);
+            }
+        };
 
-  const handleDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    pasteImage(event.dataTransfer, setValue);
-  }, []);
+        fetchData();
+    }, []);
 
-  const handleContent = () => {
-    editAbout(process.env.USER_ID || '', value);
-  }
+    const handleChange = useCallback((newValue?: string) => {
+        if (newValue !== value) {
+            setValue(newValue || "");
+        }
+    }, [value]);
 
-  return (
-    <div className="block">
-        <div className="w-full">
-            <button className="float-right bg-customYellow"
-            onClick={handleContent}>저장</button>
+    const handlePaste = useCallback((event: React.ClipboardEvent) => {
+        event.preventDefault();
+        pasteImage(event.clipboardData, setValue);
+    }, []);
+
+    const handleDrop = useCallback((event: React.DragEvent) => {
+        event.preventDefault();
+        pasteImage(event.dataTransfer, setValue);
+    }, []);
+
+    const handleContent = async () => {
+        await editAbout(value);
+        router.push('/mypage');
+    };
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
+    }, [darkMode]);
+
+    return (
+        <div className="block h-full" data-color-mode={darkMode ? "dark" : "light"} >
+            <MDEditor className="w-full h-4/5"
+                value={value}
+                onChange={handleChange}
+                onPaste={handlePaste}
+                height={700}
+                onDrop={handleDrop}
+            />
+             <div className="w-full">
+                <button className="float-right bg-customYellow px-6 py-1 rounded-md my-4 mx-2" onClick={handleContent}>저장</button>
+            </div>
         </div>
-        <MDEditor className="w-full"
-            value={value}
-            onChange={handleChange}
-            height={600}
-            onPaste={handlePaste}
-            onDrop={handleDrop}
-        />
-    </div>
-  );
+    );
 };
 
 export default Editor;
