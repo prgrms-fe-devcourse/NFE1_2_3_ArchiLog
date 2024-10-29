@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyBqZhTzb2JZVJ98enUP00r-rDiUJDmxWcI",
   authDomain: "archilog-7b615.firebaseapp.com",
