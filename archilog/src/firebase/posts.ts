@@ -10,17 +10,17 @@ import {
   DatabaseReference
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { getCurrentUserId } from './auth';
+import { getCurrentUserId } from "./auth";
 
 interface Post {
-    id: string;
-    title: string;
-    content: string;
-    tags: string[];
-    authorId: string;
-    createdAt: number;
-    updatedAt: number;
-  }
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  authorId: string;
+  createdAt: number;
+  updatedAt: number;
+}
 
 // 사용자 인증
 export const checkAuthenticated = () => {
@@ -54,7 +54,7 @@ export const checkAuthorized = async (postRef: DatabaseReference, userId: string
 // 게시글 목록 불러오기
 export const getPost = async () => {
   const db = getDatabase();
-  const postsRef = ref(db, "posts/create");
+  const postsRef = ref(db, "posts/");
 
   try {
     const snapshot = await get(postsRef);
@@ -106,7 +106,7 @@ export const getPost = async () => {
 // 게시글 상세정보 불러오기
 export const getPostDetails = async (postId: string) => {
   const db = getDatabase();
-  const postRef = ref(db, `posts/create/${postId}`);
+  const postRef = ref(db, `posts/${postId}`);
 
   try {
     const snapshot = await get(postRef);
@@ -116,7 +116,7 @@ export const getPostDetails = async (postId: string) => {
     }
 
     const postData = snapshot.val();
- 
+
     return {
       id: postId,
       ...postData
@@ -174,7 +174,7 @@ export const addComment = async (content: string, postId: string) => {
 export const addPost = async (title: string, content: string, tags: string[]) => {
   const db = getDatabase();
   const user = checkAuthenticated();
-  const postsRef = ref(db, "posts/create");
+  const postsRef = ref(db, "posts/");
 
   try {
     const newPostRef = await push(postsRef, {
@@ -196,8 +196,8 @@ export const addPost = async (title: string, content: string, tags: string[]) =>
 
 // // 게시글 추가하기 수정
 // export const addPost = async (
-//   title: string, 
-//   content: string, 
+//   title: string,
+//   content: string,
 //   tags: string[]
 // ) => {
 //   const db = getDatabase();

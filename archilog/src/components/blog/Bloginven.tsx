@@ -205,7 +205,7 @@ const Blog: React.FC = () => {
                 <div
                   key={post.id}
                   onClick={() => handlePostDetail(post.id)}
-                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-black dark:border-white rounded-xl">
+                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#b3c1ea] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-black dark:border-white rounded-xl">
                   <Image
                     className="w-[230px] h-[160px]"
                     src="/images/Example.png"
