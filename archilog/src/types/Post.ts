@@ -10,3 +10,4 @@ type Post = {
 }
 
 export default Post;
+  

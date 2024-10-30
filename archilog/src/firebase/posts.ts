@@ -1,5 +1,6 @@
 import { getDatabase, ref, get, update, remove, push, serverTimestamp, DataSnapshot, DatabaseReference } from 'firebase/database';
 import { getAuth } from "firebase/auth"; 
+import Post from '@/types/Post';
 
 // 사용자 인증
 export const checkAuthenticated = () => {
@@ -31,13 +32,13 @@ export const checkAuthorized = async (postRef: DatabaseReference, userId: string
 };
 
 // 게시글 목록 불러오기
-export const getPost = async (authorId: string) => {
+export const getPost = async (username: string): Promise<Post[]> => {
     const db = getDatabase();
-    const postsRef = ref(db, `posts/author/${authorId}`);
+    const postsRef = ref(db, `/users/${username}/posts`);
 
     try {
         const snapshot = await get(postsRef);
-        const posts: string[] = [];
+        const posts: Post[] = [];
 
         if (snapshot.exists()) {
             snapshot.forEach((childSnapshot: DataSnapshot) => {
@@ -57,9 +58,9 @@ export const getPost = async (authorId: string) => {
 };
 
 // 게시글 상세정보 불러오기 
-export const getPostDetails = async (postId: string) => {
+export const getPostDetails = async (username: string, postId: string) => {
     const db = getDatabase();
-    const postRef = ref(db, `posts/${postId}`);
+    const postRef = ref(db, `users/${username}/posts/${postId}`);
 
     try {
         const snapshot = await get(postRef);
@@ -82,7 +83,7 @@ export const addComment = async (
 ) => {
     const db = getDatabase();
     const user = checkAuthenticated();
-    const commentsRef = ref(db, `posts/${postId}/comments`);
+    const commentsRef = ref(db, `users/${user.displayName}/posts/${postId}/comments`);
 
     try {
         await push(commentsRef, {
@@ -106,7 +107,7 @@ export const deleteComment = async (
   ) => {
   const db = getDatabase();
   const user = checkAuthenticated();
-  const commentRef = ref(db, `posts/${postId}/comments/${commentId}`);
+  const commentRef = ref(db, `users/${user.displayName}/posts/${postId}/comments/${commentId}`);
 
   try {
       await checkAuthorized(commentRef, user.uid);

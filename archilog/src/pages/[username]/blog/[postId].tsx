@@ -29,7 +29,9 @@ const PostDetail = () => {
 
   const fetchPostDetails = async (postId: string) => {
     try {
-      const postData = await getPostDetails(postId);
+      const user = auth.currentUser;
+      const username = user?.displayName || '';
+      const postData = await getPostDetails(username, postId);
       setPost(postData);
       console.log(postData);
       const commentsArray = Object.entries(postData.comments || {}).map(([id, comment]) => ({
