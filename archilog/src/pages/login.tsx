@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import HeaderLogin from "../components/Layout/HeaderLogin";
+import ForgotPasswordModal from "./password";
 import {
   signIn,
   signInWithGithubPopup,
   signInWithGooglePopup,
-  getCurrentUser,
-} from "@/firebase/auth"; 
+  sendResetPasswordEmail,
+  checkEmailExists,
+  checkUsernameExists,
+} from "@/firebase/auth";
 import { getCurrentUserInfo } from "@/firebase/users";
+
+// UserInfo 인터페이스 정의
+interface UserInfo {
+  username: string;
+}
 
 const LoginLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -16,6 +24,11 @@ const LoginLayout: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetUsername, setResetUsername] = useState("");
+  const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
+  const [isCodeSent, setIsCodeSent] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,13 +39,13 @@ const LoginLayout: React.FC = () => {
     const checkAuthStatus = async () => {
       try {
         const user = await getCurrentUserInfo();
-        if (user) {
+        if (user && user.username) {
           router.push(`/${user.username}`);
         } else {
-          setIsLoading(false); 
+          setIsLoading(false);
         }
       } catch (error) {
-        console.error("User is not authenticated:", error);
+        console.error("Authentication check error:", error);
         setIsLoading(false);
       }
     };
@@ -40,13 +53,8 @@ const LoginLayout: React.FC = () => {
     checkAuthStatus();
   }, [router]);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
+  const toggleDarkMode = () => setDarkMode((prevMode) => !prevMode);
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const handleSignup = () => {
     router.push(`/register?darkMode=${darkMode}`);
@@ -59,31 +67,32 @@ const LoginLayout: React.FC = () => {
 
   const handleLogin = async () => {
     setErrorMessage(null);
-
+  
     if (!email) {
       setErrorMessage("Email을 입력해주세요.");
       return;
     }
-
+  
     if (!validateEmail(email)) {
       setErrorMessage("유효한 이메일 형식이 아닙니다.");
       return;
     }
-
+  
     if (!password) {
       setErrorMessage("Password를 입력해주세요.");
       return;
     }
-
-    try {
-      await signIn(email, password);
+  
+    const loginResult = await signIn(email, password);
+  
+    if (typeof loginResult === "string") {
+      setErrorMessage(loginResult);
+    } else {
       alert("로그인 되었습니다.");
-      const user = await getCurrentUserInfo();
-      router.push(`/${user.username}`); 
-    } catch (error) {
-      setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
+      const user = (await getCurrentUserInfo()) as UserInfo;
+      router.push(`/${user.username}`);
     }
-  };
+  };  
 
   const handleGithubLogin = async () => {
     try {
@@ -102,6 +111,42 @@ const LoginLayout: React.FC = () => {
       setErrorMessage("Google 로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };
+
+  const handleSendCode = async () => {
+    if (!resetUsername && !resetEmail) {
+      setVerificationMessage("유저네임과 이메일을 입력해주세요.");
+      return;
+    }
+
+    if (!resetUsername) {
+      setVerificationMessage("유저네임을 입력해주세요.");
+      return;
+    }
+
+    if (!resetEmail) {
+      setVerificationMessage("이메일을 입력해주세요.");
+      return;
+    }
+
+    if (!validateEmail(resetEmail)) {
+      setVerificationMessage("유효한 이메일 형식이 아닙니다.");
+      return;
+    }
+
+    const accountExists = await checkEmailExists(resetEmail);
+    const usernameExists = await checkUsernameExists(resetUsername);
+
+    if (!accountExists || !usernameExists) {
+      setVerificationMessage("해당 계정은 존재하지 않습니다.");
+      return;
+    }
+
+    await sendResetPasswordEmail(resetEmail);
+    setVerificationMessage("비밀번호 재설정 이메일이 발송되었습니다.");
+    setIsCodeSent(true);
+  };
+
+  const handlePasswordReset = () => setIsModalOpen(true);
 
   if (isLoading) return null;
 
@@ -141,7 +186,7 @@ const LoginLayout: React.FC = () => {
               </button>
               <button
                 onClick={handleSignup}
-                className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg bg-white text-black hover:bg-gray-200`}
+                className="w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg bg-white text-black hover:bg-gray-200"
                 style={{ zIndex: 1 }}
               >
                 Sign up
@@ -149,9 +194,7 @@ const LoginLayout: React.FC = () => {
             </div>
 
             <div className="w-full mb-2">
-              <label className="block text-sm font-medium mb-1">
-                Email address
-              </label>
+              <label className="block text-sm font-medium mb-1">Email address</label>
               <input
                 type="email"
                 placeholder="Your email"
@@ -179,38 +222,26 @@ const LoginLayout: React.FC = () => {
                   className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-full"
                   onClick={togglePasswordVisibility}
                 >
-                  <img
-                    src="/images/eye.svg"
-                    alt="Show Password"
-                    className="h-6 w-6"
-                  />
+                  <img src="/images/eye.svg" alt="Show Password" className="h-6 w-6" />
                 </button>
               </div>
             </div>
 
             <div className="w-full text-right mb-2">
-              <a href="#" className="text-sm hover:underline">
+              <a onClick={handlePasswordReset} className="text-sm hover:underline cursor-pointer">
                 Forgot password?
               </a>
             </div>
 
-            {errorMessage && (
-              <p className="text-red-500 text-center mb-2">{errorMessage}</p>
-            )}
+            {errorMessage && <p className="text-red-500 text-center mb-2">{errorMessage}</p>}
 
             <div className="text-center text-sm text-gray-500 mt-1">
               <p>
-                <span
-                  onClick={handleGithubLogin}
-                  className="cursor-pointer hover:underline"
-                >
+                <span onClick={handleGithubLogin} className="cursor-pointer hover:underline">
                   Login with GitHub
                 </span>{" "}
                 |
-                <span
-                  onClick={handleGoogleLogin}
-                  className="cursor-pointer hover:underline"
-                >
+                <span onClick={handleGoogleLogin} className="cursor-pointer hover:underline">
                   {" "}
                   Login with Google
                 </span>
@@ -228,23 +259,33 @@ const LoginLayout: React.FC = () => {
 
         <div className="flex-none w-full md:w-1/2 flex items-center justify-center">
           <div className="text-center">
-            <p
-              className={`text-3xl md:text-4xl ${
-                darkMode ? "text-white" : "text-black"
-              }`}
-            >
-              Hello!
-            </p>
-            <p
-              className={`text-3xl md:text-4xl ${
-                darkMode ? "text-white" : "text-black"
-              } mt-2`}
-            >
+            <p className={`text-3xl md:text-4xl ${darkMode ? "text-white" : "text-black"}`}>Hello!</p>
+            <p className={`text-3xl md:text-4xl ${darkMode ? "text-white" : "text-black"} mt-2`}>
               Thank you for visiting ArchiLog.
             </p>
           </div>
         </div>
       </main>
+
+      <ForgotPasswordModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setResetEmail("");
+          setResetUsername("");
+          setVerificationMessage(null);
+          setIsCodeSent(false);
+        }}
+        resetEmail={resetEmail}
+        resetUsername={resetUsername}
+        setResetEmail={setResetEmail}
+        setResetUsername={setResetUsername}
+        handleSendCode={handleSendCode}
+        verificationMessage={verificationMessage}
+        setVerificationMessage={setVerificationMessage}
+        isCodeSent={isCodeSent}
+        darkMode={darkMode}
+      />
     </div>
   );
 };
