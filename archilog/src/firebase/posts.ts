@@ -7,20 +7,20 @@ import {
   push,
   serverTimestamp,
   DataSnapshot,
-  DatabaseReference
+  DatabaseReference,
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { getCurrentUserId } from './auth';
+import { getCurrentUserId } from "./auth";
 
 interface Post {
-    id: string;
-    title: string;
-    content: string;
-    tags: string[];
-    authorId: string;
-    createdAt: number;
-    updatedAt: number;
-  }
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  authorId: string;
+  createdAt: number;
+  updatedAt: number;
+}
 
 // 사용자 인증
 export const checkAuthenticated = () => {
@@ -35,7 +35,10 @@ export const checkAuthenticated = () => {
 };
 
 // 권한 확인하기
-export const checkAuthorized = async (postRef: DatabaseReference, userId: string) => {
+export const checkAuthorized = async (
+  postRef: DatabaseReference,
+  userId: string
+) => {
   const snapshot: DataSnapshot = await get(postRef);
 
   if (!snapshot.exists()) {
@@ -65,7 +68,7 @@ export const getPost = async () => {
         const post = childSnapshot.val();
         posts.push({
           id: childSnapshot.key,
-          ...post
+          ...post,
         });
       });
     }
@@ -132,7 +135,7 @@ export const addComment = async (content: string, postId: string) => {
     await push(commentsRef, {
       content: content,
       authorId: user.uid,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
 
     console.log("Comment added successfully");
@@ -166,10 +169,14 @@ export const addComment = async (content: string, postId: string) => {
 // };
 
 // 게시글 추가하기
-export const addPost = async (title: string, content: string, tags: string[]) => {
+export const addPost = async (
+  title: string,
+  content: string,
+  tags: string[]
+) => {
   const db = getDatabase();
   const user = checkAuthenticated();
-  const postsRef = ref(db, "posts/create");
+  const postsRef = ref(db, "posts/");
 
   try {
     const newPostRef = await push(postsRef, {
@@ -178,7 +185,7 @@ export const addPost = async (title: string, content: string, tags: string[]) =>
       tags: tags,
       authorId: user.uid,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     console.log(`Post added successfully with ID: ${newPostRef.key}`);
@@ -191,8 +198,8 @@ export const addPost = async (title: string, content: string, tags: string[]) =>
 
 // // 게시글 추가하기 수정
 // export const addPost = async (
-//   title: string, 
-//   content: string, 
+//   title: string,
+//   content: string,
 //   tags: string[]
 // ) => {
 //   const db = getDatabase();
@@ -237,7 +244,12 @@ export const deletePost = async (postId: string) => {
 };
 
 // 게시글 수정하기 함수
-export const updatePost = async (postId: string, title: string, tags: string[], content: string) => {
+export const updatePost = async (
+  postId: string,
+  title: string,
+  tags: string[],
+  content: string
+) => {
   const db = getDatabase();
   const user = checkAuthenticated();
   const postRef = ref(db, `posts/${postId}`);
@@ -248,7 +260,7 @@ export const updatePost = async (postId: string, title: string, tags: string[], 
       title: title,
       tags: tags,
       content: content,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     console.log("Post updated successfully");

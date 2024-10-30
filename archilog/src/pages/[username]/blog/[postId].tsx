@@ -30,8 +30,17 @@ const PostDetail = () => {
   const fetchPostDetails = async (postId: string) => {
     try {
       const postData = await getPostDetails(postId);
+
+      // 댓글 데이터를 객체에서 배열로 변환
+      const commentsArray = postData.comments
+        ? Object.keys(postData.comments).map((key) => ({
+            id: key,
+            ...postData.comments[key],
+          }))
+        : [];
+
       setPost(postData);
-      setComments(postData.comments || []);
+      setComments(commentsArray);
     } catch (error) {
       console.error("Failed to fetch post details:", error);
     }
