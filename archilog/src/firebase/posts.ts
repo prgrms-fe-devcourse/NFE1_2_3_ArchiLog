@@ -168,6 +168,23 @@ export const addComment = async (content: string, postId: string) => {
 //   }
 // };
 
+// 댓글 삭제하기
+export const deleteComment = async (postId: string, commentId: string) => {
+  const db = getDatabase();
+  const user = checkAuthenticated();
+  const commentRef = ref(db, `posts/${postId}/comments/${commentId}`);
+
+  try {
+    await checkAuthorized(commentRef, user.uid);
+    await remove(commentRef);
+
+    console.log("Comment deleted successfully");
+  } catch (error) {
+    console.error("Error deleting comment: ", error);
+    throw error;
+  }
+};
+
 // 게시글 추가하기
 export const addPost = async (
   title: string,
