@@ -47,6 +47,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
 
       setLoading(false);
       alert("게시글이 성공적으로 등록되었습니다!");
+      window.history.go(-1);
     } catch (error) {
       console.error("게시글 등록 오류:", error);
       setLoading(false);
