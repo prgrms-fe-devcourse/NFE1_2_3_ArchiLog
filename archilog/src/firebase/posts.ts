@@ -106,7 +106,7 @@ export const getPost = async () => {
 // 게시글 상세정보 불러오기
 export const getPostDetails = async (postId: string) => {
   const db = getDatabase();
-  const postRef = ref(db, `posts/${postId}`);
+  const postRef = ref(db, `posts/create/${postId}`);
 
   try {
     const snapshot = await get(postRef);
@@ -115,7 +115,12 @@ export const getPostDetails = async (postId: string) => {
       throw new Error("Post not found");
     }
 
-    return snapshot.val();
+    const postData = snapshot.val();
+ 
+    return {
+      id: postId,
+      ...postData
+    };
   } catch (error) {
     console.error("Error fetching post details:", error);
     throw error;

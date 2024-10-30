@@ -5,8 +5,9 @@ import Search from "../../../public/images/search.svg";
 import Image from "next/image";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { getPost } from "@/firebase/posts";
-import { auth } from "@/firebase/firebase";
+import { auth, database } from "@/firebase/firebase";
 import { useRouter } from "next/router";
+import { ref, get } from "firebase/database";
 
 interface Post {
   id: string;
@@ -26,6 +27,8 @@ const Blog: React.FC = () => {
   const [uniqueTags, setUniqueTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const router = useRouter();
+  const { username } = router.query;
+  const [isOwner, setIsOwner] = useState(false);
 
   const currentUrl = router.asPath;
   const postLink = `${currentUrl}/post`;
@@ -59,46 +62,74 @@ const Blog: React.FC = () => {
     router.push(postLink);
   };
 
+  const handlePostDetail = (postId: string) => {
+    router.push(`${currentUrl}/${postId}`);
+  };
+
   const fetchPosts = async () => {
     try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
-
       const fetchedPosts = await getPost();
-      const userPosts = fetchedPosts.filter((post) => post.authorId === currentUser.uid);
-      console.log("Fetched posts:", userPosts);
-      setPosts(userPosts || []);
-      extractUniqueTags(userPosts || []);
+
+      const filteredPosts = await Promise.all(
+        fetchedPosts.map(async (post) => {
+          try {
+            const userSnapshot = await get(ref(database, `users/${post.authorId}`));
+            const userData = userSnapshot.val();
+
+            if (userData && userData.username === username) {
+              return post;
+            }
+            return null;
+          } catch (error) {
+            console.error("Error fetching user data for post:", post.id, error);
+            return null;
+          }
+        })
+      );
+
+      const userPosts = filteredPosts.filter((post): post is Post => post !== null);
+      setPosts(userPosts);
+
+      if (userPosts.length > 0) {
+        extractUniqueTags(userPosts);
+      } else {
+        setUniqueTags([]);
+      }
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setPosts([]);
+      setUniqueTags([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        fetchPosts();
-      } else {
-        setPosts([]);
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+    if (username && typeof username === "string") {
+      fetchPosts();
+      isCurrentUserProfile().then(setIsOwner);
+    }
+  }, [username]);
 
   const displayedPosts = posts.filter((post) => {
     const matchesSearch = searchTerm ? post.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
-
     const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
-
     return matchesSearch && matchesTag;
   });
+
+  const isCurrentUserProfile = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return false;
+  
+    try {
+      const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
+      const userData = userSnapshot.val();
+      return userData && userData.username === username;
+    } catch (error) {
+      console.error("Error checking current user:", error);
+      return false;
+    }
+  };
 
   const removeHtmlTags = (html: string) => {
     return html.replace(/<[^>]*>/g, "");
@@ -109,14 +140,14 @@ const Blog: React.FC = () => {
       {/* 검색창 */}
       <div className="flex items-center mx-auto w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
-        {auth.currentUser && (
-          <Image
-            src={darkMode ? Edit_W : Edit_B}
-            alt="edit"
-            className="ml-5 cursor-pointer w-[20px] h-[20px] transition-transform duration-300 hover:scale-110"
-            onClick={handleAddPost}
-          />
-        )}
+        {isOwner && ( 
+        <Image
+          src={darkMode ? Edit_W : Edit_B}
+          alt="edit"
+          className="ml-5 cursor-pointer w-[20px] h-[20px] transition-transform duration-300 hover:scale-110"
+          onClick={handleAddPost}
+        />
+      )}
         <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-blue-500 border-2">
           <input
             type="text"
@@ -136,8 +167,8 @@ const Blog: React.FC = () => {
             key={index}
             className={`mx-1 my-1 px-3 py-1 rounded-full cursor-pointer transition-colors duration-300 ${
               selectedTag === tag
-                ? "bg-[#388E3C] dark:bg-[#FFA000]"
-                : "bg-[#4CAF50] hover:bg-[#43A047] dark:bg-[#FDAD00] dark:hover:bg-[#FFB300]"
+                ? "bg-[#6A8CC8] dark:bg-[#ffc848]"
+                : "bg-[#b3c1ea] hover:bg-[#6A8CC8] dark:bg-[#FDAD00] dark:hover:bg-[#ffc848]"
             }`}
             onClick={() => handleTagClick(tag)}>
             #{tag}
@@ -156,9 +187,10 @@ const Blog: React.FC = () => {
               displayedPosts.map((post) => (
                 <div
                   key={post.id}
-                  className="hidden md:flex w-full items-center px-4 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 rounded-lg">
+                  onClick={() => handlePostDetail(post.id)}
+                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-black dark:border-white rounded-xl">
                   <Image
-                    className="w-[230px] h-[150px] sm:w-[230px] sm:h-[150px] lg:w-[230px] lg:h-[150px]"
+                    className="w-[230px] h-[160px]"
                     src="/images/Example.png"
                     alt="Example"
                     width={500}
@@ -173,7 +205,7 @@ const Blog: React.FC = () => {
                       {post.tags.map((tag: string, index: number) => (
                         <span
                           key={index}
-                          className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                          className="text-[12px] text-white dark:text-black bg-[#b3c1ea] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
                           #{tag}
                         </span>
                       ))}
@@ -202,6 +234,7 @@ const Blog: React.FC = () => {
                 displayedPosts.map((post) => (
                   <div
                     key={post.id}
+                    onClick={() => handlePostDetail(post.id)}
                     className="items-center px-4 w-[450px] hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 my-2 rounded-lg">
                     <div className="ml-5">
                       <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
