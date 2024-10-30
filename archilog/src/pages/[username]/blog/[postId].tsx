@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { auth } from "@/firebase/firebase";
-import { getPostDetails, addComment, deletePost } from "@/firebase/posts";
+import {
+  getPostDetails,
+  addComment,
+  deleteComment,
+  deletePost,
+} from "@/firebase/posts";
 
 interface Comment {
   id: string;
@@ -89,8 +94,7 @@ const PostDetail = () => {
     const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
     if (confirmDelete) {
       try {
-        // 댓글 삭제 로직 필요 (Firebase 백엔드에서 구현된 경우)
-        // await deleteComment(postId, commentId);
+        await deleteComment(postId as string, commentId);
 
         fetchPostDetails(postId as string);
       } catch (error) {
