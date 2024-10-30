@@ -78,7 +78,8 @@ const LoginLayout: React.FC = () => {
     try {
       await signIn(email, password);
       alert("로그인 되었습니다.");
-      router.push("/"); 
+      const user = await getCurrentUserInfo();
+      router.push(`/${user.username}`); 
     } catch (error) {
       setErrorMessage("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
     }
