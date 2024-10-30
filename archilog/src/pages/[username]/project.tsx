@@ -150,7 +150,8 @@ export default function ProjectPage() {
     if (!user) return;
     
     try {
-      await addProject(data.repoUrl, data.description, user.uid);
+      const username = user.displayName || '';
+      await addProject(data.repoUrl, data.description, username);
       fetchProjects();
     } catch (error) {
       throw error;

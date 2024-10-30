@@ -35,6 +35,7 @@ export const signUp = async (email: string, password: string, username: string, 
 
     if (user) {
       const timestamp = Date.now();
+      
       await set(ref(database, `users/${username}`), {
         username,
         email,
@@ -42,7 +43,7 @@ export const signUp = async (email: string, password: string, username: string, 
         userId: user.uid,
         resume: "",
         project: [],
-        posts: []
+        posts: [],
       });
     }
     

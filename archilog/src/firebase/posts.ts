@@ -127,7 +127,7 @@ export const addPost = async (
 ) => {
     const db = getDatabase();
     const user = checkAuthenticated();
-    const postsRef = ref(db, 'posts/');
+    const postsRef = ref(db, `users/${user.displayName}/posts`);
 
     try {
         const newPostRef = await push(postsRef, {
@@ -137,6 +137,7 @@ export const addPost = async (
             authorId: user.uid,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
+            comments: [],
         });
 
         console.log(`Post added successfully with ID: ${newPostRef.key}`);
