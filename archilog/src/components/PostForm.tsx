@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { addPost } from "../firebase/posts";
 import { auth } from "../firebase/firebase";
+import { useRouter } from "next/router";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 interface PostFormInputs {
@@ -25,6 +26,9 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   const [content, setContent] = useState<string>("");
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const basePath = router.asPath.split("/").slice(1, 3).join("/");
 
   const onSubmit: SubmitHandler<PostFormInputs> = async (data) => {
     if (!user) {
@@ -47,6 +51,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
 
       setLoading(false);
       alert("게시글이 성공적으로 등록되었습니다!");
+      router.push(`/${basePath}`);
     } catch (error) {
       console.error("게시글 등록 오류:", error);
       setLoading(false);
