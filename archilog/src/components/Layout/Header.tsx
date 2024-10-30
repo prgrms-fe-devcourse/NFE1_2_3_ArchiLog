@@ -89,6 +89,16 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
             >
               Blog
             </Link>
+            <button
+                onClick={handleLogout}
+                className={`text-sm md:text-base lg:text-lg ${
+                  darkMode
+                    ? "text-white hover:text-[#FDAD00]"
+                    : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                Logout
+              </button>
           </nav>
         ) : (
           <button
