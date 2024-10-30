@@ -175,7 +175,7 @@ const Blog: React.FC = () => {
                         </span>
                       ))}
                     </div>
-                    <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
+                    <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
                       {new Date(post.createdAt).toLocaleDateString()}
                     </div>
                   </div>
