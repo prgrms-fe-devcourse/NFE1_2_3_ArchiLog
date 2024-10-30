@@ -193,7 +193,7 @@ export const addPost = async (
 ) => {
   const db = getDatabase();
   const user = checkAuthenticated();
-  const postsRef = ref(db, "posts/");
+  const postsRef = ref(db, "posts");
 
   try {
     const newPostRef = await push(postsRef, {

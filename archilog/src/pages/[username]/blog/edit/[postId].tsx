@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
 import dynamic from "next/dynamic";
-import { auth } from "../../../firebase/firebase";
-import { getPostDetails, updatePost } from "../../../firebase/posts";
+import { auth } from "../../../../firebase/firebase";
+import { getPostDetails, updatePost } from "../../../../firebase/posts";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
