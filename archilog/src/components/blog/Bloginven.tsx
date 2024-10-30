@@ -27,6 +27,9 @@ const Blog: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const router = useRouter();
 
+  const currentUrl = router.asPath;
+  const postLink = `${currentUrl}/post`;
+
   const extractUniqueTags = (posts: Post[]) => {
     const allTags = posts.reduce((tags: string[], post) => {
       return tags.concat(post.tags || []);
@@ -53,7 +56,7 @@ const Blog: React.FC = () => {
       }
       return;
     }
-    router.push("/createpost");
+    router.push(postLink);
   };
 
   const fetchPosts = async () => {
