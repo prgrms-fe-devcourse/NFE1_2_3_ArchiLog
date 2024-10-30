@@ -74,7 +74,7 @@ const PostDetail = () => {
     if (confirmDelete) {
       try {
         await deletePost(postId as string);
-        router.push("/blog"); // 게시글 목록 페이지로 이동
+        router.push(`/${user?.displayName}/blog`); // 게시글 목록 페이지로 이동
       } catch (error) {
         console.error("Failed to delete post:", error);
       }
@@ -82,7 +82,7 @@ const PostDetail = () => {
   };
 
   const handleUpdatePost = () => {
-    router.push(`/post/edit/${postId}`); // 수정 페이지로 이동
+    router.push(`/${user?.displayName}/blog/edit/${postId}`); // 수정 페이지로 이동
   };
 
   const handleDeleteComment = async (commentId: string) => {

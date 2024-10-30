@@ -60,7 +60,7 @@ export const getPost = async (username: string): Promise<Post[]> => {
 // 게시글 상세정보 불러오기 
 export const getPostDetails = async (username: string, postId: string) => {
     const db = getDatabase();
-    const postRef = ref(db, `users/${username}/posts/${postId}`);
+    const postRef = ref(db, `/users/${username}/posts/${postId}`);
 
     try {
         const snapshot = await get(postRef);
@@ -153,7 +153,7 @@ export const addPost = async (
 export const deletePost = async (postId: string) => {
     const db = getDatabase();
     const user = checkAuthenticated();
-    const postRef = ref(db, `posts/${postId}`);
+    const postRef = ref(db, `users/${user.displayName}/posts/${postId}`);
 
     try {
         await checkAuthorized(postRef, user.uid);
@@ -177,7 +177,7 @@ export const updatePost = async (
 ) => {
     const db = getDatabase();
     const user = checkAuthenticated();
-    const postRef = ref(db, `posts/${postId}`);
+    const postRef = ref(db, `/users/${user.displayName}/posts/${postId}`);
 
     try {
         await checkAuthorized(postRef, user.uid);
