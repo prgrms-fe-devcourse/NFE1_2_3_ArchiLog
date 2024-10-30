@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { auth } from "@/firebase/firebase";
-import { getPostDetails, addComment, deletePost } from "@/firebase/posts";
+import { getPostDetails, addComment, deletePost, deleteComment } from "@/firebase/posts";
 
 interface Comment {
   id: string;
@@ -29,9 +29,18 @@ const PostDetail = () => {
 
   const fetchPostDetails = async (postId: string) => {
     try {
-      const postData = await getPostDetails(postId);
+      const user = auth.currentUser;
+      const username = user?.displayName || '';
+      const postData = await getPostDetails(username, postId);
       setPost(postData);
-      setComments(postData.comments || []);
+      console.log(postData);
+      const commentsArray = Object.entries(postData.comments || {}).map(([id, comment]) => ({
+        id,
+        ...comment,
+      }));
+      setComments(commentsArray);
+      console.log(comments);
+
     } catch (error) {
       console.error("Failed to fetch post details:", error);
     }
@@ -65,7 +74,7 @@ const PostDetail = () => {
     if (confirmDelete) {
       try {
         await deletePost(postId as string);
-        router.push("/blog"); // 게시글 목록 페이지로 이동
+        router.push(`/${user?.displayName}/blog`); // 게시글 목록 페이지로 이동
       } catch (error) {
         console.error("Failed to delete post:", error);
       }
@@ -73,16 +82,15 @@ const PostDetail = () => {
   };
 
   const handleUpdatePost = () => {
-    router.push(`/post/edit/${postId}`); // 수정 페이지로 이동
+    router.push(`/${user?.displayName}/blog/edit/${postId}`); // 수정 페이지로 이동
   };
 
   const handleDeleteComment = async (commentId: string) => {
     const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
     if (confirmDelete) {
       try {
-        // 댓글 삭제 로직 필요 (Firebase 백엔드에서 구현된 경우)
-        // await deleteComment(postId, commentId);
-
+        console.log(post);
+        await deleteComment(postId as string, commentId);
         fetchPostDetails(postId as string);
       } catch (error) {
         console.error("Failed to delete comment:", error);

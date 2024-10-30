@@ -6,7 +6,7 @@ import { useAuth } from "@/components/hook/useAuth";
 
 interface Project {
   id: string;
-  userId: string;
+  username: string;
   repoUrl: string;
   customDescription: string;
   createdAt: number;
@@ -131,7 +131,15 @@ export default function ProjectPage() {
   const fetchProjects = async () => {
     try {
       const data = await getProjects();
-      setProjects(data);
+      const mappedProjects = data.map(project => ({
+        id: project.id,
+        username: project.username,
+        repoUrl: project.repoUrl,
+        customDescription: project.customDescription,
+        createdAt: project.createdAt,
+        repoInfo: project.repoInfo
+      })) as Project[];
+      setProjects(mappedProjects);
     } catch (err) {
       setError("프로젝트를 불러오는데 실패했습니다");
     } finally {
@@ -150,7 +158,8 @@ export default function ProjectPage() {
     if (!user) return;
     
     try {
-      await addProject(data.repoUrl, data.description, user.uid);
+      const username = user.displayName || '';
+      await addProject(data.repoUrl, data.description, username);
       fetchProjects();
     } catch (error) {
       throw error;
@@ -232,7 +241,7 @@ export default function ProjectPage() {
                     : 'bg-white border-gray-300 hover:border-gray-400'
                 } border transition-all duration-300 shadow-sm`}
               >
-                {user && project.userId === user.uid && (
+                {user && project.username === user.displayName && (
                   <button
                     onClick={(e) => handleDeleteProject(project.id, e)}
                     className={`absolute top-3 right-3 p-2 rounded-full ${

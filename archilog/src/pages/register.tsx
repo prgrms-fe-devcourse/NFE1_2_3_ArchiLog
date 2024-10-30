@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import HeaderLogin from "../components/Layout/HeaderLogin";
-import { signUp } from "@/firebase/auth";
+import { signUp, checkUsernameExists } from "@/firebase/auth";
 
 const RegisterLayout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -19,13 +19,8 @@ const RegisterLayout: React.FC = () => {
     }
   }, [router.query.darkMode]);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
+  const toggleDarkMode = () => setDarkMode((prevMode) => !prevMode);
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const handleSignInClick = () => {
     router.push(`/login?darkMode=${darkMode}`);
@@ -60,36 +55,32 @@ const RegisterLayout: React.FC = () => {
       return;
     }
 
+    const usernameExists = await checkUsernameExists(username);
+    if (usernameExists) {
+      setErrorMessage("이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.");
+      return;
+    }
+
     try {
       await signUp(email, password, username, router);
     } catch (error: any) {
-      if (error.message.includes("닉네임")) {
-        setErrorMessage(error.message);
-      } else if (error.code === "auth/email-already-in-use") {
+      if (error.code === "auth/email-already-in-use") {
         setErrorMessage("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
       } else {
-        setErrorMessage("회원가입에 실패했습니다. 다시 시도해주세요.");
+        setErrorMessage("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
       }
     }
   };
 
   return (
-    <div
-      className={`${
-        darkMode ? "dark bg-black text-white" : "bg-white text-black"
-      } min-h-screen flex flex-col`}
-    >
+    <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen flex flex-col`}>
       <header>
         <HeaderLogin darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       </header>
 
       <main className="flex-grow flex m-0 p-5 md:p-0">
         <div className="flex-none w-full md:w-1/2 flex items-center justify-center m-0 p-0">
-          <div
-            className={`${
-              darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-            } rounded-md shadow-2xl p-6 md:p-8 w-full md:max-w-[85%] mx-4 min-h-[45rem] flex flex-col justify-between transition-all duration-300`}
-          >
+          <div className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} rounded-md shadow-2xl p-6 md:p-8 w-full md:max-w-[85%] mx-4 min-h-[45rem] flex flex-col justify-between transition-all duration-300`}>
             <div className="text-center mb-4">
               <h1 className="text-3xl md:text-5xl font-bold">Register</h1>
             </div>
@@ -108,11 +99,7 @@ const RegisterLayout: React.FC = () => {
               </button>
 
               <button
-                className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-600 text-yellow-300"
-                    : "bg-gray-300 text-black"
-                } hover:bg-gray-400`}
+                className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg ${darkMode ? "bg-gray-600 text-yellow-300" : "bg-gray-300 text-black"} hover:bg-gray-400`}
                 style={{ position: "relative", zIndex: 10 }}
               >
                 Sign up
@@ -126,24 +113,18 @@ const RegisterLayout: React.FC = () => {
                 placeholder="Your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${
-                  darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
-                }`}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
               />
             </div>
 
             <div className="w-full mb-2">
-              <label className="block text-sm font-medium mb-1">
-                Email address
-              </label>
+              <label className="block text-sm font-medium mb-1">Email address</label>
               <input
                 type="email"
                 placeholder="Your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${
-                  darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
-                }`}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
               />
             </div>
 
@@ -155,9 +136,7 @@ const RegisterLayout: React.FC = () => {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${
-                    darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500 ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
                 />
                 <button
                   type="button"
@@ -201,20 +180,8 @@ const RegisterLayout: React.FC = () => {
 
         <div className="flex-none w-full md:w-1/2 flex items-center justify-center">
           <div className="text-center">
-            <p
-              className={`text-3xl md:text-4xl ${
-                darkMode ? "text-white" : "text-black"
-              }`}
-            >
-              Hello!
-            </p>
-            <p
-              className={`text-3xl md:text-4xl ${
-                darkMode ? "text-white" : "text-black"
-              } mt-2`}
-            >
-              Thank you for visiting ArchiLog.
-            </p>
+            <p className={`text-3xl md:text-4xl ${darkMode ? "text-white" : "text-black"}`}>Hello!</p>
+            <p className={`text-3xl md:text-4xl ${darkMode ? "text-white" : "text-black"} mt-2`}>Thank you for visiting ArchiLog.</p>
           </div>
         </div>
       </main>
