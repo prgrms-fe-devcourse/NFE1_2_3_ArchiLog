@@ -154,6 +154,13 @@ const Blog: React.FC = () => {
                 <div
                   key={post.id}
                   className="hidden md:flex w-full items-center px-4 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 rounded-lg">
+                  <Image
+                    className="w-[230px] h-[150px] sm:w-[230px] sm:h-[150px] lg:w-[230px] lg:h-[150px]"
+                    src="/images/Example.png"
+                    alt="Example"
+                    width={500}
+                    height={300}
+                  />
                   <div className="ml-5">
                     <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                       {post.title}
