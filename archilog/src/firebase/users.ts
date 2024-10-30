@@ -2,17 +2,19 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, get, update, child } from "firebase/database";
 import { database } from "./firebase";
 import { getCurrentUserId } from "./auth";
+import User from "@/types/User";
 
 
 // 현재 사용자 정보
-export const getCurrentUserInfo = () => {
+export const getCurrentUserInfo = (): Promise<User> => {
   return new Promise(async (resolve, reject) => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       unsubscribe();
       if (user) {
+        console.log(user);
         try {
-          const userRef = ref(database, `users/${user.uid}`);
+          const userRef = ref(database, `users/${user.displayName}`);
           const snapshot = await get(userRef);
 
           if (snapshot.exists()) {
@@ -36,9 +38,26 @@ export const getCurrentUserInfo = () => {
   });
 };
 
+// 사용자 정보
+export const getUserInfo = async (key: string): Promise<User> => {
+  try{
+      const userRef = ref(database, `users/${key}`);
+    const snapshot = await get(userRef);
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      throw new Error("No user data found");
+    }
+  } catch {
+    throw new Error("No user found");
+  }
+  
+};
+
+
 // 마이페이지 불러오기 함수
-export const getAbout = async (userId: string) => {
-  const userRef = ref(database, `users/${userId}`);
+export const getAbout = async (username: string) => {
+  const userRef = ref(database, `users/${username}`);
 
   try {
     const snapshot = await get(userRef);
@@ -74,7 +93,7 @@ export const editAbout = async (resume: string) => {
     throw new Error("Unauthorized access");
   }
 
-  const userRef = ref(database, `users/${user.uid}`);
+  const userRef = ref(database, `users/${user.displayName}`);
 
   try {
     await update(userRef, { resume });

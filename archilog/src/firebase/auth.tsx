@@ -5,7 +5,8 @@ import {
   signOut, 
   GithubAuthProvider, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup, 
+  updateProfile
 } from 'firebase/auth';
 import { ref, set, get, child } from 'firebase/database';
 import { auth, database } from './firebase';
@@ -34,7 +35,7 @@ export const signUp = async (email: string, password: string, username: string, 
 
     if (user) {
       const timestamp = Date.now();
-      await set(ref(database, `users/${user.uid}`), {
+      await set(ref(database, `users/${username}`), {
         username,
         email,
         createdAt: timestamp,
@@ -44,9 +45,11 @@ export const signUp = async (email: string, password: string, username: string, 
         posts: []
       });
     }
+    
+    await updateProfile (user, { displayName: username });
 
     alert("회원가입이 완료되었습니다. 메인 페이지로 이동합니다.");
-    router.push("/"); 
+    router.push(`/${user.displayName}`); 
     return user;
   } catch (error: any) {
     console.error('회원가입 오류:', error);
