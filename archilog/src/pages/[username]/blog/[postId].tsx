@@ -29,8 +29,7 @@ const PostDetail = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
 
-  const currentUrl = router.asPath;
-  const blogLink = `${currentUrl}/blog`;
+  const basePath = router.asPath.split("/").slice(1, 3).join("/");
 
   useEffect(() => {
     if (postId) {
@@ -85,7 +84,7 @@ const PostDetail = () => {
     if (confirmDelete) {
       try {
         await deletePost(postId as string);
-        router.push(blogLink); // 게시글 목록 페이지로 이동
+        router.push(`/${basePath}`); // 게시글 목록 페이지로 이동
       } catch (error) {
         console.error("Failed to delete post:", error);
       }
@@ -93,7 +92,7 @@ const PostDetail = () => {
   };
 
   const handleUpdatePost = () => {
-    router.push(`/post/edit/${postId}`); // 수정 페이지로 이동
+    router.push(`/${basePath}/edit/${postId}`); // 수정 페이지로 이동
   };
 
   const handleDeleteComment = async (commentId: string) => {
