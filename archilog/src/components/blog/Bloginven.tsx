@@ -4,9 +4,14 @@ import Edit_B from "../../../public/images/edit_B.svg";
 import Search from "../../../public/images/search.svg";
 import Image from "next/image";
 import { useDarkMode } from "@/contexts/DarkModeContext";
+import { useRouter } from "next/router";
 
 const Blog: React.FC = () => {
   const { darkMode } = useDarkMode();
+  const router = useRouter();
+  const currentUrl = router.asPath;
+  const postLink = `${currentUrl}/post`;
+
 
   return (
     <div className="dark:text-white pt-16 dark:bg-black">
@@ -15,6 +20,7 @@ const Blog: React.FC = () => {
       <div className="flex items-center mx-auto mt-7 w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
         <Image
+          onClick={() => router.push(postLink)}
           src={darkMode ? Edit_W : Edit_B}
           alt="edit"
           className="ml-5 cursor-pointer w-[25px] h-[25px] transition-transform duration-300 hover:scale-110"
