@@ -205,7 +205,7 @@ const Blog: React.FC = () => {
                 <div
                   key={post.id}
                   onClick={() => handlePostDetail(post.id)}
-                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#b3c1ea] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-black dark:border-white rounded-xl">
+                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-black dark:border-white rounded-xl">
                   <Image
                     className="w-[230px] h-[160px]"
                     src="/images/Example.png"
@@ -252,7 +252,7 @@ const Blog: React.FC = () => {
                   <div
                     key={post.id}
                     onClick={() => handlePostDetail(post.id)}
-                    className="items-center px-4 w-[450px] hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 my-2 rounded-lg">
+                    className="items-center px-4 w-[450px] hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 border-[#b3c1ea] my-2 rounded-lg">
                     <div className="ml-5">
                       <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
                         {post.title}
@@ -262,7 +262,7 @@ const Blog: React.FC = () => {
                         {post.tags.map((tag: string, index: number) => (
                           <span
                             key={index}
-                            className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                            className="text-[12px] text-white dark:text-black bg-[#b3c1ea] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
                             #{tag}
                           </span>
                         ))}
