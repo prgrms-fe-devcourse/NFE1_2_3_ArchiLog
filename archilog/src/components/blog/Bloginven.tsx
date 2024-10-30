@@ -30,6 +30,26 @@ const Blog: React.FC = () => {
   const { username } = router.query;
   const [isOwner, setIsOwner] = useState(false);
 
+  //(임시)유저네임 체크
+  useEffect(() => {
+    const getCurrentUsername = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        try {
+          const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
+          const userData = userSnapshot.val();
+          console.log("Current user's username:", userData?.username);
+        } catch (error) {
+          console.error("Error fetching current user's username:", error);
+        }
+      } else {
+        console.log("No user is currently logged in");
+      }
+    };
+
+    getCurrentUsername();
+  }, []);
+
   const currentUrl = router.asPath;
   const postLink = `${currentUrl}/post`;
 
@@ -76,10 +96,7 @@ const Blog: React.FC = () => {
             const userSnapshot = await get(ref(database, `users/${post.authorId}`));
             const userData = userSnapshot.val();
 
-            if (userData && userData.username === username) {
-              return post;
-            }
-            return null;
+            return userData?.username === username ? post : null;
           } catch (error) {
             console.error("Error fetching user data for post:", post.id, error);
             return null;
@@ -120,7 +137,7 @@ const Blog: React.FC = () => {
   const isCurrentUserProfile = async () => {
     const currentUser = auth.currentUser;
     if (!currentUser) return false;
-  
+
     try {
       const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
       const userData = userSnapshot.val();
@@ -140,14 +157,14 @@ const Blog: React.FC = () => {
       {/* 검색창 */}
       <div className="flex items-center mx-auto w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
-        {isOwner && ( 
-        <Image
-          src={darkMode ? Edit_W : Edit_B}
-          alt="edit"
-          className="ml-5 cursor-pointer w-[20px] h-[20px] transition-transform duration-300 hover:scale-110"
-          onClick={handleAddPost}
-        />
-      )}
+        {isOwner && (
+          <Image
+            src={darkMode ? Edit_W : Edit_B}
+            alt="edit"
+            className="ml-5 cursor-pointer w-[20px] h-[20px] transition-transform duration-300 hover:scale-110"
+            onClick={handleAddPost}
+          />
+        )}
         <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-blue-500 border-2">
           <input
             type="text"
