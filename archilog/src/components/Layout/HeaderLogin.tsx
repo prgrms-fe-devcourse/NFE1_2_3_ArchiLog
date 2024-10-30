@@ -23,14 +23,14 @@ const HeaderLogin: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
         </div>
 
         <nav className="hidden md:flex space-x-3 md:space-x-5 lg:space-x-8 ml-auto">
-          <a
-            href="#"
+          <Link
+            href="/AboutUs"
             className={`text-sm md:text-base lg:text-lg ${
               darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
             }`}
           >
             AboutUs
-          </a>
+          </Link>
         </nav>
 
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>

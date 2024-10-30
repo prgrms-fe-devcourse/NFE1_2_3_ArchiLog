@@ -110,7 +110,7 @@ function AddProjectModal({
                 : 'bg-black text-white hover:bg-gray-800'
             } rounded-lg disabled:opacity-50 transition-colors`}
           >
-            {loading ? "프로젝트 추가 중..." : "프로젝트 추가"}
+            {loading ? "프로젝트 추가 중" : "프로젝트 추가"}
           </button>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}

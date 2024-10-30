@@ -169,7 +169,7 @@ export const addComment = async (content: string, postId: string) => {
 export const addPost = async (title: string, content: string, tags: string[]) => {
   const db = getDatabase();
   const user = checkAuthenticated();
-  const postsRef = ref(db, "posts/create");
+  const postsRef = ref(db, "posts/");
 
   try {
     const newPostRef = await push(postsRef, {
