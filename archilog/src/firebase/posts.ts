@@ -1,5 +1,7 @@
 import { getDatabase, ref, get, update, remove, push, serverTimestamp, DataSnapshot, DatabaseReference } from 'firebase/database';
 import { getAuth } from "firebase/auth"; 
+import { getCurrentUserId } from './auth';
+import Post from '@/types/Post';
 
 // 사용자 인증
 export const checkAuthenticated = () => {
@@ -33,11 +35,11 @@ export const checkAuthorized = async (postRef: DatabaseReference, userId: string
 // 게시글 목록 불러오기
 export const getPost = async (authorId: string) => {
     const db = getDatabase();
-    const postsRef = ref(db, `posts/author/${authorId}`);
+    const postsRef = ref(db, `${authorId}/posts`);
 
     try {
         const snapshot = await get(postsRef);
-        const posts: string[] = [];
+        const posts: any[] = [];
 
         if (snapshot.exists()) {
             snapshot.forEach((childSnapshot: DataSnapshot) => {
@@ -48,7 +50,7 @@ export const getPost = async (authorId: string) => {
                 });
             });
         }
-
+        console.log(posts)
         return posts;
     } catch (error) {
         console.error("Error fetching posts: ", error);
@@ -82,7 +84,8 @@ export const addComment = async (
 ) => {
     const db = getDatabase();
     const user = checkAuthenticated();
-    const commentsRef = ref(db, `posts/${postId}/comments`);
+    const userId = await getCurrentUserId();
+    const commentsRef = ref(db, `${userId}/posts/${postId}/comments`);
 
     try {
         await push(commentsRef, {
@@ -105,8 +108,9 @@ export const addPost = async (
     tags: string[]
 ) => {
     const db = getDatabase();
-    const user = checkAuthenticated();
-    const postsRef = ref(db, 'posts/create');
+    const user = await checkAuthenticated();
+    const userId = await getCurrentUserId();
+    const postsRef = ref(db, `users/${userId}/posts`);
 
     try {
         const newPostRef = await push(postsRef, {
@@ -114,6 +118,7 @@ export const addPost = async (
             content: content,
             tags: tags,
             authorId: user.uid,
+            comments: [],
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
         });

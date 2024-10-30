@@ -16,6 +16,6 @@ const CreatePostPage: React.FC = () => {
       </main>
     </div>
   );
-};
+}; 
 
 export default CreatePostPage;
