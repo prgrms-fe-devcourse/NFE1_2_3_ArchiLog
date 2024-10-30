@@ -69,7 +69,7 @@ const PostEdit: React.FC = () => {
       );
       setLoading(false);
       alert("게시글이 성공적으로 수정되었습니다!");
-      router.push(`/post/${postId}`);
+      router.push(`/blog/${postId}`);
     } catch (error) {
       console.error("게시글 수정 오류:", error);
       setLoading(false);
