@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Github, Star, GitFork, Clock, Trash2, Plus } from "lucide-react";
 import { addProject, deleteProject, getProjects } from "@/firebase/projects";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import { useAuth } from "@/components/hooks/useAuth";
+import { useAuth } from "@/components/hook/useAuth";
 
 interface Project {
   id: string;
-  userId: string;
+  username: string;
   repoUrl: string;
   customDescription: string;
   createdAt: number;
@@ -110,7 +110,7 @@ function AddProjectModal({
                 : 'bg-black text-white hover:bg-gray-800'
             } rounded-lg disabled:opacity-50 transition-colors`}
           >
-            {loading ? "프로젝트 추가 중..." : "프로젝트 추가"}
+            {loading ? "프로젝트 추가 중" : "프로젝트 추가"}
           </button>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -131,7 +131,15 @@ export default function ProjectPage() {
   const fetchProjects = async () => {
     try {
       const data = await getProjects();
-      setProjects(data);
+      const mappedProjects = data.map(project => ({
+        id: project.id,
+        username: project.username,
+        repoUrl: project.repoUrl,
+        customDescription: project.customDescription,
+        createdAt: project.createdAt,
+        repoInfo: project.repoInfo
+      })) as Project[];
+      setProjects(mappedProjects);
     } catch (err) {
       setError("프로젝트를 불러오는데 실패했습니다");
     } finally {
@@ -233,7 +241,7 @@ export default function ProjectPage() {
                     : 'bg-white border-gray-300 hover:border-gray-400'
                 } border transition-all duration-300 shadow-sm`}
               >
-                {user && project.userId === user.uid && (
+                {user && project.username === user.displayName && (
                   <button
                     onClick={(e) => handleDeleteProject(project.id, e)}
                     className={`absolute top-3 right-3 p-2 rounded-full ${

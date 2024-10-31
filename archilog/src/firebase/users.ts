@@ -5,9 +5,8 @@ import { getCurrentUserId } from "./auth";
 import User from "@/types/User";
 
 // 현재 사용자 정보
-export const getCurrentUserInfo = (): Promise<User> => {
+export const getCurrentUserInfo = (): Promise<User | null> => { 
   return new Promise(async (resolve, reject) => {
-
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       unsubscribe();
@@ -36,19 +35,26 @@ export const getCurrentUserInfo = (): Promise<User> => {
 };
 
 // 사용자 정보
-export const getUserInfo = async (key: string): Promise<User> => {
-  try{
-      const userRef = ref(database, `users/${key}`);
+export const getUserInfo = async (key: string): Promise<User | null> => {
+  try {
+    if (!key) {
+      console.log("No key provided");
+      return null;
+    }
+
+    const userRef = ref(database, `users/${key}`);
     const snapshot = await get(userRef);
+    
     if (snapshot.exists()) {
       return snapshot.val();
     } else {
-      throw new Error("No user data found");
+      console.log(`No user data found for key: ${key}`);
+      return null;
     }
-  } catch {
-    throw new Error("No user found");
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
   }
-  
 };
 
 
@@ -84,12 +90,8 @@ export const editAbout = async (resume: string) => {
     throw new Error("User is not authenticated");
   }
 
-  if (user.uid !== userId) {
-    throw new Error("Unauthorized access");
-  }
-
+  // userId 체크 부분 제거함 (현재 로그인한 사용자의 정보만 수정 가능)
   const userRef = ref(database, `users/${user.displayName}`);
-
 
   try {
     await update(userRef, { resume });
