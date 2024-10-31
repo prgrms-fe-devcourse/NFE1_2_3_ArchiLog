@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
 import { Github, Star, GitFork, Clock, Trash2, Plus } from "lucide-react";
-import { addProject, deleteProject, getProjects } from "@/firebase/projects";
+import { ref, get, query, orderByChild } from 'firebase/database';
+import { database } from '@/firebase/firebase';
+import { addProject, deleteProject } from "@/firebase/projects";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useAuth } from "@/components/hook/useAuth";
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 
 interface Project {
   id: string;
@@ -121,26 +124,44 @@ function AddProjectModal({
 }
 
 export default function ProjectPage() {
+  const router = useRouter();
+  const { username } = router.query;
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { darkMode } = useDarkMode();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+
+  // URL의 username과 로그인한 유저의 displayName이 일치하는지 확인
+  const hasPermission = Boolean(user?.displayName === username);
 
   const fetchProjects = async () => {
     try {
-      const data = await getProjects();
-      const mappedProjects = data.map(project => ({
-        id: project.id,
-        username: project.username,
-        repoUrl: project.repoUrl,
-        customDescription: project.customDescription,
-        createdAt: project.createdAt,
-        repoInfo: project.repoInfo
-      })) as Project[];
-      setProjects(mappedProjects);
+      if (!username || typeof username !== 'string') {
+        setError("Username is required");
+        setLoading(false);
+        return;
+      }
+
+      const projectsRef = ref(database, `/users/${username}/projects`);
+      const projectsQuery = query(projectsRef, orderByChild('createdAt'));
+      
+      const snapshot = await get(projectsQuery);
+      const projectsList: Project[] = [];
+
+      snapshot.forEach((child) => {
+        if (child.key && child.val()) {
+          projectsList.push({
+            id: child.key,
+            ...child.val()
+          });
+        }
+      });
+
+      setProjects(projectsList.reverse());
     } catch (err) {
+      console.error('Error fetching projects:', err);
       setError("프로젝트를 불러오는데 실패했습니다");
     } finally {
       setLoading(false);
@@ -148,20 +169,22 @@ export default function ProjectPage() {
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (username) {
+      fetchProjects();
+    }
+  }, [username]);
 
   const handleAddProject = async (data: {
     repoUrl: string;
     description: string;
   }) => {
-    if (!user) return;
-    
+    if (!user || !hasPermission || !username || typeof username !== 'string') return;
+
     try {
-      const username = user.displayName || '';
       await addProject(data.repoUrl, data.description, username);
-      fetchProjects();
+      await fetchProjects();
     } catch (error) {
+      console.error('Error adding project:', error);
       throw error;
     }
   };
@@ -171,7 +194,7 @@ export default function ProjectPage() {
     e: React.MouseEvent
   ) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !hasPermission) return;
 
     if (!window.confirm("이 프로젝트를 삭제하시겠습니까?")) {
       return;
@@ -179,10 +202,7 @@ export default function ProjectPage() {
 
     try {
       await deleteProject(projectId, user.uid);
-      const updatedProjects = projects.filter(
-        (project) => project.id !== projectId
-      );
-      setProjects(updatedProjects);
+      await fetchProjects();
     } catch (error) {
       console.error("프로젝트 삭제 실패:", error);
       alert("프로젝트 삭제에 실패했습니다");
@@ -210,7 +230,7 @@ export default function ProjectPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-black'}`}>Project</h1>
-          {isAuthenticated && (
+          {hasPermission && (
             <button
               onClick={() => setIsModalOpen(true)}
               className={`flex items-center space-x-2 px-4 py-2 ${
@@ -241,7 +261,7 @@ export default function ProjectPage() {
                     : 'bg-white border-gray-300 hover:border-gray-400'
                 } border transition-all duration-300 shadow-sm`}
               >
-                {user && project.username === user.displayName && (
+                {hasPermission && (
                   <button
                     onClick={(e) => handleDeleteProject(project.id, e)}
                     className={`absolute top-3 right-3 p-2 rounded-full ${

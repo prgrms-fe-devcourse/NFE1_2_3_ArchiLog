@@ -1,4 +1,3 @@
-// src/firebase/projects.ts
 import { ref, push, get, query, orderByChild, remove } from 'firebase/database';
 import { database } from './firebase';
 import { checkAuthenticated } from './posts';
@@ -62,11 +61,13 @@ async function fetchRepoInfo(url: string): Promise<GitHubRepo> {
 // 새 프로젝트 추가
 export async function addProject(repoUrl: string, description: string, username: string) {
   try {
-    // GitHub API를 통해 저장소 정보 가져오기
-    const repoInfo = await fetchRepoInfo(repoUrl);
     const user = checkAuthenticated();
+    if (user.displayName !== username) {
+      throw new Error('Unauthorized to add project');
+    }
+
+    const repoInfo = await fetchRepoInfo(repoUrl);
     
-    // 프로젝트 데이터 구성
     const projectData: ProjectData = {
       username,
       repoUrl,
@@ -75,8 +76,7 @@ export async function addProject(repoUrl: string, description: string, username:
       createdAt: Date.now()
     };
 
-    // Firebase에 데이터 저장
-    const projectsRef = ref(database,`/users/${user.displayName}/projects`);
+    const projectsRef = ref(database, `/users/${username}/projects`);
     const newProjectRef = await push(projectsRef, projectData);
     
     return {
@@ -89,11 +89,14 @@ export async function addProject(repoUrl: string, description: string, username:
   }
 }
 
-// 모든 프로젝트 가져오기
-export async function getProjects() {
+// 프로젝트 가져오기
+export async function getProjects(username: string) {
   try {
-    const user = checkAuthenticated();
-    const projectsRef = ref(database, `/users/${user.displayName}/projects`);
+    if (!username) {
+      throw new Error('Username is required');
+    }
+
+    const projectsRef = ref(database, `/users/${username}/projects`);
     const projectsQuery = query(projectsRef, orderByChild('createdAt'));
     
     const snapshot = await get(projectsQuery);
@@ -108,7 +111,6 @@ export async function getProjects() {
       }
     });
 
-    // 최신순으로 정렬
     return projects.reverse();
   } catch (error) {
     console.error('Error fetching projects:', error);
@@ -116,39 +118,19 @@ export async function getProjects() {
   }
 }
 
-// 단일 프로젝트 가져오기
-export async function getProject(projectId: string) {
-  try {
-    const projectRef = ref(database, `projects/${projectId}`);
-    const snapshot = await get(projectRef);
-    
-    if (!snapshot.exists()) {
-      throw new Error('Project not found');
-    }
-
-    return {
-      id: snapshot.key,
-      ...snapshot.val()
-    };
-  } catch (error) {
-    console.error('Error fetching project:', error);
-    throw error instanceof Error ? error : new Error('Failed to fetch project');
-  }
-}
-
 // 프로젝트 삭제
-export async function deleteProject(projectId: string, userId: string) {
+export async function deleteProject(projectId: string, username: string) {
   try {
-    const projectRef = ref(database, `projects/${projectId}`);
+    const user = checkAuthenticated();
+    if (user.displayName !== username) {
+      throw new Error('Unauthorized to delete project');
+    }
+
+    const projectRef = ref(database, `/users/${username}/projects/${projectId}`);
     const snapshot = await get(projectRef);
     
     if (!snapshot.exists()) {
-      throw new Error('Project not found');
-    }
-
-    const projectData = snapshot.val();
-    if (projectData.userId !== userId) {
-      throw new Error('Unauthorized to delete this project');
+      return true;
     }
 
     await remove(projectRef);
@@ -156,76 +138,5 @@ export async function deleteProject(projectId: string, userId: string) {
   } catch (error) {
     console.error('Error deleting project:', error);
     throw error instanceof Error ? error : new Error('Failed to delete project');
-  }
-}
-
-// 프로젝트 업데이트
-export async function updateProject(
-  projectId: string, 
-  userId: string, 
-  updates: { customDescription?: string }
-) {
-  try {
-    const projectRef = ref(database, `projects/${projectId}`);
-    const snapshot = await get(projectRef);
-    
-    if (!snapshot.exists()) {
-      throw new Error('Project not found');
-    }
-
-    const projectData = snapshot.val();
-    if (projectData.userId !== userId) {
-      throw new Error('Unauthorized to update this project');
-    }
-
-    const updatedData = {
-      ...projectData,
-      ...updates,
-      updatedAt: Date.now()
-    };
-
-    await push(projectRef, updatedData);
-    return {
-      id: projectId,
-      ...updatedData
-    };
-  } catch (error) {
-    console.error('Error updating project:', error);
-    throw error instanceof Error ? error : new Error('Failed to update project');
-  }
-}
-
-// GitHub 저장소 정보 새로고침
-export async function refreshProjectInfo(projectId: string, userId: string) {
-  try {
-    const projectRef = ref(database, `projects/${projectId}`);
-    const snapshot = await get(projectRef);
-    
-    if (!snapshot.exists()) {
-      throw new Error('Project not found');
-    }
-
-    const projectData = snapshot.val();
-    if (projectData.userId !== userId) {
-      throw new Error('Unauthorized to refresh this project');
-    }
-
-    // GitHub API에서 최신 정보 가져오기
-    const repoInfo = await fetchRepoInfo(projectData.repoUrl);
-    
-    const updatedData = {
-      ...projectData,
-      repoInfo,
-      updatedAt: Date.now()
-    };
-
-    await push(projectRef, updatedData);
-    return {
-      id: projectId,
-      ...updatedData
-    };
-  } catch (error) {
-    console.error('Error refreshing project info:', error);
-    throw error instanceof Error ? error : new Error('Failed to refresh project info');
   }
 }
