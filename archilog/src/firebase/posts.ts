@@ -1,5 +1,16 @@
-import { getDatabase, ref, get, update, remove, push, serverTimestamp, DataSnapshot, DatabaseReference } from 'firebase/database';
-import { getAuth } from "firebase/auth"; 
+import {
+  getDatabase,
+  ref,
+  get,
+  update,
+  remove,
+  push,
+  serverTimestamp,
+  DataSnapshot,
+  DatabaseReference,
+} from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { getCurrentUserId } from "./auth";
 import Post from '@/types/Post';
 
 // 사용자 인증
@@ -15,8 +26,12 @@ export const checkAuthenticated = () => {
 };
 
 // 권한 확인하기
-export const checkAuthorized = async (postRef: DatabaseReference, userId: string) => {
-    const snapshot: DataSnapshot = await get(postRef);
+export const checkAuthorized = async (
+  postRef: DatabaseReference,
+  userId: string
+) => {
+  const snapshot: DataSnapshot = await get(postRef);
+
 
     if (!snapshot.exists()) {
         throw new Error("Post not found");
@@ -120,7 +135,7 @@ export const deleteComment = async (
   }
 };
 
-// 게시글 추가하기
+
 export const addPost = async (
     title: string, 
     content: string, 

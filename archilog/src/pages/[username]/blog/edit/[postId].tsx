@@ -22,7 +22,6 @@ const PostEdit: React.FC = () => {
   const [user] = useAuthState(auth);
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
-
   const {
     register,
     handleSubmit,
