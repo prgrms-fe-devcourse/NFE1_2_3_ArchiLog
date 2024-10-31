@@ -7,16 +7,7 @@ import { useDarkMode } from "@/contexts/DarkModeContext";
 import { getPost } from "@/firebase/posts";
 import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/router";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  authorId: string;
-  createdAt: number;
-  updatedAt: number;
-}
+import Post from "@/types/Post";
 
 const Blog: React.FC = () => {
   const { darkMode } = useDarkMode();
@@ -67,11 +58,9 @@ const Blog: React.FC = () => {
         return;
       }
 
-      const fetchedPosts = await getPost();
-      const userPosts = fetchedPosts.filter((post) => post.authorId === currentUser.uid);
-      console.log("Fetched posts:", userPosts);
-      setPosts(userPosts || []);
-      extractUniqueTags(userPosts || []);
+      const fetchedPosts = await getPost(currentUser.displayName || '');
+      setPosts(fetchedPosts || []);
+      extractUniqueTags(fetchedPosts || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -103,6 +92,11 @@ const Blog: React.FC = () => {
   const removeHtmlTags = (html: string) => {
     return html.replace(/<[^>]*>/g, "");
   };
+
+  const handlePostClick = (id: string) => {
+    router.push(`${currentUrl}/${id}`);
+
+  }
 
   return (
     <div className="dark:text-white dark:bg-black">
@@ -155,6 +149,7 @@ const Blog: React.FC = () => {
             {displayedPosts.length > 0 ? (
               displayedPosts.map((post) => (
                 <div
+                  onClick={() => handlePostClick(post.id)}
                   key={post.id}
                   className="hidden md:flex w-full items-center px-4 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 rounded-lg">
                   <Image

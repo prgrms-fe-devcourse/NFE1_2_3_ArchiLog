@@ -5,15 +5,17 @@ import  { pasteImage } from '../utils/uploadImage';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import React from 'react';
-import { editAbout, getCurrentUserInfo } from "../firebase/users";
+import { editAbout, getCurrentUserInfo, getUserInfo } from "../firebase/users";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import { useRouter } from 'next/router';
+import { auth } from "@/firebase/firebase";
 
 const MDEditor = dynamic<MDEditorProps>(() => import("@uiw/react-md-editor"), {
     ssr: false,
 });
 
 const Editor = () => {
+    const currentUser = auth.currentUser;
     const [value, setValue] = useState<string>("");
     const router = useRouter();
 
@@ -22,7 +24,7 @@ const Editor = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const user = await getCurrentUserInfo();
+                const user = await getUserInfo(currentUser?.displayName || '');
                 if (user) {
                     const resume = user.resume || "";
                     setValue(resume);
@@ -59,7 +61,7 @@ const Editor = () => {
 
     const handleContent = async () => {
         await editAbout(value);
-        router.push('/mypage');
+        router.push(`/${currentUser?.displayName}`);
     };
 
     useEffect(() => {

@@ -1,6 +1,7 @@
 // src/firebase/projects.ts
 import { ref, push, get, query, orderByChild, remove } from 'firebase/database';
 import { database } from './firebase';
+import { checkAuthenticated } from './posts';
 
 // GitHub 저장소 정보 인터페이스
 interface GitHubRepo {
@@ -17,7 +18,7 @@ interface GitHubRepo {
 
 // 프로젝트 데이터 인터페이스
 interface ProjectData {
-  userId: string;
+  username: string;
   repoUrl: string;
   customDescription: string;
   repoInfo: GitHubRepo;
@@ -59,14 +60,15 @@ async function fetchRepoInfo(url: string): Promise<GitHubRepo> {
 }
 
 // 새 프로젝트 추가
-export async function addProject(repoUrl: string, description: string, userId: string) {
+export async function addProject(repoUrl: string, description: string, username: string) {
   try {
     // GitHub API를 통해 저장소 정보 가져오기
     const repoInfo = await fetchRepoInfo(repoUrl);
+    const user = checkAuthenticated();
     
     // 프로젝트 데이터 구성
     const projectData: ProjectData = {
-      userId,
+      username,
       repoUrl,
       customDescription: description,
       repoInfo,
@@ -74,7 +76,7 @@ export async function addProject(repoUrl: string, description: string, userId: s
     };
 
     // Firebase에 데이터 저장
-    const projectsRef = ref(database, 'projects');
+    const projectsRef = ref(database,`/users/${user.displayName}/projects`);
     const newProjectRef = await push(projectsRef, projectData);
     
     return {
@@ -90,7 +92,8 @@ export async function addProject(repoUrl: string, description: string, userId: s
 // 모든 프로젝트 가져오기
 export async function getProjects() {
   try {
-    const projectsRef = ref(database, 'projects');
+    const user = checkAuthenticated();
+    const projectsRef = ref(database, `/users/${user.displayName}/projects`);
     const projectsQuery = query(projectsRef, orderByChild('createdAt'));
     
     const snapshot = await get(projectsQuery);

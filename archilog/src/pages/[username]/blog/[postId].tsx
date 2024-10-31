@@ -10,6 +10,7 @@ import {
   deletePost,
 } from "@/firebase/posts";
 
+
 interface Comment {
   id: string;
   content: string;
@@ -39,17 +40,15 @@ const PostDetail = () => {
 
   const fetchPostDetails = async (postId: string) => {
     try {
-      const postData = await getPostDetails(postId);
-
-      // 댓글 데이터를 객체에서 배열로 변환
-      const commentsArray = postData.comments
-        ? Object.keys(postData.comments).map((key) => ({
-            id: key,
-            ...postData.comments[key],
-          }))
-        : [];
-
+      const user = auth.currentUser;
+      const username = user?.displayName || '';
+      const postData = await getPostDetails(username, postId);
       setPost(postData);
+      console.log(postData);
+      const commentsArray = Object.entries(postData.comments || {}).map(([id, comment]) => ({
+        id,
+        ...comment,
+      }));
       setComments(commentsArray);
     } catch (error) {
       console.error("Failed to fetch post details:", error);
@@ -84,7 +83,7 @@ const PostDetail = () => {
     if (confirmDelete) {
       try {
         await deletePost(postId as string);
-        router.push(`/${basePath}`); // 게시글 목록 페이지로 이동
+        router.push(`/${user?.displayName}/blog`); // 게시글 목록 페이지로 이동
       } catch (error) {
         console.error("Failed to delete post:", error);
       }
@@ -92,7 +91,7 @@ const PostDetail = () => {
   };
 
   const handleUpdatePost = () => {
-    router.push(`/${basePath}/edit/${postId}`); // 수정 페이지로 이동
+    router.push(`/${user?.displayName}/blog/edit/${postId}`); // 수정 페이지로 이동
   };
 
   const handleDeleteComment = async (commentId: string) => {
