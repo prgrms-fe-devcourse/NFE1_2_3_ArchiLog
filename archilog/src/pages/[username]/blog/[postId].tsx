@@ -3,6 +3,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { auth } from "@/firebase/firebase";
 import { useDarkMode } from "@/contexts/DarkModeContext";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import {
   getPostDetails,
   addComment,
@@ -135,9 +137,13 @@ const PostDetail = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-8 p-6 rounded-lg shadow-md">
+    <div
+      className={`max-w-4xl mx-auto mt-8 p-6 rounded-lg shadow-md ${
+        darkMode ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
+      }`}
+    >
       {post && (
-        <div className="flex flex-col lg:flex-row-reverse">
+        <div className="flex flex-col lg:flex-row">
           {/* 목차 for Mobile */}
           <aside
             className={`lg:hidden rounded-lg border ${
@@ -226,13 +232,17 @@ const PostDetail = () => {
               ))}
             </div>
 
+            {/* 게시글 내용 */}
             <div
               className={`prose ${
                 darkMode ? "prose-invert" : ""
               } max-w-none mb-10`}
               ref={postContentRef}
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            >
+              <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                {post.content}
+              </ReactMarkdown>
+            </div>
           </div>
 
           {/* 목차 for Desktop */}
