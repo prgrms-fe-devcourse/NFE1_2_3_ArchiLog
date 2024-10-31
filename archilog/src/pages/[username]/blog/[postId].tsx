@@ -2,7 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { auth } from "@/firebase/firebase";
-import { getPostDetails, addComment, deletePost } from "@/firebase/posts";
+import { useDarkMode } from "@/contexts/DarkModeContext";
+import {
+  getPostDetails,
+  addComment,
+  deleteComment,
+  deletePost,
+} from "@/firebase/posts";
+
 
 interface Comment {
   id: string;
@@ -20,6 +27,10 @@ const PostDetail = () => {
   const router = useRouter();
   const { postId } = router.query;
   const postContentRef = useRef<HTMLDivElement>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { darkMode } = useDarkMode();
+
+  const basePath = router.asPath.split("/").slice(1, 3).join("/");
 
   useEffect(() => {
     if (postId) {
@@ -29,9 +40,16 @@ const PostDetail = () => {
 
   const fetchPostDetails = async (postId: string) => {
     try {
-      const postData = await getPostDetails(postId);
+      const user = auth.currentUser;
+      const username = user?.displayName || '';
+      const postData = await getPostDetails(username, postId);
       setPost(postData);
-      setComments(postData.comments || []);
+      console.log(postData);
+      const commentsArray = Object.entries(postData.comments || {}).map(([id, comment]) => ({
+        id,
+        ...comment,
+      }));
+      setComments(commentsArray);
     } catch (error) {
       console.error("Failed to fetch post details:", error);
     }
@@ -65,7 +83,7 @@ const PostDetail = () => {
     if (confirmDelete) {
       try {
         await deletePost(postId as string);
-        router.push("/blog"); // 게시글 목록 페이지로 이동
+        router.push(`/${user?.displayName}/blog`); // 게시글 목록 페이지로 이동
       } catch (error) {
         console.error("Failed to delete post:", error);
       }
@@ -73,16 +91,14 @@ const PostDetail = () => {
   };
 
   const handleUpdatePost = () => {
-    router.push(`/post/edit/${postId}`); // 수정 페이지로 이동
+    router.push(`/${user?.displayName}/blog/edit/${postId}`); // 수정 페이지로 이동
   };
 
   const handleDeleteComment = async (commentId: string) => {
     const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
     if (confirmDelete) {
       try {
-        // 댓글 삭제 로직 필요 (Firebase 백엔드에서 구현된 경우)
-        // await deleteComment(postId, commentId);
-
+        await deleteComment(postId as string, commentId);
         fetchPostDetails(postId as string);
       } catch (error) {
         console.error("Failed to delete comment:", error);
@@ -109,39 +125,161 @@ const PostDetail = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-8 p-4 bg-white shadow-lg rounded-md">
+    <div
+      className={`max-w-4xl mx-auto mt-8 p-6 rounded-lg shadow-md ${
+        darkMode ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
+      }`}
+    >
       {/* 게시글 제목 */}
       {post && (
-        <div>
-          <h1 className="text-3xl font-bold">{post.title}</h1>
-          <div className="flex items-center mt-2">
-            {post.tags.map((tag: string, index: number) => (
-              <span
-                key={index}
-                className="text-sm bg-gray-200 rounded-full px-2 py-1 mr-2"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-          <div className="mt-4 mb-8">
+        <div className="flex flex-col lg:flex-row">
+          {/* Left Content */}
+          <div className="flex-grow">
+            <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+
+            <div className="flex items-center gap-2 mb-6">
+              {post.tags.map((tag: string, index: number) => (
+                <span
+                  key={index}
+                  className={`text-sm px-2 py-1 rounded-full ${
+                    darkMode
+                      ? "bg-gray-800 text-gray-400"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+
             {/* 게시글 내용 */}
             <div
+              className={`prose ${
+                darkMode ? "prose-invert" : ""
+              } max-w-none mb-10`}
               ref={postContentRef}
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
+
+            {/* 댓글 */}
+            <div className="mt-8 space-y-4">
+              {user ? (
+                <div
+                  className={`flex items-center rounded-full px-4 py-3 mt-4 ${
+                    darkMode
+                      ? "bg-gray-800 border-gray-700"
+                      : "bg-gray-100 border-gray-300"
+                  }`}
+                >
+                  <input
+                    type="text"
+                    placeholder="Add a comment"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="bg-transparent flex-grow outline-none"
+                  />
+                  <button
+                    onClick={handleAddComment}
+                    className="focus:outline-none"
+                    aria-label="Submit comment"
+                  >
+                    {/* SVG for Paper Airplane Icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5 transform rotate-45"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 10l9-9m0 0l9 9m-9-9v18"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-500">
+                  로그인 후 댓글 작성이 가능합니다.
+                </p>
+              )}
+              <ul className="space-y-4">
+                {comments.map((comment) => (
+                  <li
+                    key={comment.id}
+                    className={`p-4 rounded-lg shadow-md border ${
+                      darkMode
+                        ? "bg-gray-800 border-gray-700 text-gray-300"
+                        : "bg-gray-100 border-gray-300 text-gray-800"
+                    }`}
+                  >
+                    <div>
+                      <span className="font-semibold">작성자 이름</span>{" "}
+                      <span className="text-sm">{comment.createdAt}</span>
+                    </div>
+                    <p>{comment.content}</p>
+                    {user?.uid === comment.authorId && (
+                      <div className="flex justify-end mt-2">
+                        <button
+                          onClick={() => handleDeleteComment(comment.id)}
+                          className="text-red-500 hover:underline"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* 목차 */}
-          <aside className="mb-8">
-            <h2 className="text-xl font-semibold">목차</h2>
-            <ul>
+          <aside
+            className={`ml-0 lg:ml-8 mt-6 lg:mt-0 lg:w-1/4 rounded-lg border ${
+              darkMode
+                ? "bg-gray-800 border-gray-600"
+                : "bg-gray-100 border-gray-300"
+            } p-4`}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">목차</h2>
+              {user?.uid === post.authorId && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="focus:outline-none"
+                  >
+                    •••
+                  </button>
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-32 bg-black rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                      <button
+                        onClick={handleUpdatePost}
+                        className="w-full px-4 py-2 text-left text-sm text-white-700 hover:bg-gray-100"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={handleDeletePost}
+                        className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <ul className="space-y-1 mt-4">
               {generateTableOfContents().map((item) => (
                 <li
                   key={item.id}
-                  className={`pl-${
-                    item.level === "H2" ? "4" : "8"
-                  } cursor-pointer text-blue-500`}
+                  className={`cursor-pointer text-sm ${
+                    darkMode ? "text-blue-400" : "text-blue-600"
+                  } hover:underline pl-${item.level === "H2" ? "4" : "8"}`}
                   onClick={() => handleScrollToSection(item.id)}
                 >
                   {item.text}
@@ -149,68 +287,6 @@ const PostDetail = () => {
               ))}
             </ul>
           </aside>
-
-          {/* 댓글 */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">댓글</h2>
-            {user ? (
-              <div className="mb-4">
-                <textarea
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  className="w-full p-2 border rounded-md"
-                  rows={3}
-                  placeholder="댓글을 입력하세요."
-                />
-                <div className="flex justify-end mt-2">
-                  <button
-                    onClick={handleAddComment}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    댓글 작성
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500">로그인 후 댓글 작성이 가능합니다.</p>
-            )}
-            <ul>
-              {comments.map((comment) => (
-                <li key={comment.id} className="border-t pt-4 mt-4">
-                  <p className="text-gray-800">{comment.content}</p>
-                  <div className="flex justify-between text-sm text-gray-500 mt-2">
-                    <span>{comment.createdAt}</span>
-                    {user?.uid === comment.authorId && (
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="text-red-500"
-                      >
-                        삭제
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* 수정 및 삭제 버튼 */}
-          {user?.uid === post.authorId && (
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={handleUpdatePost}
-                className="px-4 py-2 mr-2 bg-yellow-500 text-white rounded-md"
-              >
-                수정
-              </button>
-              <button
-                onClick={handleDeletePost}
-                className="px-4 py-2 bg-red-500 text-white rounded-md"
-              >
-                삭제
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>

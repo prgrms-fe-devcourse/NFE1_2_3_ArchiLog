@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
 import dynamic from "next/dynamic";
-import { auth } from "../../../firebase/firebase";
-import { getPostDetails, updatePost } from "../../../firebase/posts";
+import { auth } from "../../../../firebase/firebase";
+import { getPostDetails, updatePost } from "../../../../firebase/posts";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
@@ -22,7 +22,6 @@ const PostEdit: React.FC = () => {
   const [user] = useAuthState(auth);
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -35,7 +34,8 @@ const PostEdit: React.FC = () => {
     const fetchPostData = async () => {
       if (postId && typeof postId === "string") {
         try {
-          const post = await getPostDetails(postId);
+          const username = user?.displayName || '';
+          const post = await getPostDetails(username, postId);
           setValue("title", post.title);
           setValue("tags", post.tags.join(", "));
           setContent(post.content);
@@ -69,7 +69,7 @@ const PostEdit: React.FC = () => {
       );
       setLoading(false);
       alert("게시글이 성공적으로 수정되었습니다!");
-      router.push(`/post/${postId}`);
+      window.history.go(-1);
     } catch (error) {
       console.error("게시글 수정 오류:", error);
       setLoading(false);

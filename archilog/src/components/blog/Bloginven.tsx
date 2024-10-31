@@ -7,17 +7,8 @@ import { useDarkMode } from "@/contexts/DarkModeContext";
 import { getPost } from "@/firebase/posts";
 import { auth, database } from "@/firebase/firebase";
 import { useRouter } from "next/router";
+import Post from "@/types/Post";
 import { ref, get } from "firebase/database";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  authorId: string;
-  createdAt: number;
-  updatedAt: number;
-}
 
 const Blog: React.FC = () => {
   const { darkMode } = useDarkMode();
@@ -94,29 +85,15 @@ const Blog: React.FC = () => {
   //게시물 목록 데이터
   const fetchPosts = async () => {
     try {
-      const fetchedPosts = await getPost();
-      //URL과 username일치하는 게시물 필터링
-      const filteredPosts = await Promise.all(
-        fetchedPosts.map(async (post) => {
-          try {
-            const userSnapshot = await get(ref(database, `users/${post.authorId}`));
-            const userData = userSnapshot.val();
-
-            return userData?.username === username ? post : null;
-          } catch (error) {
-            console.error("Error fetching user data for post:", post.id, error);
-            return null;
-          }
-        })
-      );
-      const userPosts = filteredPosts.filter((post): post is Post => post !== null);
-      setPosts(userPosts);
-
-      if (userPosts.length > 0) {
-        extractUniqueTags(userPosts);
-      } else {
-        setUniqueTags([]);
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        setLoading(false);
+        return;
       }
+
+      const fetchedPosts = await getPost(currentUser.displayName || '');
+      setPosts(fetchedPosts || []);
+      extractUniqueTags(fetchedPosts || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
       setPosts([]);
@@ -160,6 +137,11 @@ const Blog: React.FC = () => {
   const removeHtmlTags = (html: string) => {
     return html.replace(/<[^>]*>/g, "");
   };
+
+  const handlePostClick = (id: string) => {
+    router.push(`${currentUrl}/${id}`);
+
+  }
 
   return (
     <div className="dark:text-white dark:bg-black">
