@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import HeaderLogin from "../components/Layout/HeaderLogin";
 import { signUp, checkUsernameExists } from "@/firebase/auth";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 const RegisterLayout: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,18 +11,12 @@ const RegisterLayout: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { darkMode } = useDarkMode();
 
-  useEffect(() => {
-    if (router.query.darkMode === "true") {
-      setDarkMode(true);
-    }
-  }, [router.query.darkMode]);
-
-  const toggleDarkMode = () => setDarkMode((prevMode) => !prevMode);
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const handleSignInClick = () => {
-    router.push(`/login?darkMode=${darkMode}`);
+    router.push(`/login`);
   };
 
   const handleRegister = async () => {
@@ -72,12 +65,12 @@ const RegisterLayout: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
+}, [darkMode]);
+
   return (
     <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen flex flex-col`}>
-      <header>
-        <HeaderLogin darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      </header>
-
       <main className="flex-grow flex m-0 p-5 md:p-0">
         <div className="flex-none w-full md:w-1/2 flex items-center justify-center m-0 p-0">
           <div className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} rounded-md shadow-2xl p-6 md:p-8 w-full md:max-w-[85%] mx-4 min-h-[45rem] flex flex-col justify-between transition-all duration-300`}>
