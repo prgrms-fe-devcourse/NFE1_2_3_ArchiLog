@@ -1,24 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { MdOutlineAccountCircle } from "react-icons/md";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import { getCurrentUserInfo } from "@/firebase/users";
 import Link from "next/link";
-import { logOutAndRedirect } from "../../firebase/auth"; 
+import { auth, checkUsernameExists, logOutAndRedirect } from "../../firebase/auth"; 
 
 interface HeaderProps {
   isLoggedIn: boolean; // 로그인 여부를 나타냄
 }
 
-const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
+const Header: React.FC<HeaderProps> = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { darkMode, toggleDarkMode } = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [logo, setLogo] = useState('ArchiLog');
+  const [path, setPath] = useState('');
   const router = useRouter();
   const currentUrl = router.asPath;
   const splitUrl = currentUrl.split('/');
-  const basePath = router.asPath.split('/').slice(1, 2)[0];
+  const basePath = router.asPath.split(/[/?]/).slice(1, 2)[0];
 
-  const logo = splitUrl[1] ? splitUrl[1] : 'ArchiLog';
+  useEffect(() => {
+    const verifyUsername = async () => {
+      if (await checkUsernameExists(splitUrl[1])) {
+        setLogo(splitUrl[1]);
+        setPath(basePath);
+      } else {
+        setLogo('ArchiLog');
+        setPath('login');
+      }
+    };
+  
+    verifyUsername();
+  }, [splitUrl]);
+  
+  useEffect(() => {
+    setIsLoggedIn(!!auth.currentUser);
+  }, [auth.currentUser]);
+
 
   // 사이드바 토글 함수
   const toggleSidebar = () => {
@@ -27,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
 
   // 로그인 버튼 클릭 시 로그인 페이지로 이동
   const handleLogin = () => {
-    router.push("/login");
+    router.push("/register");
   };
 
   const handleLogout = async () => {
@@ -51,13 +69,34 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
       >
         {/* 왼쪽 로고 */}
         <div className="flex items-center">
-          <Link href={`/${basePath}`} className="text-2xl md:text-xl lg:text-3xl font-bold">
+          <Link href={`/${path}`} className="text-2xl md:text-xl lg:text-3xl font-bold">
             {logo}
           </Link>
         </div>
+        
+        { !isLoggedIn && splitUrl[1] !== 'AboutUs' &&
+          <header
+          className={`w-screen border-gray-700 ${
+            darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
+          }`}
+        >
+          <div className="flex justify-between items-center mx-auto" style={{ height: "80px" }}>
+            <nav className="hidden md:flex space-x-3 md:space-x-5 lg:space-x-8 ml-auto">
+              <Link
+                href="/AboutUs"
+                className={`text-sm md:text-base lg:text-lg${
+                  darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                AboutUs
+              </Link>
+            </nav>
+          </div>
+        </header>
+        }
 
         {/* 로그인 여부에 따른 네비게이션 메뉴 */}
-        {isLoggedIn ? (
+        {isLoggedIn && (
           <nav className="hidden md:flex space-x-5 ml-auto">
             <Link
               href={`/${basePath}`}
@@ -100,16 +139,17 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
                 Logout
               </button>
           </nav>
-        ) : (
+        )}
+        {!isLoggedIn && splitUrl[1] !== 'login' && splitUrl[1] !== 'register' && (
           <button
             onClick={handleLogin}
-            className={`text-sm md:text-base lg:text-lg ${
+            className={`text-sm md:text-base lg:text-lg ml-auto pl-5 ${
               darkMode
                 ? "text-white hover:text-[#FDAD00]"
                 : "text-black hover:text-[#4CAF50]"
             }`}
           >
-            Login
+            Join
           </button>
         )}
 

@@ -13,12 +13,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         darkMode ? "dark bg-black text-white" : "bg-white text-black"
       } min-h-screen`}
     >
-      {router.pathname !== "/login" && router.pathname !== "/register" && (
-        <header>
-          <Header isLoggedIn={true} />
-        </header>
-      )}
-      <main className={router.pathname === "/login" || router.pathname === "/register" ? "" : "pt-10"}>
+      <header>
+        <Header isLoggedIn={true} />
+      </header>
+      
+      <main>
         {children}
       </main>
     </div>
