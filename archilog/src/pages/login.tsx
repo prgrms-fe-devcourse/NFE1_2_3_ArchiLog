@@ -9,6 +9,7 @@ import {
   sendResetPasswordEmail,
   checkEmailExists,
   checkUsernameExists,
+  auth,
 } from "@/firebase/auth";
 import { getCurrentUserInfo } from "@/firebase/users";
 
@@ -38,9 +39,9 @@ const LoginLayout: React.FC = () => {
 
     const checkAuthStatus = async () => {
       try {
-        const user = await getCurrentUserInfo();
-        if (user && user.username) {
-          router.push(`/${user.username}`);
+        const user = auth.currentUser;
+        if (user) {
+          router.push(`/${user.displayName}`);
         } else {
           setIsLoading(false);
         }

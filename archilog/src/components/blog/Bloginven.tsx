@@ -95,7 +95,6 @@ const Blog: React.FC = () => {
 
   const handlePostClick = (id: string) => {
     router.push(`${currentUrl}/${id}`);
-
   }
 
   return (
@@ -196,6 +195,7 @@ const Blog: React.FC = () => {
               {displayedPosts.length > 0 ? (
                 displayedPosts.map((post) => (
                   <div
+                    onClick={() => handlePostClick(post.id)}
                     key={post.id}
                     className="items-center px-4 w-[450px] hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 my-2 rounded-lg">
                     <div className="ml-5">
@@ -204,7 +204,7 @@ const Blog: React.FC = () => {
                       </div>
                       <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
                       <div className="flex flex-wrap gap-2">
-                        {post.tags.map((tag: string, index: number) => (
+                        {post.tags?.map((tag: string, index: number) => (
                           <span
                             key={index}
                             className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
@@ -213,7 +213,7 @@ const Blog: React.FC = () => {
                         ))}
                       </div>
                       <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                        {new Date(post.createdAt).toLocaleDateString()}
+                        {new Date(post?.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
