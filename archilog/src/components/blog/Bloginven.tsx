@@ -161,6 +161,10 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
     return html.replace(/<[^>]*>/g, "");
   };
 
+  const handlePostClick = (id: string) => {
+    router.push(`${currentUrl}/${id}`);
+  };
+
   return (
     <div className="dark:text-white dark:bg-black">
       {/* 검색창 */}
@@ -276,8 +280,8 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                           </span>
                         ))}
                       </div>
-                      <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
+                      <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
+                        {new Date(post?.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
