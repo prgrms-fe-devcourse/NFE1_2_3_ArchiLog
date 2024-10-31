@@ -226,11 +226,11 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                     width={500}
                     height={300}
                   /> */}
-                  <div className="ml-5">
+                  <div className="ml-5 w-full max-w-[700px]">
                     <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                       {post.title}
                     </div>
-                    <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
+                    <div className="font-light mt-2 overflow-hidden line-clamp-2 max-w-[700px]">{removeHtmlTags(post.content)}</div>
                     <div className="flex flex-wrap gap-2">
                       {post.tags?.map((tag: string, index: number) => (
                         <span
@@ -265,7 +265,6 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                   <div
                     onClick={() => handlePostClick(post.id)}
                     key={post.id}
-                    onClick={() => handlePostDetail(post.id)}
                     className="items-center px-4 w-[450px] hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 border-[#6A8CC8] my-2 rounded-lg">
                     <div className="ml-5">
                       <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
