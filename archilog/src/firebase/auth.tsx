@@ -5,7 +5,7 @@ import {
   signOut, 
   GithubAuthProvider, 
   GoogleAuthProvider, 
-  updateProfile
+  updateProfile,
   signInWithPopup,
   sendPasswordResetEmail,
 } from 'firebase/auth';
