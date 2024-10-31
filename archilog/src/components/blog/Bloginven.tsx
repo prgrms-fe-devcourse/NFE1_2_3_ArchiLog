@@ -10,15 +10,19 @@ import { useRouter } from "next/router";
 import Post from "@/types/Post";
 import { ref, get } from "firebase/database";
 
-const Blog: React.FC = () => {
+interface BloginvenProps {
+  initialPosts: Post[];
+  username: string;
+}
+
+const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUsername }) => {
   const { darkMode } = useDarkMode();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>(initialPosts || []);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [uniqueTags, setUniqueTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const router = useRouter();
-  const { username } = router.query;
   const [isOwner, setIsOwner] = useState(false);
 
   //(임시)유저네임 체크
@@ -29,17 +33,18 @@ const Blog: React.FC = () => {
         try {
           const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
           const userData = userSnapshot.val();
-          console.log("현재 유저:", userData?.username);
+          console.log("현재 로그인된 유저:", userData?.username);
+          console.log("페이지 username:", initialUsername);
         } catch (error) {
           console.error("오류:", error);
         }
       } else {
-        console.log("없어요");
+        console.log("로그인된 사용자 없음");
       }
     };
 
     getCurrentUsername();
-  }, []);
+  }, [initialUsername]);
 
   const currentUrl = router.asPath;
   const postLink = `${currentUrl}/post`;
@@ -81,17 +86,13 @@ const Blog: React.FC = () => {
     router.push(`${currentUrl}/${postId}`);
   };
 
-
   //게시물 목록 데이터
   const fetchPosts = async () => {
-    try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
+    if (!initialUsername) return;
 
-      const fetchedPosts = await getPost(currentUser.displayName || '');
+    try {
+      setLoading(true);
+      const fetchedPosts = await getPost(initialUsername);
       setPosts(fetchedPosts || []);
       extractUniqueTags(fetchedPosts || []);
     } catch (error) {
@@ -103,45 +104,61 @@ const Blog: React.FC = () => {
     }
   };
 
-  //사용자에 따라 게시물 렌더링
   useEffect(() => {
-    if (username && typeof username === "string") {
+    if (initialPosts?.length > 0) {
+      extractUniqueTags(initialPosts);
+    }
+  }, [initialPosts]);
+
+  useEffect(() => {
+    if (initialUsername) {
       fetchPosts();
-      isCurrentUserProfile().then(setIsOwner);
     }
-  }, [username]);
+  }, [initialUsername]);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user && initialUsername) {
+        try {
+          const userSnapshot = await get(ref(database, `users/${user.uid}`));
+          const userData = userSnapshot.val();
+          const currentUsername = user.displayName || userData?.username;
+
+          console.log("User data:", userData);
+          console.log("Current user:", user);
+
+          const isOwner = currentUsername === initialUsername;
+          console.log("Auth state changed - Ownership check:", {
+            currentUsername,
+            pageUsername: initialUsername,
+            isOwner,
+            userData
+          });
+
+          setIsOwner(isOwner);
+        } catch (error) {
+          console.error("Error checking ownership:", error);
+          setIsOwner(false);
+        }
+      } else {
+        setIsOwner(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [initialUsername]);
   //검색
-  const displayedPosts = posts.filter((post) => {
-    const matchesSearch = searchTerm ? post.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
-    const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
-    return matchesSearch && matchesTag;
-  });
-
-  //현재 사용자 확인용
-  const isCurrentUserProfile = async () => {
-    const currentUser = auth.currentUser;
-    if (!currentUser) return false;
-
-    try {
-      const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
-      const userData = userSnapshot.val();
-      return userData && userData.username === username;
-    } catch (error) {
-      console.error("Error checking current user:", error);
-      return false;
-    }
-  };
+  const displayedPosts =
+    posts?.filter((post) => {
+      const matchesSearch = searchTerm ? post.title?.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+      const matchesTag = selectedTag ? post.tags?.includes(selectedTag) : true;
+      return matchesSearch && matchesTag;
+    }) || [];
 
   //content데이터값 태그 제거
   const removeHtmlTags = (html: string) => {
     return html.replace(/<[^>]*>/g, "");
   };
-
-  const handlePostClick = (id: string) => {
-    router.push(`${currentUrl}/${id}`);
-
-  }
 
   return (
     <div className="dark:text-white dark:bg-black">
@@ -210,7 +227,7 @@ const Blog: React.FC = () => {
                     </div>
                     <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
                     <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag: string, index: number) => (
+                      {post.tags?.map((tag: string, index: number) => (
                         <span
                           key={index}
                           className="text-[12px] text-white dark:text-black bg-[#6A8CC8] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
@@ -219,7 +236,7 @@ const Blog: React.FC = () => {
                       ))}
                     </div>
                     <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                      {new Date(post.createdAt).toLocaleDateString()}
+                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
                     </div>
                   </div>
                 </div>
@@ -250,7 +267,7 @@ const Blog: React.FC = () => {
                       </div>
                       <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
                       <div className="flex flex-wrap gap-2">
-                        {post.tags.map((tag: string, index: number) => (
+                        {post.tags?.map((tag: string, index: number) => (
                           <span
                             key={index}
                             className="text-[12px] text-white dark:text-black bg-[#6A8CC8] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
@@ -258,8 +275,8 @@ const Blog: React.FC = () => {
                           </span>
                         ))}
                       </div>
-                      <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                        {new Date(post.createdAt).toLocaleDateString()}
+                      <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
+                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
                       </div>
                     </div>
                   </div>
@@ -277,4 +294,4 @@ const Blog: React.FC = () => {
   );
 };
 
-export default Blog;
+export default Bloginven;
