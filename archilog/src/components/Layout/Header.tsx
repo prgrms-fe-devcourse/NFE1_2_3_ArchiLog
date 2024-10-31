@@ -7,7 +7,7 @@ import Link from "next/link";
 import { logOutAndRedirect } from "../../firebase/auth"; 
 
 interface HeaderProps {
-  isLoggedIn: boolean;
+  isLoggedIn: boolean; // 로그인 여부를 나타냄
 }
 
 const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
@@ -20,10 +20,12 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
 
   const logo = splitUrl[1] ? splitUrl[1] : 'ArchiLog';
 
+  // 사이드바 토글 함수
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // 로그인 버튼 클릭 시 로그인 페이지로 이동
   const handleLogin = () => {
     router.push("/login");
   };
@@ -47,12 +49,14 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
         className="flex justify-between items-center mx-auto"
         style={{ height: "80px" }}
       >
+        {/* 왼쪽 로고 */}
         <div className="flex items-center">
           <Link href={`/${basePath}`} className="text-2xl md:text-xl lg:text-3xl font-bold">
             {logo}
           </Link>
         </div>
 
+        {/* 로그인 여부에 따른 네비게이션 메뉴 */}
         {isLoggedIn ? (
           <nav className="hidden md:flex space-x-5 ml-auto">
             <Link
@@ -109,12 +113,21 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
           </button>
         )}
 
+        {/* 계정 아이콘 */}
+        {/* <div className="hidden md:flex items-center ml-5">
+          <MdOutlineAccountCircle
+            className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
+          />
+        </div> */}
+
+        {/* 다크모드 전환 버튼 */}
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>
           <span className="text-2xl md:text-xl lg:text-3xl">
             {darkMode ? "🌙" : "🌞"}
           </span>
         </div>
 
+        {/* 모바일 햄버거 메뉴 (로그인 후에만 표시) */}
         {isLoggedIn && (
           <div className="md:hidden flex items-center ml-auto">
             <button onClick={toggleSidebar}>
@@ -141,6 +154,15 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn }) => {
           >
             ✕
           </button>
+
+          {/* 계정 아이콘 */}
+          {/* <div className="flex flex-col items-center mt-8">
+            <MdOutlineAccountCircle className="text-5xl" />
+            <span className="mt-2 text-lg">My Account</span>
+          </div> */}
+
+          {/* 구분선 */}
+          {/* <div className="border-b my-4"></div> */}
 
           <nav className="flex flex-col p-5 space-y-4">
             <Link
