@@ -2,6 +2,7 @@ import {
   getDatabase,
   ref,
   get,
+  set,
   update,
   remove,
   push,
@@ -154,7 +155,11 @@ export const addPost = async (
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
             comments: [],
+
         });
+
+        const postKey = newPostRef.key || ''
+        await checkImage(postKey, content);
 
         console.log(`Post added successfully with ID: ${newPostRef.key}`);
         return newPostRef.key;
@@ -163,6 +168,23 @@ export const addPost = async (
         throw error;
     }
 };
+
+const checkImage = async (postId: string, content: string) => {
+    const imageUrlRegex = /!\[\]\((https?:\/\/[^\s)]+)\)/;
+    const img = content.match(imageUrlRegex);
+    const db = getDatabase();
+    const user = checkAuthenticated();
+    const imgref = ref(db, `/users/${user.displayName}/posts/${postId}/thumbnail`);
+    if(img && img[1]){
+        try {
+            await set(imgref, img[1]);
+            console.log(`Thumbnail URL saved successfully `);
+        } catch (error) {
+            console.error("Error adding img: ", error);
+            throw error;
+        }
+    }
+}
 
 // 게시글 삭제하기
 export const deletePost = async (postId: string) => {

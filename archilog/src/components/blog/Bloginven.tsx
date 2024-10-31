@@ -219,13 +219,13 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                   key={post.id}
                   onClick={() => handlePostDetail(post.id)}
                   className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group  dark:border-[#FDAD00] rounded-xl border-2 border-[#6A8CC8]">
-                  {/* <Image
+                  <Image
                     className="w-[230px] h-[160px]"
-                    src="/images/Example.png"
+                    src={post?.thumbnail || '/images/Logo_B.svg'}
                     alt="Example"
                     width={500}
                     height={300}
-                  /> */}
+                  />
                   <div className="ml-5">
                     <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                       {post.title}
@@ -265,7 +265,6 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                   <div
                     onClick={() => handlePostClick(post.id)}
                     key={post.id}
-                    onClick={() => handlePostDetail(post.id)}
                     className="items-center px-4 w-[450px] hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 border-[#6A8CC8] my-2 rounded-lg">
                     <div className="ml-5">
                       <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
