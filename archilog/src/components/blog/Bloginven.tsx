@@ -191,19 +191,20 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
       </div>
 
       {/* 태그 */}
-      <div className="flex items-center justify-center text-[#9ca3af] dark:text-black font-bold text-[15px] mt-7 w-full max-w-3xl mx-auto flex-wrap pb-7">
+      <div className="flex items-center justify-center text-white dark:text-black font-bold text-[15px] mt-7 w-full max-w-3xl mx-auto flex-wrap pb-7">
         {uniqueTags.map((tag, index) => (
           <div
             key={index}
             className={`mx-1 my-1 px-3 py-1 rounded-full cursor-pointer transition-colors duration-300 ${
               selectedTag === tag
-                ? "bg-[#DDDDDD] dark:bg-[#ffc848]"
-                : "bg-[#E5E7EB] hover:bg-[#DDDDDD] dark:bg-[#FDAD00] dark:hover:bg-[#ffc848]"
+                ? "bg-[#6a8cc8] dark:bg-[#ffc848]"
+                : "bg-[#94B9F3] hover:bg-[#6a8cc8] dark:bg-[#FDAD00] dark:hover:bg-[#ffc848]"
             }`}
             onClick={() => handleTagClick(tag)}>
             #{tag}
           </div>
         ))}
+
         <div className="border-b-[#E0E0E0]  border-b-2 w-full max-w-[740px] pt-5 mx-5"></div>
       </div>
 
@@ -222,7 +223,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                   {/* 보더 바텀값 */}
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[700px] h-[2px] bg-[#E5E7EB] dark:bg-[#FDAD00]" />
                   {/* 포스트 전체값 */}
-                  <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#AAAAAA] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#E5E7EB] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                  <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#94B9F3] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
                     <div className="ml-5 w-full max-w-[700px] relative z-10">
                       <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                         {post.title}
@@ -234,7 +235,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                         {post.tags?.map((tag: string, index: number) => (
                           <span
                             key={index}
-                            className="text-[12px] text-[#9ca3af] dark:text-black bg-[#E5E7EB] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                            className="text-[12px] text-white dark:text-black bg-[#94B9F3] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
                             #{tag}
                           </span>
                         ))}
@@ -254,6 +255,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
           </>
         )}
 
+
         {/* 반응형 게시글 768px 이하 */}
         <div className="md:hidden flex flex-col items-center mx-auto w-full max-w-[450px]">
           {loading ? (
@@ -270,7 +272,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                     <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[390px] h-[2px] bg-[#E5E7EB] dark:bg-[#FDAD00]" />
 
                     {/* 포스트 전체값 */}
-                    <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#AAAAAA] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#AAAAAA] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                    <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#94B9F3] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
                       <div className="ml-5 w-full max-w-[400px] relative z-10">
                         <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[350px] line-clamp-1">
                           {post.title}
@@ -282,7 +284,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                           {post.tags?.map((tag: string, index: number) => (
                             <span
                               key={index}
-                              className="text-[12px] text-white dark:text-black bg-[#AAAAAA] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                              className="text-[12px] text-white dark:text-black bg-[#94B9F3] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
                               #{tag}
                             </span>
                           ))}
