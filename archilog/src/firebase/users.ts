@@ -5,7 +5,7 @@ import { getCurrentUserId } from "./auth";
 import User from "@/types/User";
 
 // 현재 사용자 정보
-export const getCurrentUserInfo = (): Promise<User> => {
+export const getCurrentUserInfo = (): Promise<User | null> => {
   return new Promise(async (resolve, reject) => {
 
     const auth = getAuth();
