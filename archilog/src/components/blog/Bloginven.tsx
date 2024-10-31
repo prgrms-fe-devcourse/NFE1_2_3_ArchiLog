@@ -163,7 +163,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
 
   const handlePostClick = (id: string) => {
     router.push(`${currentUrl}/${id}`);
-  };
+  }
 
   return (
     <div className="dark:text-white dark:bg-black">
