@@ -10,7 +10,6 @@ import {
   deletePost,
 } from "@/firebase/posts";
 
-
 interface Comment {
   id: string;
   content: string;
@@ -30,8 +29,6 @@ const PostDetail = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
 
-  const basePath = router.asPath.split("/").slice(1, 3).join("/");
-
   useEffect(() => {
     if (postId) {
       fetchPostDetails(postId as string);
@@ -41,14 +38,28 @@ const PostDetail = () => {
   const fetchPostDetails = async (postId: string) => {
     try {
       const user = auth.currentUser;
-      const username = user?.displayName || '';
+      const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
       setPost(postData);
-      console.log(postData);
-      const commentsArray = Object.entries(postData.comments || {}).map(([id, comment]) => ({
-        id,
-        ...comment,
-      }));
+
+      // 타임스탬프를 날짜로 변환
+      const commentsArray = Object.entries(postData.comments || {}).map(
+        ([id, comment]) => {
+          const createdAtDate = new Date(comment.createdAt); // 타임스탬프를 Date 객체로 변환
+          const formattedDate = new Intl.DateTimeFormat("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(createdAtDate);
+
+          return {
+            id,
+            ...comment,
+            createdAt: formattedDate, // 포맷팅된 날짜 사용
+          };
+        }
+      );
+
       setComments(commentsArray);
     } catch (error) {
       console.error("Failed to fetch post details:", error);
