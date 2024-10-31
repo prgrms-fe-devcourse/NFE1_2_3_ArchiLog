@@ -176,16 +176,30 @@ const PostDetail = () => {
                     •••
                   </button>
                   {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-32 bg-black rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div
+                      className={`absolute right-0 mt-2 w-32 rounded-md shadow-lg ring-1 ring-opacity-5 ${
+                        darkMode
+                          ? "bg-gray-800 ring-gray-600"
+                          : "bg-white ring-gray-300"
+                      }`}
+                    >
                       <button
                         onClick={handleUpdatePost}
-                        className="w-full px-4 py-2 text-left text-sm text-white-700 hover:bg-gray-100"
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${
+                          darkMode
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-700"
+                        }`}
                       >
                         수정
                       </button>
                       <button
                         onClick={handleDeletePost}
-                        className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100"
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${
+                          darkMode
+                            ? "text-red-400 hover:bg-gray-700"
+                            : "text-red-500"
+                        }`}
                       >
                         삭제
                       </button>

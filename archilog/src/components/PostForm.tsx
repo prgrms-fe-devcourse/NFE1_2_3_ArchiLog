@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
 import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
 import { addPost } from "../firebase/posts";
 import { auth } from "../firebase/firebase";
+
+import "react-markdown-editor-lite/lib/index.css"; // 마크다운 에디터 스타일
+import MdEditor from "react-markdown-editor-lite";
+import MarkdownIt from "markdown-it";
 import { useRouter } from "next/router";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 interface PostFormInputs {
   title: string;
   tags: string;
@@ -23,10 +25,11 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<PostFormInputs>();
-  const [content, setContent] = useState<string>("");
+  const [markdownContent, setMarkdownContent] = useState<string>("");
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const mdParser = new MarkdownIt();
 
   const onSubmit: SubmitHandler<PostFormInputs> = async (data) => {
     if (!user) {
@@ -43,7 +46,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
       setLoading(true);
       await addPost(
         data.title,
-        content,
+        markdownContent,
         data.tags.split(",").map((tag) => tag.trim())
       );
 
@@ -100,25 +103,13 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
           )}
         </div>
 
-        {/* 마크다운 에디터 (ReactQuill) */}
         <div className="mb-6">
-          <div
-            className={`rounded-md p-2 ${
-              darkMode ? "bg-[#222121]" : "bg-gray-100"
-            }`}
-          >
-            <ReactQuill
-              value={content}
-              onChange={setContent}
-              className={`custom-quill ${
-                darkMode
-                  ? "quill-dark bg-[#222121] text-[#ffffff]"
-                  : "bg-gray-100 text-gray-900"
-              }`}
-              placeholder="내용을 입력하세요"
-              theme="snow"
-            />
-          </div>
+          <MdEditor
+            value={markdownContent}
+            style={{ height: "400px" }}
+            renderHTML={(text) => mdParser.render(text)}
+            onChange={({ text }) => setMarkdownContent(text)}
+          />
         </div>
 
         {/* 제출 버튼 */}
