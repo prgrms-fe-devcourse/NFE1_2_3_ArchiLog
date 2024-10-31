@@ -170,16 +170,14 @@ export const addPost = async (
 };
 
 const checkImage = async (postId: string, content: string) => {
-    console.log('실행은댐');
     const imageUrlRegex = /!\[\]\((https?:\/\/[^\s)]+)\)/;
     const img = content.match(imageUrlRegex);
-    console.log(img);
     const db = getDatabase();
     const user = checkAuthenticated();
     const imgref = ref(db, `/users/${user.displayName}/posts/${postId}/thumbnail`);
     if(img && img[1]){
         try {
-            await set(imgref, img[0]);
+            await set(imgref, img[1]);
             console.log(`Thumbnail URL saved successfully `);
         } catch (error) {
             console.error("Error adding img: ", error);
