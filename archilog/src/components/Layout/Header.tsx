@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = () => {
 
   // 로그인 버튼 클릭 시 로그인 페이지로 이동
   const handleLogin = () => {
-    router.push("/register");
+    router.push("/login");
   };
 
   const handleLogout = async () => {
@@ -149,7 +149,7 @@ const Header: React.FC<HeaderProps> = () => {
                 : "text-black hover:text-[#4CAF50]"
             }`}
           >
-            Join
+            Login
           </button>
         )}
 
