@@ -22,8 +22,10 @@ const AboutUs = () => {
                         <div className="flex-1">
                             <h3 className="text-xl font-bold mb-3">About Me</h3>
                             <p className="text-lg leading-relaxed">
-                                사용자가 자신의 이력서를 마크다운 형식으로 직접 작성하여 메인 페이지에 표시하는 공간입니다. 
-                                표준화된 템플릿 대신 개성을 반영한 맞춤형 이력서를 손쉽게 작성할 수 있게 해줍니다.
+                                사용자가 자신의 이력서를  Markdown으로 직접 작성하여 메인 페이지에 표시하는 공간입니다.<br/>
+                                Markdown을 사용하여 이력서를 다양하게 작성할 수 있으며,
+                                이력서의 구조, 내용, 그리고 디자인을 유연하게 작성 할 수 있습니다.<br/>
+                                표준화된 템플릿 대신 개성을 반영한 맞춤형 이력서를 손쉽게 만들어 보세요.
                             </p>
                         </div>
                         <div className="relative w-full md:w-96 h-64 rounded-lg overflow-hidden">
@@ -41,8 +43,9 @@ const AboutUs = () => {
                         <div className="flex-1">
                             <h3 className="text-xl font-bold mb-3">Project</h3>
                             <p className="text-lg leading-relaxed">
-                                GitHub와 연동되어 깃허브에 올려둔 프로젝트를 웹사이트로 가져와 게시할 수 있습니다. 
-                                이 기능을 통해 자신의 기술력을 실시간으로 업데이트하고, 효율적으로 관리할 수 있습니다.
+                                실시간으로 GitHub와 연동되어 깃허브에 올려둔 자신의 프로젝트를 ArchiLog로 가져와 게시할 수 있습니다.<br/>
+                                이 기능을 통해 자신의 기술력을 실시간으로 업데이트하고, 공유할 수 있으며 발표자료 및 프로젝트를 쉽고, 효율적으로 관리할 수 있습니다.
+
                             </p>
                         </div>
                         <div className="relative w-full md:w-96 h-64 rounded-lg overflow-hidden">
@@ -61,7 +64,8 @@ const AboutUs = () => {
                             <h3 className="text-xl font-bold mb-3">Blog</h3>
                             <p className="text-lg leading-relaxed">
                                 개발 중 겪은 문제와 해결 과정을 마크다운 형식으로 기록할 수 있습니다. 
-                                이력서와 프로젝트 외에도 학습 기록을 남겨 자기 개발 과정을 꾸준히 보여줄 수 있습니다.
+                                이력서와 프로젝트 외에도 학습 기록을 남겨 자기 개발 과정을 꾸준히 보여줄 수 있습니다.<br/>
+                                자신만의 블로그를 만들어 보세요!!
                             </p>
                         </div>
                         <div className="relative w-full md:w-96 h-64 rounded-lg overflow-hidden">

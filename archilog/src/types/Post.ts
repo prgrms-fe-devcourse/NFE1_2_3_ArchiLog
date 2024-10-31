@@ -7,6 +7,7 @@ type Post = {
     updatedAt: string,
     comments?: string[];
     authorId: string;
+    thumbnail?: string;
 }
 
 export default Post;

@@ -31,6 +31,8 @@ const PostDetail = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
 
+  // const username = router.asPath.split("/")[1];
+
   useEffect(() => {
     if (postId) {
       fetchPostDetails(postId as string);

@@ -5,22 +5,51 @@ import Search from "../../../public/images/search.svg";
 import Image from "next/image";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { getPost } from "@/firebase/posts";
-import { auth } from "@/firebase/firebase";
+import { auth, database } from "@/firebase/firebase";
 import { useRouter } from "next/router";
 import Post from "@/types/Post";
+import { ref, get } from "firebase/database";
 
-const Blog: React.FC = () => {
+interface BloginvenProps {
+  initialPosts: Post[];
+  username: string;
+}
+
+const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUsername }) => {
   const { darkMode } = useDarkMode();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>(initialPosts || []);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [uniqueTags, setUniqueTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const router = useRouter();
+  const [isOwner, setIsOwner] = useState(false);
+
+  //(임시)유저네임 체크
+  useEffect(() => {
+    const getCurrentUsername = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        try {
+          const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
+          const userData = userSnapshot.val();
+          console.log("현재 로그인된 유저:", userData?.username);
+          console.log("페이지 username:", initialUsername);
+        } catch (error) {
+          console.error("오류:", error);
+        }
+      } else {
+        console.log("로그인된 사용자 없음");
+      }
+    };
+
+    getCurrentUsername();
+  }, [initialUsername]);
 
   const currentUrl = router.asPath;
   const postLink = `${currentUrl}/post`;
 
+  //게시물 태그 분류
   const extractUniqueTags = (posts: Post[]) => {
     const allTags = posts.reduce((tags: string[], post) => {
       return tags.concat(post.tags || []);
@@ -30,6 +59,7 @@ const Blog: React.FC = () => {
     setUniqueTags(uniqueTags);
   };
 
+  //태그 클릭 검색
   const handleTagClick = (tag: string) => {
     if (selectedTag === tag) {
       setSelectedTag(null);
@@ -38,6 +68,7 @@ const Blog: React.FC = () => {
     }
   };
 
+  //게시물 작성
   const handleAddPost = () => {
     const currentUser = auth.currentUser;
     if (!currentUser) {
@@ -50,45 +81,82 @@ const Blog: React.FC = () => {
     router.push(postLink);
   };
 
-  const fetchPosts = async () => {
-    try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
+  //게시물 상세 페이지
+  const handlePostDetail = (postId: string) => {
+    router.push(`${currentUrl}/${postId}`);
+  };
 
-      const fetchedPosts = await getPost(currentUser.displayName || '');
+  //게시물 목록 데이터
+  const fetchPosts = async () => {
+    if (!initialUsername) return;
+
+    try {
+      setLoading(true);
+      const fetchedPosts = await getPost(initialUsername);
       setPosts(fetchedPosts || []);
       extractUniqueTags(fetchedPosts || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setPosts([]);
+      setUniqueTags([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        fetchPosts();
+    if (initialPosts?.length > 0) {
+      extractUniqueTags(initialPosts);
+    }
+  }, [initialPosts]);
+
+  useEffect(() => {
+    if (initialUsername) {
+      fetchPosts();
+    }
+  }, [initialUsername]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user && initialUsername) {
+        try {
+          const userSnapshot = await get(ref(database, `users/${user.uid}`));
+          const userData = userSnapshot.val();
+          const currentUsername = user.displayName || userData?.username;
+
+          console.log("User data:", userData);
+          console.log("Current user:", user);
+
+          const isOwner = currentUsername === initialUsername;
+          console.log("Auth state changed - Ownership check:", {
+            currentUsername,
+            pageUsername: initialUsername,
+            isOwner,
+            userData
+          });
+
+          setIsOwner(isOwner);
+        } catch (error) {
+          console.error("Error checking ownership:", error);
+          setIsOwner(false);
+        }
       } else {
-        setPosts([]);
-        setLoading(false);
+        setIsOwner(false);
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [initialUsername]);
 
-  const displayedPosts = posts.filter((post) => {
-    const matchesSearch = searchTerm ? post.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+  //검색
+  const displayedPosts =
+    posts?.filter((post) => {
+      const matchesSearch = searchTerm ? post.title?.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+      const matchesTag = selectedTag ? post.tags?.includes(selectedTag) : true;
+      return matchesSearch && matchesTag;
+    }) || [];
 
-    const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
-
-    return matchesSearch && matchesTag;
-  });
-
+  //content데이터값 태그 제거
   const removeHtmlTags = (html: string) => {
     return html.replace(/<[^>]*>/g, "");
   };
@@ -102,7 +170,7 @@ const Blog: React.FC = () => {
       {/* 검색창 */}
       <div className="flex items-center mx-auto w-full max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
-        {auth.currentUser && (
+        {isOwner && (
           <Image
             src={darkMode ? Edit_W : Edit_B}
             alt="edit"
@@ -110,7 +178,7 @@ const Blog: React.FC = () => {
             onClick={handleAddPost}
           />
         )}
-        <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-blue-500 border-2">
+        <div className="ml-auto bg-gray-200 dark:bg-white rounded-full h-[40px] p-4 dark:text-black flex items-center justify-center focus-within:border-[#b3c1ea] border-2">
           <input
             type="text"
             className="bg-gray-200 dark:bg-white dark:text-black outline-none"
@@ -129,31 +197,31 @@ const Blog: React.FC = () => {
             key={index}
             className={`mx-1 my-1 px-3 py-1 rounded-full cursor-pointer transition-colors duration-300 ${
               selectedTag === tag
-                ? "bg-[#388E3C] dark:bg-[#FFA000]"
-                : "bg-[#4CAF50] hover:bg-[#43A047] dark:bg-[#FDAD00] dark:hover:bg-[#FFB300]"
+                ? "bg-[#b3c1ea] dark:bg-[#ffc848]"
+                : "bg-[#6A8CC8] hover:bg-[#b3c1ea] dark:bg-[#FDAD00] dark:hover:bg-[#ffc848]"
             }`}
             onClick={() => handleTagClick(tag)}>
             #{tag}
           </div>
         ))}
-        <div className="border-b-[#E5E7EB] dark:border-b-white border-b-2 w-full max-w-[740px] pt-5 mx-5"></div>
+        <div className="border-b-[#E0E0E0]  border-b-2 w-full max-w-[740px] pt-5 mx-5"></div>
       </div>
 
       {/* 게시글 768px 이상 */}
       <div className="flex flex-col items-center mx-auto my-8 max-w-3xl font-bold">
         {loading ? (
-          <div>Loading...</div>
+          <div className="hidden md:flex">Loading...</div>
         ) : (
           <>
             {displayedPosts.length > 0 ? (
               displayedPosts.map((post) => (
                 <div
-                  onClick={() => handlePostClick(post.id)}
                   key={post.id}
-                  className="hidden md:flex w-full items-center px-4 mb-7 hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 rounded-lg">
+                  onClick={() => handlePostDetail(post.id)}
+                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group  dark:border-[#FDAD00] rounded-xl border-2 border-[#6A8CC8]">
                   <Image
-                    className="w-[230px] h-[150px] sm:w-[230px] sm:h-[150px] lg:w-[230px] lg:h-[150px]"
-                    src="/images/Example.png"
+                    className="w-[230px] h-[160px]"
+                    src={post?.thumbnail || '/images/Logo_B.svg'}
                     alt="Example"
                     width={500}
                     height={300}
@@ -164,16 +232,16 @@ const Blog: React.FC = () => {
                     </div>
                     <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
                     <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag: string, index: number) => (
+                      {post.tags?.map((tag: string, index: number) => (
                         <span
                           key={index}
-                          className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                          className="text-[12px] text-white dark:text-black bg-[#6A8CC8] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
                           #{tag}
                         </span>
                       ))}
                     </div>
                     <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                      {new Date(post.createdAt).toLocaleDateString()}
+                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
                     </div>
                   </div>
                 </div>
@@ -197,7 +265,7 @@ const Blog: React.FC = () => {
                   <div
                     onClick={() => handlePostClick(post.id)}
                     key={post.id}
-                    className="items-center px-4 w-[450px] hover:text-[#4CAF50] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 my-2 rounded-lg">
+                    className="items-center px-4 w-[450px] hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 border-[#6A8CC8] my-2 rounded-lg">
                     <div className="ml-5">
                       <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
                         {post.title}
@@ -207,7 +275,7 @@ const Blog: React.FC = () => {
                         {post.tags?.map((tag: string, index: number) => (
                           <span
                             key={index}
-                            className="text-[12px] text-white dark:text-black bg-[#4CAF50] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                            className="text-[12px] text-white dark:text-black bg-[#6A8CC8] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
                             #{tag}
                           </span>
                         ))}
@@ -231,4 +299,4 @@ const Blog: React.FC = () => {
   );
 };
 
-export default Blog;
+export default Bloginven;

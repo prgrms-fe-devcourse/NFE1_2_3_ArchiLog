@@ -9,6 +9,7 @@ export default function Document() {
           href="https://unpkg.com/@uiw/react-md-editor/dist/mdeditor.css"
         />
       </Head>
+      <title>ArchiLog</title>
       <body>
         <Main />
         <NextScript />
