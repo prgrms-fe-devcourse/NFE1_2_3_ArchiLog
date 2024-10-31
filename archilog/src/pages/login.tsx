@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import HeaderLogin from "../components/Layout/HeaderLogin";
 import ForgotPasswordModal from "./password";
 import {
   signIn,
@@ -12,14 +11,9 @@ import {
   auth,
 } from "@/firebase/auth";
 import { getCurrentUserInfo } from "@/firebase/users";
-
-// UserInfo 인터페이스 정의
-interface UserInfo {
-  username: string;
-}
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 const LoginLayout: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,17 +25,18 @@ const LoginLayout: React.FC = () => {
   const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const router = useRouter();
+  const { darkMode } = useDarkMode();
+  
+  useEffect(() => {
+    document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
+}, [darkMode]);
 
   useEffect(() => {
-    if (router.query.darkMode === "true") {
-      setDarkMode(true);
-    }
-
     const checkAuthStatus = async () => {
       try {
-        const user = auth.currentUser;
-        if (user) {
-          router.push(`/${user.displayName}`);
+        const user = await getCurrentUserInfo();
+        if (user && user.username) {
+          router.push(`/${user.username}`);
         } else {
           setIsLoading(false);
         }
@@ -54,11 +49,10 @@ const LoginLayout: React.FC = () => {
     checkAuthStatus();
   }, [router]);
 
-  const toggleDarkMode = () => setDarkMode((prevMode) => !prevMode);
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const handleSignup = () => {
-    router.push(`/register?darkMode=${darkMode}`);
+    router.push(`/register`);
   };
 
   const validateEmail = (email: string) => {
@@ -90,8 +84,8 @@ const LoginLayout: React.FC = () => {
       setErrorMessage(loginResult);
     } else {
       alert("로그인 되었습니다.");
-      const user = (await getCurrentUserInfo()) as UserInfo;
-      router.push(`/${user.username}`);
+      const user = auth.currentUser;
+      router.push(`/${user?.displayName}`);
     }
   };  
 
@@ -157,9 +151,6 @@ const LoginLayout: React.FC = () => {
         darkMode ? "dark bg-black text-white" : "bg-white text-black"
       } min-h-screen flex flex-col`}
     >
-      <header>
-        <HeaderLogin darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      </header>
 
       <main className="flex-grow flex m-0 p-5 md:p-0">
         <div className="flex-none w-full md:w-1/2 flex items-center justify-center m-0 p-0">
