@@ -1,19 +1,16 @@
-import React, { useState } from "react";
-import Header_login from "./HeaderLogin"; 
+import { useDarkMode } from "@/contexts/DarkModeContext";
+import React, { useEffect, useState } from "react";
+
 
 const LoginLayout: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode } = useDarkMode();
 
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
-  };
+  useEffect(() => {
+    document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
+}, [darkMode]);
 
   return (
     <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen flex flex-col`}>
-      <header>
-        <Header_login darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      </header>
-
       {/* Main */}
       <main className="flex-grow flex m-0 p-5 md:p-0">
         {/* Left Side */}

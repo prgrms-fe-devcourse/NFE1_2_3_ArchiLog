@@ -30,7 +30,7 @@ const PostDetail = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
 
-  const basePath = router.asPath.split("/").slice(1, 3).join("/");
+  const username = router.asPath.split("/")[1];
 
   useEffect(() => {
     if (postId) {
@@ -40,8 +40,6 @@ const PostDetail = () => {
 
   const fetchPostDetails = async (postId: string) => {
     try {
-      const user = auth.currentUser;
-      const username = user?.displayName || '';
       const postData = await getPostDetails(username, postId);
       setPost(postData);
       console.log(postData);
