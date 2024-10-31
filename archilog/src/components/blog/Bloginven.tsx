@@ -147,6 +147,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
 
     return () => unsubscribe();
   }, [initialUsername]);
+
   //검색
   const displayedPosts =
     posts?.filter((post) => {
