@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { addPost } from "../firebase/posts";
 import { auth } from "../firebase/firebase";
+import { useRouter } from "next/router";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 interface PostFormInputs {
@@ -25,6 +26,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   const [content, setContent] = useState<string>("");
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<PostFormInputs> = async (data) => {
     if (!user) {
