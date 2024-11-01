@@ -2,10 +2,11 @@ import Image from "next/image";
 import { useState } from "react";
 
 const AboutUs = () => {
-  const [selectSection, setSelectSection] = useState("intro");
-  const [clickSection, setClickSection] = useState(null)
+  const [selectSection, setSelectSection] = useState("aboutme");
 
   return (
+
+    
     <div className="container mx-auto px-4 py-8">
       <section className="mb-10 ">
         <h2 className="text-6xl font-bold mb-12 text-center ">ArchiLog 소개</h2>
@@ -133,7 +134,7 @@ const AboutUs = () => {
       </section>
 
       <section className="my-20  text-center">
-        <h2 className="text-2xl font-semibold mb-4">ArchiLog가 IT 취준생에게 필요한 이유</h2>
+        <h2 className="text-3xl font-bold mb-8">ArchiLog가 IT 취준생에게 필요한 이유</h2>
         <p className="text-lg leading-relaxed">
           ArchiLog는 단순한 포트폴리오 사이트를 넘어, 자기 자신을 완성도 높게 표현할 수 있는 개인 이력서입니다. <br />
           복잡한 코딩이나 디자인 없이 자신의 경험과 기술력을 직관적이고 명확하게 전달할 수 있습니다.<br /> ArchiLog의 강력한

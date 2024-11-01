@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
 import dynamic from "next/dynamic";
@@ -9,6 +9,7 @@ import "react-markdown-editor-lite/lib/index.css"; // 마크다운 에디터 스
 import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
 import { useRouter } from "next/router";
+import { pasteImage, pasteImageUrl } from "@/utils/uploadImage";
 
 interface PostFormInputs {
   title: string;
@@ -30,6 +31,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const mdParser = new MarkdownIt();
+  const editorRef = useRef<HTMLDivElement | null>(null);
 
   const onSubmit: SubmitHandler<PostFormInputs> = async (data) => {
     if (!user) {
@@ -58,6 +60,40 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
       setLoading(false);
     }
   };
+
+  const handlePaste = useCallback(async (event: React.ClipboardEvent) => {
+    event.preventDefault();
+    const files: File[] = Array.from(event.clipboardData.files);
+    await pasteImage(files);
+  }, []);
+
+  const handleDrop = useCallback(async (event: React.DragEvent) => {
+      event.preventDefault();
+      const files: File[] = Array.from(event.dataTransfer.files);
+      await pasteImage(files);
+  }, []);
+
+  function onImageUpload(file: File) {
+    return new Promise(async (resolve) => {
+      const imgUrl = await pasteImageUrl([file]);
+      resolve(imgUrl[0]);
+    });
+  }
+
+  useEffect(() => {
+    const editorElement = editorRef.current;
+    if (editorElement) {
+      editorElement.addEventListener("paste", handlePaste as unknown as EventListener);
+      editorElement.addEventListener("drop", handleDrop as unknown as EventListener);
+    }
+
+    return () => {
+      if (editorElement) {
+        editorElement.removeEventListener("paste", handlePaste as unknown as EventListener);
+        editorElement.removeEventListener("drop", handleDrop as unknown as EventListener);
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -109,6 +145,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
             style={{ height: "400px" }}
             renderHTML={(text) => mdParser.render(text)}
             onChange={({ text }) => setMarkdownContent(text)}
+            onImageUpload={onImageUpload}
           />
         </div>
 

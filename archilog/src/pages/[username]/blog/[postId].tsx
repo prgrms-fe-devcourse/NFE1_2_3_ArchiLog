@@ -11,6 +11,7 @@ import {
   deleteComment,
   deletePost,
 } from "@/firebase/posts";
+import dynamic from "next/dynamic";
 
 interface Comment {
   id: string;
@@ -31,7 +32,7 @@ const PostDetail = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
 
-  // const username = router.asPath.split("/")[1];
+  const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), { ssr: false });
 
   useEffect(() => {
     if (postId) {
@@ -241,9 +242,10 @@ const PostDetail = () => {
               } max-w-none mb-10`}
               ref={postContentRef}
             >
-              <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                {post.content}
-              </ReactMarkdown>
+              <MarkdownPreview source={post.content} className={`bg-transparent
+              ${
+                darkMode ? "text-gray-400" : "text-gray-700"
+              }`}/>
             </div>
           </div>
 

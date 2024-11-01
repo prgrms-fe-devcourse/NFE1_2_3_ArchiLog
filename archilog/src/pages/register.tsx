@@ -65,15 +65,24 @@ const RegisterLayout: React.FC = () => {
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleRegister();
+    }
+  };
+
   useEffect(() => {
     document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
-}, [darkMode]);
+  }, [darkMode]);
 
   return (
     <div className={`${darkMode ? "dark bg-black text-white" : "bg-white text-black"} min-h-screen flex flex-col`}>
       <main className="flex-grow flex m-0 p-5 md:p-0">
         <div className="flex-none w-full md:w-1/2 flex items-center justify-center m-0 p-0">
-          <div className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} rounded-md shadow-2xl p-6 md:p-8 w-full md:max-w-[85%] mx-4 min-h-[45rem] flex flex-col justify-between transition-all duration-300`}>
+          <div
+            className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} rounded-md shadow-2xl p-6 md:p-8 w-full md:max-w-[85%] mx-4 min-h-[45rem] flex flex-col justify-between transition-all duration-300`}
+            onKeyDown={handleKeyDown} 
+          >
             <div className="text-center mb-4">
               <h1 className="text-3xl md:text-5xl font-bold">Register</h1>
             </div>
