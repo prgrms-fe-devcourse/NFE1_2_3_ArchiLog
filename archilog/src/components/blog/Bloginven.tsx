@@ -81,7 +81,6 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
     router.push(postLink);
   };
 
-
   //게시물 목록 데이터
   const fetchPosts = async () => {
     if (!initialUsername) return;
@@ -152,13 +151,24 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
       return matchesSearch && matchesTag;
     }) || [];
 
-  //content데이터값 태그 제거
-  const removeHtmlTags = (html: string) => {
-    return html
+  //content데이터값 태그 제거(모든 마크다운 없애는 방법으로)
+  const removeMarkdownAndHtml = (text: string) => {
+    return text
+      .replace(/^#{1,6}\s+(.*?)(?:\n+)/gm, "$1 ")
       .replace(/<[^>]*>/g, "")
-      .replace(/!\[.*?\]\(.*?\)/g, "");
+      .replace(/!\[.*?\]\(.*?\)/g, "")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/^>\s/gm, "")
+      .replace(/^[-*+]\s/gm, "")
+      .replace(/^\d+\.\s/gm, "")
+      .replace(/\n+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   };
-
   const handlePostClick = (id: string) => {
     router.push(`${currentUrl}/${id}`);
   };
@@ -218,24 +228,24 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                   key={post.id}
                   onClick={() => handlePostClick(post.id)}
                   className="hidden md:flex w-full items-center px-2 mb-7 cursor-pointer group dark:border-[#FDAD00] relative">
-                    {/* 포스트 전체값 */}
+                  {/* 포스트 전체값 */}
                   <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#6a8cc8] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
                     <Image
-                    className="w-[230px] h-[160px] mx-3"
-                    src={post?.thumbnail || (darkMode ? '/images/Logo_W.svg' : '/images/Logo_B.svg')}
-                    alt="Example"
-                    width={500}
-                    height={300}
-                  />
-                  {/* 보더 바텀값 */}
-                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
-                  
+                      className="w-[230px] h-[160px] mx-3"
+                      src={post?.thumbnail || (darkMode ? "/images/Logo_W.svg" : "/images/Logo_B.svg")}
+                      alt="Example"
+                      width={500}
+                      height={300}
+                    />
+                    {/* 보더 바텀값 */}
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
+
                     <div className="ml-5 w-full max-w-[700px] relative z-10">
                       <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                         {post.title}
                       </div>
                       <div className="font-light mt-2 overflow-hidden line-clamp-2 max-w-[700px]">
-                        {removeHtmlTags(post.content)}
+                        {removeMarkdownAndHtml(post.content)}
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {post.tags?.map((tag: string, index: number) => (
@@ -261,7 +271,6 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
           </>
         )}
 
-
         {/* 반응형 게시글 768px 이하 */}
         <div className="md:hidden flex flex-col items-center mx-auto w-full max-w-[450px]">
           {loading ? (
@@ -284,7 +293,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                           {post.title}
                         </div>
                         <div className="font-light mt-2 overflow-hidden line-clamp-2 max-w-[350px]">
-                          {removeHtmlTags(post.content)}
+                          {removeMarkdownAndHtml(post.content)}
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {post.tags?.map((tag: string, index: number) => (

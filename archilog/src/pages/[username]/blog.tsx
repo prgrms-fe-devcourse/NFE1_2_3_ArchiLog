@@ -59,7 +59,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     return {
       paths,
-      fallback: 'blocking' // 새로운 사용자가 추가될 수 있으므로 blocking으로 설정
+      fallback: 'blocking'
     };
   } catch (error) {
     console.error('Error getting users:', error);
@@ -82,7 +82,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         initialPosts: posts || [],
         username
       },
-      revalidate: 60 // 60초마다 재생성
+      revalidate: 60
     };
   } catch (error) {
     console.error('Error getting posts:', error);
