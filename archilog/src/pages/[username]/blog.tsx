@@ -16,7 +16,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ initialPosts, username }) => {
 
   return (
     <div
-      className={`duration-300 min-h-screen ${
+      className={`duration-300 min-h-screen py-5 ${
         darkMode ? "bg-black text-white" : "bg-white text-black"
       }`}
     >
