@@ -21,4 +21,14 @@ export const pasteImage = async (files: File[]): Promise<string[]> => {
           return `![](${imageUrl})`;
       })
   );
+}
+
+export const pasteImageUrl = async (files: File[]): Promise<string[]> => {
+  return Promise.all(
+      files.map(async (file) => {
+          const base64 = await toBase64(file);
+          const imageUrl = await uploadUrl(base64);
+          return imageUrl;
+      })
+  );
 };
