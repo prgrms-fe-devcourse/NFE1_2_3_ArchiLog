@@ -83,12 +83,7 @@ export const signUp = async (
         email,
         createdAt: timestamp,
         userId: user.uid,
-        profile: {
-          name: "",
-          resume: "",
-          createdAt: timestamp,
-          userId: user.uid,
-        },
+        resume: "",
         project: [],
         posts: [],
       });
@@ -134,6 +129,9 @@ export const signInWithGithubPopup = async () => {
 
   try {
     const result = await signInWithPopup(auth, provider);
+    if(!await checkUsernameExists(result.user.displayName || '')){
+      createUserData(result.user);
+    }
     return result.user;
   } catch (error: any) {
     console.error("깃허브 로그인 오류:", error);
@@ -150,12 +148,43 @@ export const signInWithGooglePopup = async () => {
 
   try {
     const result = await signInWithPopup(auth, provider);
+    if(!await checkUsernameExists(result.user.displayName || '')){
+      await createUserData(result.user);
+    }
+
     return result.user;
   } catch (error: any) {
     console.error("구글 로그인 오류:", error);
     throw error;
   }
 };
+
+const createUserData = async (user: any) => {
+  console.log('실행')
+  if (user) {
+    const timestamp = Date.now();
+
+    let name = '';
+    const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    if (korean.test(user.displayName)) {
+      name = user.email.split("@")[0];
+    } else {
+      name = user.displayName;
+    }
+ 
+    await set(ref(database, `users/${name}`), {
+      username: name,
+      email: user.email,
+      createdAt: timestamp,
+      userId: user.uid,
+      resume: "",
+      project: [],
+      posts: [],
+    });
+
+    await updateProfile (user, { displayName: name });
+  }
+}
 
 // 로그아웃
 export const logOutAndRedirect = async (router: ReturnType<typeof useRouter>) => {

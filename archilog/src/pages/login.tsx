@@ -91,8 +91,10 @@ const LoginLayout: React.FC = () => {
 
   const handleGithubLogin = async () => {
     try {
-      await signInWithGithubPopup();
-      router.push("/");
+      const user = await signInWithGithubPopup();
+      if(user){
+        router.push(`/${user.displayName}`);
+      }
     } catch (error) {
       setErrorMessage("GitHub 로그인에 실패했습니다. 다시 시도해주세요.");
     }
@@ -100,8 +102,11 @@ const LoginLayout: React.FC = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithGooglePopup();
-      router.push("/");
+      const user = await signInWithGooglePopup();
+      console.log(user)
+      if(user){
+        router.push(`/${user.displayName}`);
+      }
     } catch (error) {
       setErrorMessage("Google 로그인에 실패했습니다. 다시 시도해주세요.");
     }
