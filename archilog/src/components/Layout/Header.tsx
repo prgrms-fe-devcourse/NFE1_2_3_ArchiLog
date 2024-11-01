@@ -69,7 +69,7 @@ const Header: React.FC<HeaderProps> = () => {
       >
         {/* 왼쪽 로고 */}
         <div className="flex items-center">
-          <Link href={`/${path}`} className="text-2xl md:text-xl lg:text-3xl font-bold">
+          <Link href={`/${path}`} className="text-3xl md:text-3xl lg:text-3xl font-bold">
             {logo}
           </Link>
         </div>
@@ -100,7 +100,7 @@ const Header: React.FC<HeaderProps> = () => {
           <nav className="hidden md:flex space-x-5 ml-auto">
             <Link
               href={`/${basePath}`}
-              className={`text-sm md:text-base lg:text-lg ${
+              className={`text-sm md:text-lg lg:text-lg ${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
                   : "text-black hover:text-[#4CAF50]"
@@ -110,7 +110,7 @@ const Header: React.FC<HeaderProps> = () => {
             </Link>
             <Link
               href={`/${basePath}/project`}
-              className={`text-sm md:text-base lg:text-lg ${
+              className={`text-sm md:text-lg lg:text-lg ${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
                   : "text-black hover:text-[#4CAF50]"
@@ -120,7 +120,7 @@ const Header: React.FC<HeaderProps> = () => {
             </Link>
             <Link
               href={`/${basePath}/blog`}
-              className={`text-sm md:text-base lg:text-lg ${
+              className={`text-sm md:text-lg lg:text-lg ${
                 darkMode
                   ? "text-white hover:text-[#FDAD00]"
                   : "text-black hover:text-[#4CAF50]"
@@ -130,7 +130,7 @@ const Header: React.FC<HeaderProps> = () => {
             </Link>
             <button
                 onClick={handleLogout}
-                className={`text-sm md:text-base lg:text-lg ${
+                className={`text-sm md:text-lg lg:text-lg ${
                   darkMode
                     ? "text-white hover:text-[#FDAD00]"
                     : "text-black hover:text-[#4CAF50]"

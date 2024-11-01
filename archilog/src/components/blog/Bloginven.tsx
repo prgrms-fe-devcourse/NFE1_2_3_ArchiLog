@@ -81,10 +81,6 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
     router.push(postLink);
   };
 
-  //게시물 상세 페이지
-  const handlePostDetail = (postId: string) => {
-    router.push(`${currentUrl}/${postId}`);
-  };
 
   //게시물 목록 데이터
   const fetchPosts = async () => {
@@ -165,12 +161,12 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
 
   const handlePostClick = (id: string) => {
     router.push(`${currentUrl}/${id}`);
-  }
+  };
 
   return (
     <div className="dark:text-white dark:bg-black">
       {/* 검색창 */}
-      <div className="flex items-center mx-auto w-full max-w-3xl px-4">
+      <div className="flex items-center mx-auto w-full pt-10 max-w-3xl px-4">
         <div className="font-bold text-[25px]">Posts</div>
         {isOwner && (
           <Image
@@ -199,18 +195,19 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
             key={index}
             className={`mx-1 my-1 px-3 py-1 rounded-full cursor-pointer transition-colors duration-300 ${
               selectedTag === tag
-                ? "bg-[#b3c1ea] dark:bg-[#ffc848]"
-                : "bg-[#6A8CC8] hover:bg-[#b3c1ea] dark:bg-[#FDAD00] dark:hover:bg-[#ffc848]"
+                ? "bg-[#6a8cc8] dark:bg-[#ffc848]"
+                : "bg-[#94B9F3] hover:bg-[#6a8cc8] dark:bg-[#FDAD00] dark:hover:bg-[#ffc848]"
             }`}
             onClick={() => handleTagClick(tag)}>
             #{tag}
           </div>
         ))}
+
         <div className="border-b-[#E0E0E0]  border-b-2 w-full max-w-[740px] pt-5 mx-5"></div>
       </div>
 
       {/* 게시글 768px 이상 */}
-      <div className="flex flex-col items-center mx-auto my-8 max-w-3xl font-bold">
+      <div className="flex flex-col items-center mx-auto my-4 max-w-3xl font-bold">
         {loading ? (
           <div className="hidden md:flex">Loading...</div>
         ) : (
@@ -219,31 +216,39 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
               displayedPosts.map((post) => (
                 <div
                   key={post.id}
-                  onClick={() => handlePostDetail(post.id)}
-                  className="hidden md:flex w-full items-center px-2 mb-7 hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group  dark:border-[#FDAD00] rounded-xl border-2 border-[#6A8CC8]">
-                  <Image
-                    className="w-[230px] h-[160px]"
-                    src={post?.thumbnail || '/images/Logo_B.svg'}
+                  onClick={() => handlePostClick(post.id)}
+                  className="hidden md:flex w-full items-center px-2 mb-7 cursor-pointer group dark:border-[#FDAD00] relative">
+                    {/* 포스트 전체값 */}
+                  <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#6a8cc8] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                    <Image
+                    className="w-[230px] h-[160px] mx-3"
+                    src={post?.thumbnail || (darkMode ? '/images/Logo_W.svg' : '/images/Logo_B.svg')}
                     alt="Example"
                     width={500}
                     height={300}
                   />
-                  <div className="ml-5">
-                    <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
-                      {post.title}
-                    </div>
-                    <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags?.map((tag: string, index: number) => (
-                        <span
-                          key={index}
-                          className="text-[12px] text-white dark:text-black bg-[#6A8CC8] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
+                  {/* 보더 바텀값 */}
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
+                  
+                    <div className="ml-5 w-full max-w-[700px] relative z-10">
+                      <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
+                        {post.title}
+                      </div>
+                      <div className="font-light mt-2 overflow-hidden line-clamp-2 max-w-[700px]">
+                        {removeHtmlTags(post.content)}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {post.tags?.map((tag: string, index: number) => (
+                          <span
+                            key={index}
+                            className="text-[12px] text-white dark:text-black bg-[#94B9F3] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
+                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -256,8 +261,9 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
           </>
         )}
 
+
         {/* 반응형 게시글 768px 이하 */}
-        <div className="md:hidden flex flex-col items-center mx-auto">
+        <div className="md:hidden flex flex-col items-center mx-auto w-full max-w-[450px]">
           {loading ? (
             <div>Loading...</div>
           ) : (
@@ -267,23 +273,31 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                   <div
                     onClick={() => handlePostClick(post.id)}
                     key={post.id}
-                    className="items-center px-4 w-[450px] hover:text-[#6A8CC8] dark:hover:text-[#FDAD00] cursor-pointer hover:translate-x-1 transition-transform duration-300 ease-in-out group border-2 border-[#6A8CC8] my-2 rounded-lg">
-                    <div className="ml-5">
-                      <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[450px] line-clamp-1">
-                        {post.title}
-                      </div>
-                      <div className="font-light mt-2 overflow-hidden line-clamp-2">{removeHtmlTags(post.content)}</div>
-                      <div className="flex flex-wrap gap-2">
-                        {post.tags?.map((tag: string, index: number) => (
-                          <span
-                            key={index}
-                            className="text-[12px] text-white dark:text-black bg-[#6A8CC8] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="font-light text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
-                        {new Date(post?.createdAt).toLocaleDateString()}
+                    className="w-full items-center px-2 mb-7 cursor-pointer group relative">
+                    {/* 보더 바텀값 */}
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[410px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
+
+                    {/* 포스트 전체값 */}
+                    <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#6a8cc8] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                      <div className="ml-5 w-full max-w-[400px] relative z-10">
+                        <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[350px] line-clamp-1">
+                          {post.title}
+                        </div>
+                        <div className="font-light mt-2 overflow-hidden line-clamp-2 max-w-[350px]">
+                          {removeHtmlTags(post.content)}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {post.tags?.map((tag: string, index: number) => (
+                            <span
+                              key={index}
+                              className="text-[12px] text-white dark:text-black bg-[#94B9F3] dark:bg-[#FDAD00] px-2 py-1 my-3 rounded-full">
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="font-semibold text-[14px] text-dateColor pb-3 group-hover:text-black dark:group-hover:text-white">
+                          {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "날짜 없음"}
+                        </div>
                       </div>
                     </div>
                   </div>

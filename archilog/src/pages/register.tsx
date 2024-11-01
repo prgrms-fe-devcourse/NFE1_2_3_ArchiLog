@@ -87,7 +87,7 @@ const RegisterLayout: React.FC = () => {
               <h1 className="text-3xl md:text-5xl font-bold">Register</h1>
             </div>
 
-            <div className="flex mb-2 w-full relative">
+            <div className="flex mb-2 w-full relative mt-[11px]">
               <button
                 className={`w-1/2 px-4 py-2 border-2 border-gray-200 rounded-lg bg-white text-black hover:bg-gray-200`}
                 style={{
