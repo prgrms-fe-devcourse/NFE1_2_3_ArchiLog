@@ -199,7 +199,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
       </div>
 
       {/* 태그 */}
-      <div className="flex items-center justify-center text-white dark:text-black font-bold text-[15px] mt-7 w-full max-w-3xl mx-auto flex-wrap pb-7">
+      <div className="flex items-center justify-center text-white dark:text-black font-bold text-[15px] mt-7 w-full max-w-3xl mx-auto flex-wrap pb-3">
         {uniqueTags.map((tag, index) => (
           <div
             key={index}
@@ -213,11 +213,11 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
           </div>
         ))}
 
-        <div className="border-b-[#E0E0E0]  border-b-2 w-full max-w-[740px] pt-5 mx-5"></div>
+        <div className="border-b-[#E0E0E0]  border-b-[0.5px] w-full max-w-[740px] pt-5 mx-5"></div>
       </div>
 
       {/* 게시글 768px 이상 */}
-      <div className="flex flex-col items-center mx-auto my-4 max-w-3xl font-bold">
+      <div className="flex flex-col items-center mx-auto mb-4 max-w-3xl font-bold">
         {loading ? (
           <div className="hidden md:flex">Loading...</div>
         ) : (
@@ -238,7 +238,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                       height={300}
                     />
                     {/* 보더 바텀값 */}
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[0.5px] bg-[#d6dbe4] dark:bg-white" />
 
                     <div className="ml-5 w-full max-w-[700px] relative z-10">
                       <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
