@@ -158,7 +158,9 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
 
   //content데이터값 태그 제거
   const removeHtmlTags = (html: string) => {
-    return html.replace(/<[^>]*>/g, "");
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/!\[.*?\]\(.*?\)/g, "");
   };
 
   const handlePostClick = (id: string) => {

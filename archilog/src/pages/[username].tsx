@@ -43,7 +43,7 @@ const MyPage = () => {
   }
 
   return (
-    <div>
+    <div className='box-border py-5 h-full'>
       {currentUserId === userInfo.userId && (
         <div className="float-right mr-5">
           <Link href={`/${userInfo.username}/edit`}>
@@ -51,7 +51,7 @@ const MyPage = () => {
           </Link>
         </div>
       )}
-      <div className={`duration-300 h-screen h-full`} >
+      <div className={`duration-300 h-full`} >
         <MarkdownPreview source={userInfo.resume} className={`p-10 h-full pt-0
       ${
         darkMode ? "bg-black text-white" : "bg-white text-black"
