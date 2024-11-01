@@ -235,7 +235,7 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                       src={post?.thumbnail || (darkMode ? "/images/Logo_W.svg" : "/images/Logo_B.svg")}
                       alt="Example"
                       width={500}
-                      height={300}
+                      height={500}
                     />
                     {/* 보더 바텀값 */}
                     <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[0.5px] bg-[#d6dbe4] dark:bg-white" />
