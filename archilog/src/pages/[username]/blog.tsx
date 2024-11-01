@@ -11,6 +11,12 @@ interface BlogPageProps {
   username: string;
 }
 
+interface StaticPath {
+  params: {
+    username: string;
+  };
+}
+
 const BlogPage: React.FC<BlogPageProps> = ({ initialPosts, username }) => {
   const { darkMode } = useDarkMode();
 
@@ -36,7 +42,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   
   try {
     const snapshot = await get(usersRef);
-    const paths = [];
+    const paths: StaticPath[] = [];
     
     if (snapshot.exists()) {
       snapshot.forEach((userSnapshot) => {
