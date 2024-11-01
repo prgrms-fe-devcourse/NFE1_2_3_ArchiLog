@@ -26,10 +26,10 @@ const LoginLayout: React.FC = () => {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const router = useRouter();
   const { darkMode } = useDarkMode();
-  
+
   useEffect(() => {
     document.documentElement.setAttribute('data-color-mode', darkMode ? 'dark' : 'light');
-}, [darkMode]);
+  }, [darkMode]);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -148,6 +148,12 @@ const LoginLayout: React.FC = () => {
 
   const handlePasswordReset = () => setIsModalOpen(true);
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   if (isLoading) return null;
 
   return (
@@ -163,6 +169,7 @@ const LoginLayout: React.FC = () => {
             className={`${
               darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
             } rounded-md shadow-2xl p-6 md:p-8 w-full md:max-w-[85%] mx-4 min-h-[45rem] flex flex-col justify-between transition-all duration-300`}
+            onKeyDown={handleKeyDown} 
           >
             <div className="text-center mb-4">
               <h1 className="text-3xl md:text-5xl font-bold">Login</h1>
