@@ -20,7 +20,7 @@ const MyPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const user: User = await getUserInfo(basePath);
+        const user: User | null = await getUserInfo(basePath);
         setUserInfo(user);
 
         const currentUserId = await getCurrentUserId();
