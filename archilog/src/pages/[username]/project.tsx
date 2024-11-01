@@ -194,14 +194,15 @@ export default function ProjectPage() {
     e: React.MouseEvent
   ) => {
     e.preventDefault();
-    if (!user || !hasPermission) return;
+    if (!user?.displayName || !username || typeof username !== 'string') return;
 
     if (!window.confirm("이 프로젝트를 삭제하시겠습니까?")) {
       return;
     }
 
     try {
-      await deleteProject(projectId, user.uid);
+      // 로그인한 사용자의 displayName 전달
+      await deleteProject(projectId, user.displayName);
       await fetchProjects();
     } catch (error) {
       console.error("프로젝트 삭제 실패:", error);
