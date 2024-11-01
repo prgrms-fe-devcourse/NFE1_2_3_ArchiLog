@@ -81,10 +81,6 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
     router.push(postLink);
   };
 
-  //게시물 상세 페이지
-  const handlePostDetail = (postId: string) => {
-    router.push(`${currentUrl}/${postId}`);
-  };
 
   //게시물 목록 데이터
   const fetchPosts = async () => {
@@ -218,12 +214,20 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
               displayedPosts.map((post) => (
                 <div
                   key={post.id}
-                  onClick={() => handlePostDetail(post.id)}
+                  onClick={() => handlePostClick(post.id)}
                   className="hidden md:flex w-full items-center px-2 mb-7 cursor-pointer group dark:border-[#FDAD00] relative">
+                    {/* 포스트 전체값 */}
+                  <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#6a8cc8] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                    <Image
+                    className="w-[230px] h-[160px] mx-3"
+                    src={post?.thumbnail || (darkMode ? '/images/Logo_W.svg' : '/images/Logo_B.svg')}
+                    alt="Example"
+                    width={500}
+                    height={300}
+                  />
                   {/* 보더 바텀값 */}
-                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[700px] h-[2px] bg-[#E5E7EB] dark:bg-[#FDAD00]" />
-                  {/* 포스트 전체값 */}
-                  <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#94B9F3] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[740px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
+                  
                     <div className="ml-5 w-full max-w-[700px] relative z-10">
                       <div className="text-[20px] mt-5 overflow-hidden text-ellipsis max-w-[700px] line-clamp-1">
                         {post.title}
@@ -269,10 +273,10 @@ const Bloginven: React.FC<BloginvenProps> = ({ initialPosts, username: initialUs
                     key={post.id}
                     className="w-full items-center px-2 mb-7 cursor-pointer group relative">
                     {/* 보더 바텀값 */}
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[390px] h-[2px] bg-[#E5E7EB] dark:bg-[#FDAD00]" />
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[410px] h-[2px] bg-[#d6dbe4] dark:bg-[#FDAD00]" />
 
                     {/* 포스트 전체값 */}
-                    <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#94B9F3] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
+                    <div className="w-full flex items-center hover:translate-x-2 transition-transform duration-300 ease-in-out hover:text-[#6a8cc8] dark:hover:text-[#FDAD00] relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-[#94B9F3] before:dark:bg-[#FDAD00] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300">
                       <div className="ml-5 w-full max-w-[400px] relative z-10">
                         <div className="font-regular text-[20px] mt-5 overflow-hidden max-w-[350px] line-clamp-1">
                           {post.title}
