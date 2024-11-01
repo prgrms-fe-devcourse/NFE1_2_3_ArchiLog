@@ -4,12 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
-import dynamic from "next/dynamic";
 import { auth } from "../../../../firebase/firebase";
 import { getPostDetails, updatePost } from "../../../../firebase/posts";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
+import "react-markdown-editor-lite/lib/index.css";
+import MdEditor from "react-markdown-editor-lite";
+import MarkdownIt from "markdown-it";
 
 interface PostFormInputs {
   title: string;
@@ -20,7 +19,8 @@ const PostEdit: React.FC = () => {
   const router = useRouter();
   const { postId } = router.query;
   const [user] = useAuthState(auth);
-  const [content, setContent] = useState<string>("");
+  const [markdownContent, setMarkdownContent] = useState<string>("");
+  const mdParser = new MarkdownIt();
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -34,11 +34,11 @@ const PostEdit: React.FC = () => {
     const fetchPostData = async () => {
       if (postId && typeof postId === "string") {
         try {
-          const username = user?.displayName || '';
+          const username = user?.displayName || "";
           const post = await getPostDetails(username, postId);
           setValue("title", post.title);
           setValue("tags", post.tags.join(", "));
-          setContent(post.content);
+          setMarkdownContent(post.content);
         } catch (error) {
           console.error("Error fetching post data:", error);
           alert("게시글을 불러오는데 오류가 발생했습니다.");
@@ -46,7 +46,7 @@ const PostEdit: React.FC = () => {
       }
     };
     fetchPostData();
-  }, [postId, setValue]);
+  }, [postId, setValue, user]);
 
   const onSubmit: SubmitHandler<PostFormInputs> = async (data) => {
     if (!user) {
@@ -65,7 +65,7 @@ const PostEdit: React.FC = () => {
         postId as string,
         data.title,
         data.tags.split(",").map((tag) => tag.trim()),
-        content
+        markdownContent
       );
       setLoading(false);
       alert("게시글이 성공적으로 수정되었습니다!");
@@ -110,14 +110,13 @@ const PostEdit: React.FC = () => {
           )}
         </div>
 
-        {/* 마크다운 에디터 (ReactQuill) */}
+        {/* 마크다운 에디터 */}
         <div className="mb-6">
-          <ReactQuill
-            value={content}
-            onChange={setContent}
-            className="custom-quill bg-gray-100 text-gray-900"
-            placeholder="내용을 입력하세요"
-            theme="snow"
+          <MdEditor
+            value={markdownContent}
+            style={{ height: "400px" }}
+            renderHTML={(text) => mdParser.render(text)}
+            onChange={({ text }) => setMarkdownContent(text)} // 마크다운 업데이트
           />
         </div>
 
