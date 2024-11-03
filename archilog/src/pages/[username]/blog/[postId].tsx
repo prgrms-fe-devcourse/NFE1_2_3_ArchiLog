@@ -3,21 +3,32 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { auth } from "@/firebase/firebase";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import { remark } from "remark";
+import remarkHtml from "remark-html";
+import dynamic from "next/dynamic";
 import {
   getPostDetails,
   addComment,
   deleteComment,
   deletePost,
 } from "@/firebase/posts";
-import dynamic from "next/dynamic";
 
 interface Comment {
   id: string;
   content: string;
   authorId: string;
+  authorName: string;
   createdAt: string;
+}
+
+// 목차 항목
+interface TOCItem {
+  id: string;
+  text: string | null;
+  level: string;
 }
 
 const PostDetail = () => {
@@ -25,35 +36,53 @@ const PostDetail = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [TOCData, setTOCData] = useState<TOCItem[]>([]);
+
   const [user] = useAuthState(auth);
   const router = useRouter();
   const { postId } = router.query;
   const postContentRef = useRef<HTMLDivElement>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
 
-  const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), { ssr: false });
+  const MarkdownPreview = dynamic(() => import("@uiw/react-markdown-preview"), {
+    ssr: false,
+  });
 
+  // 게시글 데이터
   useEffect(() => {
     if (postId) {
-      fetchPostDetails(postId as string);
+      loadPostDetails(postId as string);
     }
   }, [postId]);
 
-  const fetchPostDetails = async (postId: string) => {
+  // 목차 데이터
+  useEffect(() => {
+    if (post) {
+      generateTableOfContents(post.content).then((tocItems) => {
+        setTOCData(tocItems);
+      });
+    }
+  }, [post]);
+
+  // 게시글, 댓글
+  const loadPostDetails = async (postId: string) => {
     try {
       const user = auth.currentUser;
       const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
       setPost(postData);
 
-      const commentsArray = Object.entries(postData.comments || {}).map(
+      const formattedComments = Object.entries(postData.comments || {}).map(
         ([id, comment]) => {
           const createdAtDate = new Date(comment.createdAt);
           const formattedDate = new Intl.DateTimeFormat("ko-KR", {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
           }).format(createdAtDate);
 
           return {
@@ -64,7 +93,7 @@ const PostDetail = () => {
         }
       );
 
-      setComments(commentsArray);
+      setComments(formattedComments);
     } catch (error) {
       console.error("Failed to fetch post details:", error);
     }
@@ -85,12 +114,29 @@ const PostDetail = () => {
       setLoading(true);
       await addComment(commentText, postId as string);
       setCommentText("");
-      fetchPostDetails(postId as string);
+      loadPostDetails(postId as string);
     } catch (error) {
       console.error("Error adding comment:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        await deleteComment(postId as string, commentId);
+        loadPostDetails(postId as string);
+      } catch (error) {
+        console.error("Failed to delete comment:", error);
+      }
+    }
+  };
+
+  // 게시글 수정, 삭제
+  const handleUpdatePost = () => {
+    router.push(`/${user?.displayName}/blog/edit/${postId}`);
   };
 
   const handleDeletePost = async () => {
@@ -105,44 +151,56 @@ const PostDetail = () => {
     }
   };
 
-  const handleUpdatePost = () => {
-    router.push(`/${user?.displayName}/blog/edit/${postId}`);
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
-    if (confirmDelete) {
-      try {
-        await deleteComment(postId as string, commentId);
-        fetchPostDetails(postId as string);
-      } catch (error) {
-        console.error("Failed to delete comment:", error);
-      }
-    }
-  };
-
-  const generateTableOfContents = () => {
-    if (!post) return [];
-
+  // 목차 이동
+  const generateTableOfContents = async (
+    content: string
+  ): Promise<TOCItem[]> => {
+    const htmlContent = await remark().use(remarkHtml).process(content);
     const parser = new DOMParser();
-    const doc = parser.parseFromString(post.content, "text/html");
-    const headings = Array.from(doc.querySelectorAll("h2, h3"));
-    return headings.map((heading) => ({
-      id: heading.id,
-      text: heading.textContent,
-      level: heading.tagName,
-    }));
+    const doc = parser.parseFromString(htmlContent.toString(), "text/html");
+    const headings = Array.from(doc.querySelectorAll("h1, h2, h3, h4, h5, h6"));
+
+    const ids: Record<string, number> = {};
+
+    return headings.map((heading) => {
+      const text = heading.textContent?.trim() || "";
+
+      // 한국어 제목
+      let id = text
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, "")
+        .toLowerCase();
+
+      // 중복된 제목
+      if (ids[id]) {
+        id += `-${ids[id]}`;
+        ids[id]++;
+      } else {
+        ids[id] = 1;
+      }
+
+      heading.id = id;
+
+      return {
+        id,
+        text,
+        level: heading.tagName,
+      };
+    });
   };
 
   const handleScrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    if (element) element.scrollIntoView({ behavior: "smooth" });
+    console.log(`element: ${element}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
     <div
       className={`max-w-4xl mx-auto mt-8 p-6 rounded-lg shadow-md ${
-        darkMode ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
+        darkMode ? "bg-black text-gray-100" : "bg-white text-gray-900"
       }`}
     >
       {post && (
@@ -157,7 +215,7 @@ const PostDetail = () => {
           >
             <h2 className="text-xl font-semibold">목차</h2>
             <ul className="space-y-1 mt-4 max-h-[60vh] overflow-y-auto">
-              {generateTableOfContents().map((item) => (
+              {TOCData.map((item) => (
                 <li
                   key={item.id}
                   className={`cursor-pointer text-sm ${
@@ -242,10 +300,12 @@ const PostDetail = () => {
               } max-w-none mb-10`}
               ref={postContentRef}
             >
-              <MarkdownPreview source={post.content} className={`bg-transparent
-              ${
-                darkMode ? "text-gray-400" : "text-gray-700"
-              }`}/>
+              <MarkdownPreview
+                source={post.content}
+                rehypePlugins={[rehypeRaw, rehypeSlug, rehypeAutolinkHeadings]}
+                className={`bg-transparent
+              ${darkMode ? "text-gray-400" : "text-gray-700"}`}
+              />
             </div>
           </div>
 
@@ -259,7 +319,7 @@ const PostDetail = () => {
           >
             <h2 className="text-xl font-semibold">목차</h2>
             <ul className="space-y-1 mt-4 max-h-[60vh] overflow-y-auto">
-              {generateTableOfContents().map((item) => (
+              {TOCData.map((item) => (
                 <li
                   key={item.id}
                   className={`cursor-pointer text-sm ${
@@ -276,6 +336,7 @@ const PostDetail = () => {
           </aside>
         </div>
       )}
+
       {/* 댓글 작성 및 댓글 목록 */}
       <div className="mt-8 space-y-4">
         {user ? (
@@ -328,7 +389,7 @@ const PostDetail = () => {
               }`}
             >
               <div>
-                <span className="font-semibold">작성자 이름</span>{" "}
+                <span className="font-semibold">{comment.authorName}</span>{" "}
                 <span className="text-sm">{comment.createdAt}</span>
               </div>
               <p>{comment.content}</p>
