@@ -23,6 +23,8 @@ interface Comment {
   authorName: string;
   createdAt: string;
 }
+
+// 목차 항목
 interface TOCItem {
   id: string;
   text: string | null;
@@ -34,24 +36,27 @@ const PostDetail = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [TOCData, setTOCData] = useState<TOCItem[]>([]);
+
   const [user] = useAuthState(auth);
   const router = useRouter();
   const { postId } = router.query;
   const postContentRef = useRef<HTMLDivElement>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const { darkMode } = useDarkMode();
-  const [TOCData, setTOCData] = useState<TOCItem[]>([]);
 
   const MarkdownPreview = dynamic(() => import("@uiw/react-markdown-preview"), {
     ssr: false,
   });
 
+  // 게시글 데이터
   useEffect(() => {
     if (postId) {
-      fetchPostDetails(postId as string);
+      loadPostDetails(postId as string);
     }
   }, [postId]);
 
+  // 목차 데이터
   useEffect(() => {
     if (post) {
       generateTableOfContents(post.content).then((tocItems) => {
@@ -60,15 +65,15 @@ const PostDetail = () => {
     }
   }, [post]);
 
-  // 댓글
-  const fetchPostDetails = async (postId: string) => {
+  // 게시글, 댓글
+  const loadPostDetails = async (postId: string) => {
     try {
       const user = auth.currentUser;
       const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
       setPost(postData);
 
-      const commentsArray = Object.entries(postData.comments || {}).map(
+      const formattedComments = Object.entries(postData.comments || {}).map(
         ([id, comment]) => {
           const createdAtDate = new Date(comment.createdAt);
           const formattedDate = new Intl.DateTimeFormat("ko-KR", {
@@ -88,7 +93,7 @@ const PostDetail = () => {
         }
       );
 
-      setComments(commentsArray);
+      setComments(formattedComments);
     } catch (error) {
       console.error("Failed to fetch post details:", error);
     }
@@ -109,7 +114,7 @@ const PostDetail = () => {
       setLoading(true);
       await addComment(commentText, postId as string);
       setCommentText("");
-      fetchPostDetails(postId as string);
+      loadPostDetails(postId as string);
     } catch (error) {
       console.error("Error adding comment:", error);
     } finally {
@@ -122,7 +127,7 @@ const PostDetail = () => {
     if (confirmDelete) {
       try {
         await deleteComment(postId as string, commentId);
-        fetchPostDetails(postId as string);
+        loadPostDetails(postId as string);
       } catch (error) {
         console.error("Failed to delete comment:", error);
       }
