@@ -183,6 +183,8 @@ const checkImage = async (postId: string, content: string) => {
       console.error("Error adding img: ", error);
       throw error;
     }
+  } else {
+    await remove(imgref);
   }
 };
 
@@ -222,6 +224,8 @@ export const updatePost = async (
       content: content,
       updatedAt: serverTimestamp(),
     });
+
+    await checkImage(postId, content);
 
     console.log("Post updated successfully");
   } catch (error) {

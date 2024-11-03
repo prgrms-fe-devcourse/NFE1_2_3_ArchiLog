@@ -12,6 +12,14 @@ module.exports = removeImports({
         hostname: 'firebasestorage.googleapis.com',
         pathname: '/v0/b/**',
       },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
     ],
   },
   ...nextConfig

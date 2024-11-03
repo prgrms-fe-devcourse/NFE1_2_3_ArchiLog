@@ -232,7 +232,7 @@ const PostDetail = () => {
           </aside>
 
           {/* Left Content */}
-          <div className="flex-grow ml-4">
+          <div className="flex-grow ml-4 mr-8">
             {user?.uid === post.authorId && (
               <div className="flex justify-end mb-2">
                 <div className="relative">
@@ -311,7 +311,7 @@ const PostDetail = () => {
 
           {/* 목차 for Desktop */}
           <aside
-            className={`hidden lg:block lg:sticky lg:top-24 lg:h-auto lg:max-h-screen overflow-auto lg:w-80 rounded-lg border ${
+            className={`hidden lg:block lg:sticky lg:top-24 lg:h-full lg:max-h-screen overflow-auto lg:w-80 rounded-lg border ${
               darkMode
                 ? "bg-gray-800 border-gray-600"
                 : "bg-gray-100 border-gray-300"
