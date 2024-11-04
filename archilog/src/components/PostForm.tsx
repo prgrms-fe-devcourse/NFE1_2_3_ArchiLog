@@ -100,10 +100,6 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
     ? "bg-[#D9D9D9] text-gray-900 focus:ring-yellow-500"
     : "bg-gray-100 text-gray-900 focus:ring-blue-500";
 
-  const buttonStyle = darkMode
-    ? "bg-[#010409] text-white border-[#656c76] hover:bg-[#101418] focus:ring-[#656c76]"
-    : "bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-600";
-
   return (
     <div
       className={`p-4 md:p-8 mx-auto mt-16 rounded-lg shadow-lg ${
@@ -155,7 +151,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`px-6 py-2 rounded-md border focus:outline-none focus:ring-2 ${buttonStyle}`}
+            className={`px-6 py-2 rounded-md border focus:outline-none focus:ring-2 bg-[#010409] text-white border-[#656c76] hover:bg-[#101418] focus:ring-[#656c76]`}
           >
             {loading ? "등록 중..." : "등록하기"}
           </button>
