@@ -178,7 +178,6 @@ const PostDetail = () => {
 
   const handleScrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    console.log(`element: ${element}`);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
