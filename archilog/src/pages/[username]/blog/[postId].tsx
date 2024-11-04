@@ -53,9 +53,9 @@ const PostDetail = () => {
     }
   }, [post]);
 
-// 게시글, 댓글
-const loadPostDetails = async (postId: string) => {
-  try {
+  // 게시글, 댓글
+  const loadPostDetails = async (postId: string) => {
+    try {
       const user = auth.currentUser;
       const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
@@ -64,33 +64,33 @@ const loadPostDetails = async (postId: string) => {
 
       const comments: Comment[] = Object.values(postData.comments || {});
 
-      const formattedComments = comments.map((comment: Comment) => {
-          if ('createdAt' in comment) {
-              const createdAtDate = new Date(comment.createdAt);
-              const formattedDate = new Intl.DateTimeFormat("ko-KR", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-              }).format(createdAtDate);
+      const formattedComments = comments
+        .map((comment: Comment) => {
+          if ("createdAt" in comment) {
+            const createdAtDate = new Date(comment.createdAt);
+            const formattedDate = new Intl.DateTimeFormat("ko-KR", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }).format(createdAtDate);
 
-              return {
-                  ...comment,
-                  createdAt: formattedDate,
-              } as Comment;
+            return {
+              ...comment,
+              createdAt: formattedDate,
+            } as Comment;
           }
           return null;
-      }).filter((comment): comment is Comment => comment !== null);
+        })
+        .filter((comment): comment is Comment => comment !== null);
 
       setComments(formattedComments);
-  } catch (error) {
-
+    } catch (error) {
       console.error("Failed to fetch post details:", error);
-  }
-};
-
+    }
+  };
 
   const formatComments = (comments: Record<string, any>): Comment[] =>
     Object.entries(comments).map(([id, comment]) => ({
@@ -123,7 +123,7 @@ const loadPostDetails = async (postId: string) => {
       loadPostDetails(postId as string);
     } catch (error) {
       console.error("Error adding comment:", error);
-    } 
+    }
   };
 
   const handleDeleteComment = async (commentId: string) => {
@@ -134,23 +134,23 @@ const loadPostDetails = async (postId: string) => {
         const username = user?.displayName || "";
         const postData = await getPostDetails(username, postId as string);
 
-        console.log(postData)
+        console.log(postData);
         console.log(commentId);
-        
+
         // 댓글이 해당 게시글에 존재하는지 확인
-        const commentExists = postData.comments && commentId in postData.comments;
+        const commentExists =
+          postData.comments && commentId in postData.comments;
         if (!commentExists) {
-            alert("해당 댓글이 존재하지 않습니다.");
-            return;
+          alert("해당 댓글이 존재하지 않습니다.");
+          return;
         }
 
         await deleteComment(postId as string, commentId);
         loadPostDetails(postId as string); // 댓글 삭제 후 게시글 및 댓글 새로 고침
-    } catch (error) {
+      } catch (error) {
         console.error("Failed to delete comment:", error);
         alert("댓글 삭제 중 오류가 발생했습니다.");
-    }
-
+      }
     }
   };
 
@@ -214,7 +214,7 @@ const loadPostDetails = async (postId: string) => {
 
   return (
     <div
-      className={`max-w-4xl mx-auto mt-8 p-6 rounded-lg shadow-md ${
+      className={`max-w-5xl mx-auto mt-8 p-6 rounded-lg shadow-md ${
         darkMode ? "bg-black text-gray-100" : "bg-white text-gray-900"
       }`}
     >
@@ -229,7 +229,7 @@ const loadPostDetails = async (postId: string) => {
             } p-4 mb-6`}
           >
             <h2 className="text-xl font-semibold">목차</h2>
-            <ul className="space-y-1 mt-4 max-h-[60vh] overflow-y-auto">
+            <ul className="space-y-1 mt-4">
               {TOCData.map((item) => (
                 <li
                   key={item.id}
@@ -295,18 +295,17 @@ const loadPostDetails = async (postId: string) => {
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
 
             <div className="flex items-center gap-2 mb-6">
-              {post.tags && post.tags.map((tag: string, index: number) => (
-                <span
-                  key={index}
-                  className={`text-sm font-bold px-2 py-1 rounded-full text-white dark:text-black ${
-                    darkMode
-                      ? "bg-[#FDAD00] "
-                      : "bg-[#94B9F3]"
-                  }`}
-                >
-                  #{tag}
-                </span>
-              ))}
+              {post.tags &&
+                post.tags.map((tag: string, index: number) => (
+                  <span
+                    key={index}
+                    className={`text-sm font-bold px-2 py-1 rounded-full text-white dark:text-black ${
+                      darkMode ? "bg-[#FDAD00] " : "bg-[#94B9F3]"
+                    }`}
+                  >
+                    #{tag}
+                  </span>
+                ))}
             </div>
 
             {/* 게시글 내용 */}
@@ -334,7 +333,7 @@ const loadPostDetails = async (postId: string) => {
             } p-4 mb-6 lg:mb-0`}
           >
             <h2 className="text-xl font-semibold">목차</h2>
-            <ul className="space-y-1 mt-4 max-h-[60vh] overflow-y-auto">
+            <ul className="space-y-1 mt-4">
               {TOCData.map((item) => (
                 <li
                   key={item.id}
