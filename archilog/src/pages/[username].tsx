@@ -7,6 +7,14 @@ import Link from "next/link";
 import User from '@/types/User';
 import getBasePath from '@/utils/getBasePath';
 
+export async function generateStaticParams() {
+  const users: User[] = await getUsers();
+
+  return users.map((user) => ({
+    username: user.username,
+  }));
+}
+
 const MyPage = () => {
   const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), { ssr: false });
 

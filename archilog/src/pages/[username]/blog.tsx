@@ -9,7 +9,7 @@ import { checkUsernameExists } from "@/firebase/auth";
 const BlogPage: React.FC = () => {
   const { darkMode } = useDarkMode();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [usernameExists, setUsernameExists] = useState<boolean | null>(null);
+  // const [usernameExists, setUsernameExists] = useState<boolean | null>(null);
   const router = useRouter();
   const name = router.asPath.split('/').slice(1, 2)[0];
 
@@ -17,7 +17,7 @@ const BlogPage: React.FC = () => {
     const fetchData = async () => {
       try {
         const exists = await checkUsernameExists(name);
-        setUsernameExists(exists);
+        // setUsernameExists(exists);
 
         if (exists) {
           const fetchedPosts = await getPost(name);

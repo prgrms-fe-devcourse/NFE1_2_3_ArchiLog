@@ -1,7 +1,6 @@
 {
   "hosting": {
     "public": "out",
-    "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -9,7 +8,11 @@
     ],
     "frameworksBackend": {
       "region": "asia-east1"
-    }
+    },
+    "rewrites": [{
+      "source": "**",
+      "destination": "/index.html"
+    }]
   },
   "firestore": {
     "rules": "firestore.rules",
