@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { auth } from "../../../../firebase/firebase";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 import { getPostDetails, updatePost } from "../../../../firebase/posts";
 import "react-markdown-editor-lite/lib/index.css";
 import MdEditor from "react-markdown-editor-lite";
@@ -25,25 +26,26 @@ const PostEdit: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<PostFormInputs>();
+  const { darkMode } = useDarkMode();
 
   useEffect(() => {
-    // 게시글 데이터 가져오기
-    const fetchPostData = async () => {
-      if (postId && typeof postId === "string") {
-        try {
-          const username = user?.displayName || "";
-          const post = await getPostDetails(username, postId);
-          setValue("title", post.title);
-          setValue("tags", post.tags.join(", "));
-          setMarkdownContent(post.content);
-        } catch (error) {
-          console.error("Error fetching post data:", error);
-          alert("게시글을 불러오는데 오류가 발생했습니다.");
-        }
-      }
-    };
-    fetchPostData();
+    if (postId && typeof postId === "string") {
+      fetchPostData(postId as string);
+    }
   }, [postId, setValue, user]);
+
+  const fetchPostData = async (postId: string) => {
+    try {
+      const username = user?.displayName || "";
+      const post = await getPostDetails(username, postId);
+      setValue("title", post.title);
+      setValue("tags", post.tags.join(", "));
+      setMarkdownContent(post.content);
+    } catch (error) {
+      console.error("Error fetching post data:", error);
+      alert("게시글을 불러오는데 오류가 발생했습니다.");
+    }
+  };
 
   const onSubmit: SubmitHandler<PostFormInputs> = async (data) => {
     if (!user) {
@@ -64,11 +66,11 @@ const PostEdit: React.FC = () => {
         data.tags.split(",").map((tag) => tag.trim()),
         markdownContent
       );
-      setLoading(false);
       alert("게시글이 성공적으로 수정되었습니다!");
-      window.history.go(-1);
+      router.back();
     } catch (error) {
       console.error("게시글 수정 오류:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -119,9 +121,19 @@ const PostEdit: React.FC = () => {
     };
   }, []);
 
+  const inputStyle = darkMode
+    ? "bg-[#D9D9D9] text-gray-900 focus:ring-yellow-500"
+    : "bg-gray-100 text-gray-900 focus:ring-blue-500";
+
+  const buttonStyle = darkMode
+    ? "bg-[#010409] text-white border-[#656c76] hover:bg-[#101418] focus:ring-[#656c76]"
+    : "bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-600";
+
   return (
     <div
-      className="p-4 md:p-8 mx-auto mt-16 rounded-lg shadow-lg bg-white text-gray-900"
+      className={`p-4 md:p-8 mx-auto mt-16 rounded-lg shadow-lg ${
+        darkMode ? "bg-[#222121] text-gray-200" : "bg-white text-gray-900"
+      }`}
       style={{ maxWidth: "1200px", width: "90%" }}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -131,7 +143,7 @@ const PostEdit: React.FC = () => {
             id="title"
             {...register("title", { required: "제목은 필수 입력 항목입니다." })}
             type="text"
-            className="w-full p-3 rounded-md focus:outline-none focus:ring-2 bg-gray-100 text-gray-900 focus:ring-blue-500"
+            className={`w-full p-3 rounded-md focus:outline-none focus:ring-2 ${inputStyle}`}
             placeholder="제목을 입력하세요"
           />
           {errors.title && (
@@ -145,7 +157,7 @@ const PostEdit: React.FC = () => {
             id="tags"
             {...register("tags", { required: "태그는 필수 입력 항목입니다." })}
             type="text"
-            className="w-full p-3 rounded-md focus:outline-none focus:ring-2 bg-gray-100 text-gray-900 focus:ring-blue-500"
+            className={`w-full p-3 rounded-md focus:outline-none focus:ring-2 ${inputStyle}`}
             placeholder="태그를 입력해주세요. (태그1, 태그2, ...)"
           />
           {errors.tags && (
@@ -169,7 +181,7 @@ const PostEdit: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white focus:ring-2 focus:ring-blue-600"
+            className={`px-6 py-2 rounded-md border focus:outline-none focus:ring-2 ${buttonStyle}`}
           >
             {loading ? "수정 중..." : "수정하기"}
           </button>
