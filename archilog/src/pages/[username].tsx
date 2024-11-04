@@ -1,9 +1,8 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import { getAbout, getUserInfo } from "../firebase/users";
+import React, { useEffect, useState } from 'react';
+import { getUserInfo, getUsers } from "../firebase/users";
 import { getCurrentUserId } from '../firebase/auth';
 import dynamic from 'next/dynamic';
 import { useDarkMode } from "../contexts/DarkModeContext";
-import Image from 'next/image';
 import Link from "next/link";
 import User from '@/types/User';
 import getBasePath from '@/utils/getBasePath';

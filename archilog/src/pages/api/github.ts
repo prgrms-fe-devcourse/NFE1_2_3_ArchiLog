@@ -1,8 +1,20 @@
 // src/pages/api/github.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { parse } from 'cookie';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  interface GitHubRepo {
+    id: number;
+    name: string;
+    description: string | null;
+    html_url: string;
+    stargazers_count: number;
+    forks_count: number;
+    language: string | null;
+    topics: string[];
+    updated_at: string;
+    fork: boolean;
+  }
+
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -24,8 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // 포크된 저장소 제외하고 필요한 데이터만 필터링
     const repos = data
-      .filter((repo: any) => !repo.fork)
-      .map((repo: any) => ({
+      .filter((repo: GitHubRepo) => !repo.fork)
+      .map((repo: GitHubRepo) => ({
         id: repo.id,
         name: repo.name,
         description: repo.description,
@@ -36,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         topics: repo.topics || [],
         updated_at: repo.updated_at
       }))
-      .sort((a: any, b: any) => 
+      .sort((a: GitHubRepo, b: GitHubRepo) => 
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
       );
 

@@ -1,12 +1,11 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { ref, get, update } from "firebase/database";
 import { database } from "./firebase";
-import { getCurrentUserId } from "./auth";
 import User from "@/types/User";
 
 // 현재 사용자 정보
 export const getCurrentUserInfo = (): Promise<User | null> => { 
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve) => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       unsubscribe();
@@ -99,5 +98,25 @@ export const editAbout = async (resume: string) => {
   } catch (error) {
     console.error("Error updating user information:", error);
     throw new Error("Failed to update user information");
+  }
+};
+
+export const getUsers = async () => {
+  const userRef = ref(database, 'users/');
+
+  try {
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      console.log(users);
+      return users;
+    } else {
+      console.log('No users found.');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting users:', error);
+    throw error;
   }
 };

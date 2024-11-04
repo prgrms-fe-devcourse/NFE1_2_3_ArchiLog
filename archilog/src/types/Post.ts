@@ -5,7 +5,7 @@ type Post = {
     tags?: string[];
     createdAt?: string;
     updatedAt: string,
-    comments?: string[];
+    comments?: Comment[];
     authorId: string;
     thumbnail?: string;
 }

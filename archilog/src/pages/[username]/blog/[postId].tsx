@@ -15,14 +15,9 @@ import {
   deleteComment,
   deletePost,
 } from "@/firebase/posts";
+import Post from "@/types/Post";
+import Comment from "@/types/Comment";
 
-interface Comment {
-  id: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  createdAt: string;
-}
 
 // 목차 항목
 interface TOCItem {
@@ -32,10 +27,9 @@ interface TOCItem {
 }
 
 const PostDetail = () => {
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState<string>("");
-  const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [TOCData, setTOCData] = useState<TOCItem[]>([]);
 
@@ -65,39 +59,43 @@ const PostDetail = () => {
     }
   }, [post]);
 
-  // 게시글, 댓글
-  const loadPostDetails = async (postId: string) => {
-    try {
+// 게시글, 댓글
+const loadPostDetails = async (postId: string) => {
+  try {
       const user = auth.currentUser;
       const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
       setPost(postData);
+      console.log(postData);
 
-      const formattedComments = Object.entries(postData.comments || {}).map(
-        ([id, comment]) => {
-          const createdAtDate = new Date(comment.createdAt);
-          const formattedDate = new Intl.DateTimeFormat("ko-KR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }).format(createdAtDate);
+      const comments: Comment[] = Object.values(postData.comments || {});
 
-          return {
-            id,
-            ...comment,
-            createdAt: formattedDate,
-          };
-        }
-      );
+      const formattedComments = comments.map((comment: Comment) => {
+          if ('createdAt' in comment) {
+              const createdAtDate = new Date(comment.createdAt);
+              const formattedDate = new Intl.DateTimeFormat("ko-KR", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+              }).format(createdAtDate);
+
+              return {
+                  ...comment,
+                  createdAt: formattedDate,
+              } as Comment;
+          }
+          return null;
+      }).filter((comment): comment is Comment => comment !== null);
 
       setComments(formattedComments);
-    } catch (error) {
+  } catch (error) {
       console.error("Failed to fetch post details:", error);
-    }
-  };
+  }
+};
+
 
   const handleAddComment = async () => {
     if (!user) {
@@ -111,26 +109,38 @@ const PostDetail = () => {
     }
 
     try {
-      setLoading(true);
       await addComment(commentText, postId as string);
       setCommentText("");
       loadPostDetails(postId as string);
     } catch (error) {
       console.error("Error adding comment:", error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const handleDeleteComment = async (commentId: string) => {
     const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
     if (confirmDelete) {
       try {
+        const user = auth.currentUser;
+        const username = user?.displayName || "";
+        const postData = await getPostDetails(username, postId as string);
+
+        console.log(postData)
+        console.log(commentId);
+        
+        // 댓글이 해당 게시글에 존재하는지 확인
+        const commentExists = postData.comments && commentId in postData.comments;
+        if (!commentExists) {
+            alert("해당 댓글이 존재하지 않습니다.");
+            return;
+        }
+
         await deleteComment(postId as string, commentId);
-        loadPostDetails(postId as string);
-      } catch (error) {
+        loadPostDetails(postId as string); // 댓글 삭제 후 게시글 및 댓글 새로 고침
+    } catch (error) {
         console.error("Failed to delete comment:", error);
-      }
+        alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
     }
   };
 
@@ -279,7 +289,7 @@ const PostDetail = () => {
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
 
             <div className="flex items-center gap-2 mb-6">
-              {post.tags.map((tag: string, index: number) => (
+              {post.tags && post.tags.map((tag: string, index: number) => (
                 <span
                   key={index}
                   className={`text-sm px-2 py-1 rounded-full ${

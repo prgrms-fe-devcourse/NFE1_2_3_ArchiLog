@@ -31,7 +31,7 @@ function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
     const [owner, repo] = repoPath.split('/');
     if (!owner || !repo) throw new Error('Invalid GitHub URL');
     return { owner, repo };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
