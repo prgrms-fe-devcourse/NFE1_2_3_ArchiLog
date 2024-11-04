@@ -9,10 +9,7 @@ import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
 import { pasteImage, pasteImageUrl } from "@/utils/uploadImage";
 
-interface PostFormInputs {
-  title: string;
-  tags: string;
-}
+import { PostFormInputs } from "@/types/Post";
 
 const PostEdit: React.FC = () => {
   const router = useRouter();
@@ -77,15 +74,15 @@ const PostEdit: React.FC = () => {
   };
 
   const handlePaste = useCallback(async (event: React.ClipboardEvent) => {
-      event.preventDefault();
-      const files: File[] = Array.from(event.clipboardData.files);
-      await pasteImage(files);
+    event.preventDefault();
+    const files: File[] = Array.from(event.clipboardData.files);
+    await pasteImage(files);
   }, []);
 
   const handleDrop = useCallback(async (event: React.DragEvent) => {
-      event.preventDefault();
-      const files: File[] = Array.from(event.dataTransfer.files);
-      await pasteImage(files);
+    event.preventDefault();
+    const files: File[] = Array.from(event.dataTransfer.files);
+    await pasteImage(files);
   }, []);
 
   function onImageUpload(file: File) {
@@ -98,14 +95,26 @@ const PostEdit: React.FC = () => {
   useEffect(() => {
     const editorElement = editorRef.current;
     if (editorElement) {
-      editorElement.addEventListener("paste", handlePaste as unknown as EventListener);
-      editorElement.addEventListener("drop", handleDrop as unknown as EventListener);
+      editorElement.addEventListener(
+        "paste",
+        handlePaste as unknown as EventListener
+      );
+      editorElement.addEventListener(
+        "drop",
+        handleDrop as unknown as EventListener
+      );
     }
 
     return () => {
       if (editorElement) {
-        editorElement.removeEventListener("paste", handlePaste as unknown as EventListener);
-        editorElement.removeEventListener("drop", handleDrop as unknown as EventListener);
+        editorElement.removeEventListener(
+          "paste",
+          handlePaste as unknown as EventListener
+        );
+        editorElement.removeEventListener(
+          "drop",
+          handleDrop as unknown as EventListener
+        );
       }
     };
   }, []);
