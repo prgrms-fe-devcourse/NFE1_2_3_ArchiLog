@@ -95,7 +95,7 @@ const LoginLayout: React.FC = () => {
       if(user){
         router.push(`/${user.displayName}`);
       }
-    } catch (error) {
+    } catch {
       setErrorMessage("GitHub 로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };
@@ -107,7 +107,7 @@ const LoginLayout: React.FC = () => {
       if(user){
         router.push(`/${user.displayName}`);
       }
-    } catch (error) {
+    } catch {
       setErrorMessage("Google 로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };

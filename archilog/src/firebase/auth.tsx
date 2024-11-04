@@ -12,6 +12,8 @@ import {
 import { ref, set, get, child } from 'firebase/database';
 import { auth, database } from './firebase';
 import { useRouter } from 'next/router';
+import User from '@/types/User';
+import { User as AuthUser } from 'firebase/auth';
 
 // 이메일 중복 확인
 export const checkEmailExists = async (email: string) => {
@@ -19,7 +21,8 @@ export const checkEmailExists = async (email: string) => {
     const snapshot = await get(child(ref(database), 'users'));
     if (snapshot.exists()) {
       const users = snapshot.val();
-      return Object.values(users).some((user: any) => user.email === email);
+      // return Object.values(users).some((user: User) => user.email === email);
+      return Object.values(users as Record<string, User>).some((user) => user.email === email);
     }
     return false;
   } catch (error) {
@@ -34,7 +37,8 @@ export const checkUsernameExists = async (username: string) => {
     const snapshot = await get(child(ref(database), 'users'));
     if (snapshot.exists()) {
       const users = snapshot.val();
-      return Object.values(users).some((user: any) => user.username === username);
+      // return Object.values(users).some((user: any) => user.username === username);
+      return Object.values(users as Record<string, User>).some((user) => user.username === username);
     }
     return false;
   } catch (error) {
@@ -94,7 +98,7 @@ export const signUp = async (
     alert("회원가입이 완료되었습니다. 메인 페이지로 이동합니다.");
     router.push(`/${user.displayName}`); 
     return user;
-  } catch (error: any) {
+  } catch (error) {
     console.error("회원가입 오류:", error);
     throw new Error("회원가입에 실패했습니다. 다시 시도해주세요.");
   }
@@ -105,14 +109,15 @@ export const signIn = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
-  } catch (error: any) {
+  } catch (error) {
     console.log("로그인 오류 발생");
 
-    if (error.code === 'auth/user-not-found') {
+    const firebaseError = error as { code: string };
+    if (firebaseError.code === 'auth/user-not-found') {
       return "등록된 이메일을 찾을 수 없습니다. 회원가입을 진행해 주세요.";
-    } else if (error.code === 'auth/wrong-password') {
+    } else if (firebaseError.code === 'auth/wrong-password') {
       return "비밀번호가 올바르지 않습니다. 다시 시도해 주세요.";
-    } else if (error.code === 'auth/too-many-requests') {
+    } else if (firebaseError.code === 'auth/too-many-requests') {
       return "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.";
     } else {
       return "로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.";
@@ -133,7 +138,7 @@ export const signInWithGithubPopup = async () => {
       createUserData(result.user);
     }
     return result.user;
-  } catch (error: any) {
+  } catch (error) {
     console.error("깃허브 로그인 오류:", error);
     throw error;
   }
@@ -153,23 +158,23 @@ export const signInWithGooglePopup = async () => {
     }
 
     return result.user;
-  } catch (error: any) {
+  } catch (error) {
     console.error("구글 로그인 오류:", error);
     throw error;
   }
 };
 
-const createUserData = async (user: any) => {
+const createUserData = async (user: AuthUser) => {
   console.log('실행')
   if (user) {
     const timestamp = Date.now();
 
     let name = '';
     const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-    if (korean.test(user.displayName)) {
-      name = user.email.split("@")[0];
+    if (korean.test(user.displayName || '')) {
+      name = (user.email || '').split("@")[0];
     } else {
-      name = user.displayName;
+      name = user.displayName || '';
     }
  
     await set(ref(database, `users/${name}`), {
@@ -191,7 +196,7 @@ export const logOutAndRedirect = async (router: ReturnType<typeof useRouter>) =>
   try {
     await signOut(auth);
     router.push("/login");
-  } catch (error: any) {
+  } catch (error) {
     console.error("로그아웃 오류:", error);
     throw error;
   }

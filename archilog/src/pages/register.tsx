@@ -56,8 +56,9 @@ const RegisterLayout: React.FC = () => {
 
     try {
       await signUp(email, password, username, router);
-    } catch (error: any) {
-      if (error.code === "auth/email-already-in-use") {
+    } catch (error) {
+      const firebaseError = error as { code: string };
+      if (firebaseError.code === "auth/email-already-in-use") {
         setErrorMessage("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");
       } else {
         setErrorMessage("이미 존재하는 이메일입니다. 다른 이메일을 사용해주세요.");

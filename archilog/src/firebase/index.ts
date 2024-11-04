@@ -22,7 +22,7 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // Error Handler
-const handleApiError = (error: any): ApiResponse<null> => {
+const handleApiError = (error: unknown): ApiResponse<null> => {
   console.error("API Error:", error);
   return {
     success: false,

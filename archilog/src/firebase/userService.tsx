@@ -70,9 +70,11 @@ export const createUserProfile = async (userId: string, userData: { email: strin
 
     await set(userRef, userProfile);
     return userProfile;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating user profile:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -84,9 +86,11 @@ export const getUserProfile = async (userId: string) => {
       return snapshot.val() as UserProfile;
     }
     return null;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error getting user profile:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -95,9 +99,11 @@ export const updateUserProfile = async (userId: string, updates: Partial<UserPro
     checkUserAuth(userId);  // 인증 확인
     const userRef = ref(db, `users/${userId}`);
     await update(userRef, updates);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating user profile:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -109,9 +115,11 @@ export const updateProfileInfo = async (userId: string, profileData: Partial<Pro
       ...profileData,
       updatedAt: Date.now()
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating profile info:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -120,9 +128,11 @@ export const deleteUserProfile = async (userId: string) => {
     checkUserAuth(userId);  // 인증 확인
     const userRef = ref(db, `users/${userId}`);
     await remove(userRef);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error deleting user profile:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -135,9 +145,11 @@ export const addUserPost = async (userId: string, postData: Omit<Post, 'createdA
       ...postData,
       createdAt: new Date().toString()
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error adding post:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -150,9 +162,11 @@ export const addUserProject = async (userId: string, projectData: Omit<Project, 
       ...projectData,
       createdAt: new Date().toString()
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error adding project:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -165,9 +179,11 @@ export const getUserPosts = async (userId: string) => {
       return snapshot.val() as Record<string, Post>;
     }
     return null;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error getting user posts:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -180,8 +196,10 @@ export const getUserProjects = async (userId: string) => {
       return snapshot.val() as Record<string, Project>;
     }
     return null;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error getting user projects:', error);
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };

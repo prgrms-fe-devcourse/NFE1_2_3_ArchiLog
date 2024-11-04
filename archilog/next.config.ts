@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
   /* config options here */
 };
 module.exports = removeImports({
+  output: 'export',
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

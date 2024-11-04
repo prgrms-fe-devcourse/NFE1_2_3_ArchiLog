@@ -5,7 +5,7 @@ import  { pasteImage } from '../utils/uploadImage';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import React from 'react';
-import { editAbout, getCurrentUserInfo, getUserInfo } from "../firebase/users";
+import { editAbout, getUserInfo } from "../firebase/users";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import { useRouter } from 'next/router';
 import { auth } from "@/firebase/firebase";

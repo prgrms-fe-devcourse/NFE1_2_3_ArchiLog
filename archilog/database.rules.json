@@ -1,0 +1,86 @@
+{
+  "rules": {
+    "projects": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["createdAt"],  
+      "$projectId": {
+        ".validate": "newData.hasChildren(['userId', 'repoUrl', 'createdAt', 'repoInfo'])",
+        "userId": {
+          ".validate": "newData.isString()"
+        },
+        "repoUrl": {
+          ".validate": "newData.isString()"
+        },
+        "customDescription": {
+          ".validate": "newData.isString()"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "thumbnailUrl": {
+          ".validate": "newData.isString() || newData.val() == null"
+        },
+        "images": {
+          "$imageId": {
+            ".validate": "newData.isString() && newData.val().matches(/^https:\\/\\/.*$/)"
+          }
+        }
+      }
+    },
+    "users": {
+      ".read": true,
+      ".write": true,
+      "$username": {
+        "projects": {
+          ".indexOn": ["createdAt"]
+        },
+        "username": {
+          ".validate": "newData.isString() || newData.val() == null"
+        },
+        "resume": {
+          ".validate": "newData.isString() || newData.val() == null"
+        },  
+      },
+    },
+    "verificationCodes": {              
+      ".read": "auth != null",         
+      ".write": "auth != null"          
+    },
+    "posts": {
+      ".read": true,
+      ".write": "auth != null",
+      "$postId": {
+        ".validate": "newData.hasChildren(['title', 'content', 'authorId', 'createdAt'])",
+        "title": {
+          ".validate": "newData.isString()"
+        },
+        "content": {
+          ".validate": "newData.isString()"
+        },
+        "authorId": {
+          ".validate": "newData.isString() && newData.val() === auth.uid"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        },
+        "imageUrl": {
+          ".validate": "newData.isString() || newData.val() == null"
+        },
+        "images": {
+          "$imageId": {
+            ".validate": "newData.isString() && newData.val().matches(/^https:\\/\\/.*$/)"
+          }
+        }
+      },
+      "author": {
+        ".read": true,
+        ".write": "auth != null",
+        "$uid": {
+          ".read": true,
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    }
+  }
+}
