@@ -18,7 +18,7 @@ import {
 import Post from "@/types/Post";
 import Comment from "@/types/Comment";
 
-import { Comment, TOCItem } from "@/types/Post";
+import { TOCItem } from "@/types/Post";
 
 const PostDetail = () => {
   const [post, setPost] = useState<Post | null>(null);
@@ -91,20 +91,6 @@ const PostDetail = () => {
       console.error("Failed to fetch post details:", error);
     }
   };
-
-  const formatComments = (comments: Record<string, any>): Comment[] =>
-    Object.entries(comments).map(([id, comment]) => ({
-      id,
-      ...comment,
-      createdAt: new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }).format(new Date(comment.createdAt)),
-    }));
 
   const handleAddComment = async () => {
     if (!user) {
@@ -187,7 +173,7 @@ const PostDetail = () => {
       // 한국어 제목
       let id = text
         .replace(/\s+/g, "-")
-        .replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]/g, "")
+        .replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ-]/g, "")
         .toLowerCase();
 
       // 중복된 제목

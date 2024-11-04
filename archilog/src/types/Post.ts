@@ -1,13 +1,13 @@
 type Post = {
-    id: string;
-    title: string;
-    content: string;
-    tags?: string[];
-    createdAt?: string;
-    updatedAt: string,
-    comments?: Comment[];
-    authorId: string;
-    thumbnail?: string;
+  id: string;
+  title: string;
+  content: string;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt: string;
+  comments?: Comment[];
+  authorId: string;
+  thumbnail?: string;
 };
 
 export interface PostFormInputs {
@@ -17,14 +17,6 @@ export interface PostFormInputs {
 
 export interface PostFormProps {
   darkMode: boolean;
-}
-
-export interface Comment {
-  id: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  createdAt: string;
 }
 
 // 목차 항목
