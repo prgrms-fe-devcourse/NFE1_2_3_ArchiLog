@@ -3,7 +3,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { addPost } from "../firebase/posts";
 import { auth } from "../firebase/firebase";
-
 import "react-markdown-editor-lite/lib/index.css"; // 마크다운 에디터 스타일
 import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
