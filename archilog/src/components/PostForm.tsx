@@ -1,24 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
-import dynamic from "next/dynamic";
 import { addPost } from "../firebase/posts";
 import { auth } from "../firebase/firebase";
 
 import "react-markdown-editor-lite/lib/index.css"; // 마크다운 에디터 스타일
 import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
-import { useRouter } from "next/router";
 import { pasteImage, pasteImageUrl } from "@/utils/uploadImage";
 
-interface PostFormInputs {
-  title: string;
-  tags: string;
-}
-
-interface PostFormProps {
-  darkMode: boolean;
-}
+import { PostFormInputs, PostFormProps } from "@/types/Post";
 
 const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   const {
@@ -29,7 +20,6 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   const [markdownContent, setMarkdownContent] = useState<string>("");
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const mdParser = new MarkdownIt();
   const editorRef = useRef<HTMLDivElement | null>(null);
 
@@ -107,6 +97,14 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
     };
   }, []);
 
+  const inputStyle = darkMode
+    ? "bg-[#D9D9D9] text-gray-900 focus:ring-yellow-500"
+    : "bg-gray-100 text-gray-900 focus:ring-blue-500";
+
+  const buttonStyle = darkMode
+    ? "bg-[#010409] text-white border-[#656c76] hover:bg-[#101418] focus:ring-[#656c76]"
+    : "bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-600";
+
   return (
     <div
       className={`p-4 md:p-8 mx-auto mt-16 rounded-lg shadow-lg ${
@@ -121,11 +119,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
             id="title"
             {...register("title", { required: "제목은 필수 입력 항목입니다." })}
             type="text"
-            className={`w-full p-3 rounded-md focus:outline-none focus:ring-2 ${
-              darkMode
-                ? "bg-[#D9D9D9] text-gray-900 focus:ring-yellow-500"
-                : "bg-gray-100 text-gray-900 focus:ring-blue-500"
-            }`}
+            className={`w-full p-3 rounded-md focus:outline-none focus:ring-2 ${inputStyle}`}
             placeholder="제목을 입력하세요"
           />
           {errors.title && (
@@ -139,11 +133,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
             id="tags"
             {...register("tags", { required: "태그는 필수 입력 항목입니다." })}
             type="text"
-            className={`w-full p-3 rounded-md focus:outline-none focus:ring-2 ${
-              darkMode
-                ? "bg-[#151B23] text-[#ffffff] focus:ring-yellow-500"
-                : "bg-gray-100 text-gray-900 focus:ring-blue-500"
-            }`}
+            className={`w-full p-3 rounded-md focus:outline-none focus:ring-2 ${inputStyle}`}
             placeholder="태그를 입력해주세요. (태그1, 태그2, ...)"
           />
           {errors.tags && (
@@ -166,11 +156,7 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`px-6 py-2 rounded-md border focus:outline-none focus:ring-2 ${
-              darkMode
-                ? "bg-[#010409] text-white border-[#656c76] hover:bg-[#101418] focus:ring-[#656c76]"
-                : "bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-600"
-            }`}
+            className={`px-6 py-2 rounded-md border focus:outline-none focus:ring-2 ${buttonStyle}`}
           >
             {loading ? "등록 중..." : "등록하기"}
           </button>
