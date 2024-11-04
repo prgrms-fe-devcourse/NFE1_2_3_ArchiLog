@@ -99,7 +99,7 @@ const AboutUs = () => {
             <div className="relative w-full md:w-[627px] h-[400px] rounded-lg overflow-visible group p-2">
               <div className="absolute inset-0 transition-all duration-300 group-hover:scale-110 group-hover:z-50">
                 <Image
-                  src="/images/project.png"
+                  src="../../public/images/Project.png"
                 alt="Project 페이지 미리보기"
                   fill
                   className="object-cover rounded-lg shadow-lg"
@@ -122,7 +122,7 @@ const AboutUs = () => {
             <div className="relative w-full md:w-[620px] h-[320px] rounded-lg overflow-visible group p-2">
               <div className="absolute inset-0 transition-all duration-300 group-hover:scale-110 group-hover:z-50">
                 <Image
-                  src="/images/blog.png"
+                  src="../../public/images/Blog.png"
                 alt="Blog 페이지 미리보기"
                   fill
                   className="object-cover rounded-lg shadow-lg"
