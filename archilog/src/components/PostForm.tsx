@@ -67,9 +67,9 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   }, []);
 
   const handleDrop = useCallback(async (event: React.DragEvent) => {
-      event.preventDefault();
-      const files: File[] = Array.from(event.dataTransfer.files);
-      await pasteImage(files);
+    event.preventDefault();
+    const files: File[] = Array.from(event.dataTransfer.files);
+    await pasteImage(files);
   }, []);
 
   function onImageUpload(file: File) {
@@ -82,14 +82,26 @@ const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   useEffect(() => {
     const editorElement = editorRef.current;
     if (editorElement) {
-      editorElement.addEventListener("paste", handlePaste as unknown as EventListener);
-      editorElement.addEventListener("drop", handleDrop as unknown as EventListener);
+      editorElement.addEventListener(
+        "paste",
+        handlePaste as unknown as EventListener
+      );
+      editorElement.addEventListener(
+        "drop",
+        handleDrop as unknown as EventListener
+      );
     }
 
     return () => {
       if (editorElement) {
-        editorElement.removeEventListener("paste", handlePaste as unknown as EventListener);
-        editorElement.removeEventListener("drop", handleDrop as unknown as EventListener);
+        editorElement.removeEventListener(
+          "paste",
+          handlePaste as unknown as EventListener
+        );
+        editorElement.removeEventListener(
+          "drop",
+          handleDrop as unknown as EventListener
+        );
       }
     };
   }, []);
