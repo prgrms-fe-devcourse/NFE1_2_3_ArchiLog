@@ -6,16 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export"
   },
   "dependencies": {
     "@uiw/react-md-editor": "^4.0.4",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "firebase": "^11.0.1",
+    "firebase": "^10.0.0",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.1.0",
+    "firebase-tools": "^13.23.1",
+    "global": "^4.4.0",
     "lucide-react": "^0.453.0",
     "markdown-it": "^14.1.0",
     "next": "^15.0.1",

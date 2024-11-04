@@ -1,5 +1,5 @@
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 
 const LoginLayout: React.FC = () => {

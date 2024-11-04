@@ -11,7 +11,6 @@ import {
   DatabaseReference,
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { getCurrentUserId } from "./auth";
 import Post from "@/types/Post";
 
 // 사용자 인증
@@ -101,10 +100,13 @@ export const addComment = async (content: string, postId: string) => {
   );
 
   try {
-    await push(commentsRef, {
+    const newCommentRef = push(commentsRef);
+
+    await set(newCommentRef, {
+      id: newCommentRef.key,
       content: content,
       authorId: user.uid,
-      authorName: user.displayName, // 추가: 작성자 이름
+      authorName: user.displayName,
       createdAt: serverTimestamp(),
     });
 

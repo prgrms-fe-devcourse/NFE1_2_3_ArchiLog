@@ -6,7 +6,7 @@ type User = {
     createdAt: string,
     userId: string,
     resume: string,
-    project: any[],
+    project: [],
     posts: Post []
 }
 
