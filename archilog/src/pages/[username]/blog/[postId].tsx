@@ -218,7 +218,7 @@ const PostDetail = () => {
             </ul>
           </aside>
 
-          {/* Left Content */}
+          {/* 게시물 수정, 삭제 드롭다운 */}
           <div className="flex-grow ml-4 mr-8">
             {user?.uid === post.authorId && (
               <div className="flex justify-end mb-2">
@@ -263,6 +263,7 @@ const PostDetail = () => {
               </div>
             )}
 
+            {/* 게시물 */}
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
 
             <div className="flex items-center gap-2 mb-6">
