@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = () => {
   return (
     <header
       className={`w-screen px-5 border-b border-gray-700 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
+        darkMode ? "bg-black text-white" : "bg-white text-black"
       }`}
     >
       <div

@@ -282,10 +282,10 @@ const PostDetail = () => {
               {post.tags.map((tag: string, index: number) => (
                 <span
                   key={index}
-                  className={`text-sm px-2 py-1 rounded-full ${
+                  className={`text-sm font-bold px-2 py-1 rounded-full text-white dark:text-black ${
                     darkMode
-                      ? "bg-gray-800 text-gray-400"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-[#FDAD00] "
+                      : "bg-[#94B9F3]"
                   }`}
                 >
                   #{tag}
