@@ -26,6 +26,7 @@ const PostDetail = () => {
   const [commentText, setCommentText] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [TOCData, setTOCData] = useState<TOCItem[]>([]);
+  const [TOCOffset, setTOCOffset] = useState(0);
 
   const [user] = useAuthState(auth);
   const router = useRouter();
@@ -52,6 +53,19 @@ const PostDetail = () => {
       });
     }
   }, [post]);
+
+  // Scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const postContentTop =
+        postContentRef.current?.getBoundingClientRect().top || 0;
+      const viewportHeight = window.innerHeight;
+      setTOCOffset(Math.max(0, -postContentTop + 120));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // 게시글, 댓글
   const loadPostDetails = async (postId: string) => {
@@ -312,12 +326,16 @@ const PostDetail = () => {
 
           {/* 목차 for Desktop */}
           <aside
-            className={`hidden lg:block lg:sticky lg:top-24 lg:h-full lg:max-h-screen overflow-auto lg:w-80 rounded-lg border ${
+            className={`lg:w-80 hidden lg:block fixed right-0 top-24 p-4 overflow-auto border rounded-lg ${
               darkMode
                 ? "bg-gray-800 border-gray-600"
                 : "bg-gray-100 border-gray-300"
-            } p-4 mb-6 lg:mb-0`}
-            style={{ minWidth: "190px" }}
+            }`}
+            style={{
+              right: "50px",
+              maxHeight: "calc(100vh - 120px)",
+              minWidth: "240px",
+            }}
           >
             <h2 className="text-xl font-semibold">목차</h2>
             <ul className="space-y-1 mt-4">
