@@ -9,14 +9,7 @@ import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
 import { pasteImage, pasteImageUrl } from "@/utils/uploadImage";
 
-interface PostFormInputs {
-  title: string;
-  tags: string;
-}
-
-interface PostFormProps {
-  darkMode: boolean;
-}
+import { PostFormInputs, PostFormProps } from "@/types/Post";
 
 const PostForm: React.FC<PostFormProps> = ({ darkMode }) => {
   const {
