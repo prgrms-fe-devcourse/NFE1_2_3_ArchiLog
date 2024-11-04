@@ -16,20 +16,7 @@ import {
   deletePost,
 } from "@/firebase/posts";
 
-interface Comment {
-  id: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  createdAt: string;
-}
-
-// 목차 항목
-interface TOCItem {
-  id: string;
-  text: string | null;
-  level: string;
-}
+import { Comment, TOCItem } from "@/types/Post";
 
 const PostDetail = () => {
   const [post, setPost] = useState<any>(null);
@@ -68,36 +55,30 @@ const PostDetail = () => {
   // 게시글, 댓글
   const loadPostDetails = async (postId: string) => {
     try {
-      const user = auth.currentUser;
-      const username = user?.displayName || "";
-      const postData = await getPostDetails(username, postId);
-      setPost(postData);
-
-      const formattedComments = Object.entries(postData.comments || {}).map(
-        ([id, comment]) => {
-          const createdAtDate = new Date(comment.createdAt);
-          const formattedDate = new Intl.DateTimeFormat("ko-KR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }).format(createdAtDate);
-
-          return {
-            id,
-            ...comment,
-            createdAt: formattedDate,
-          };
-        }
+      const postData = await getPostDetails(
+        auth.currentUser?.displayName || "",
+        postId
       );
-
-      setComments(formattedComments);
+      setPost(postData);
+      setComments(formatComments(postData.comments || {}));
     } catch (error) {
       console.error("Failed to fetch post details:", error);
     }
   };
+
+  const formatComments = (comments: Record<string, any>): Comment[] =>
+    Object.entries(comments).map(([id, comment]) => ({
+      id,
+      ...comment,
+      createdAt: new Intl.DateTimeFormat("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(new Date(comment.createdAt)),
+    }));
 
   const handleAddComment = async () => {
     if (!user) {
@@ -123,14 +104,13 @@ const PostDetail = () => {
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
-    if (confirmDelete) {
-      try {
-        await deleteComment(postId as string, commentId);
-        loadPostDetails(postId as string);
-      } catch (error) {
-        console.error("Failed to delete comment:", error);
-      }
+    if (!confirm("정말로 댓글을 삭제하시겠습니까?")) return;
+
+    try {
+      await deleteComment(postId as string, commentId);
+      loadPostDetails(postId as string);
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
     }
   };
 
@@ -140,14 +120,13 @@ const PostDetail = () => {
   };
 
   const handleDeletePost = async () => {
-    const confirmDelete = confirm("정말로 게시글을 삭제하시겠습니까?");
-    if (confirmDelete) {
-      try {
-        await deletePost(postId as string);
-        router.push(`/${user?.displayName}/blog`);
-      } catch (error) {
-        console.error("Failed to delete post:", error);
-      }
+    if (!confirm("정말로 게시글을 삭제하시겠습니까?")) return;
+
+    try {
+      await deletePost(postId as string);
+      router.push(`/${user?.displayName}/blog`);
+    } catch (error) {
+      console.error("Failed to delete post:", error);
     }
   };
 
@@ -190,11 +169,7 @@ const PostDetail = () => {
   };
 
   const handleScrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    console.log(`element: ${element}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -231,7 +206,7 @@ const PostDetail = () => {
             </ul>
           </aside>
 
-          {/* Left Content */}
+          {/* 게시물 수정, 삭제 드롭다운 */}
           <div className="flex-grow ml-4 mr-8">
             {user?.uid === post.authorId && (
               <div className="flex justify-end mb-2">
@@ -276,6 +251,7 @@ const PostDetail = () => {
               </div>
             )}
 
+            {/* 게시물 */}
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
 
             <div className="flex items-center gap-2 mb-6">
