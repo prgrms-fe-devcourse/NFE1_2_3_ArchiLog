@@ -16,20 +16,7 @@ import {
   deletePost,
 } from "@/firebase/posts";
 
-interface Comment {
-  id: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  createdAt: string;
-}
-
-// 목차 항목
-interface TOCItem {
-  id: string;
-  text: string | null;
-  level: string;
-}
+import { Comment, TOCItem } from "@/types/Post";
 
 const PostDetail = () => {
   const [post, setPost] = useState<any>(null);
