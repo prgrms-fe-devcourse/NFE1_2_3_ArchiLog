@@ -17,35 +17,14 @@ ArchiLog는 IT 취업 준비생을 위한 차별화된 온라인 이력서 플�
 
 ### 📌 실행하기
 레포지토리를 클론합니다.
-  git clone https://github.com/prgrms-fe-devcourse/NFE1_2_3_Quote.git
-각 환경에서 필요한 패키지를 설치합니다. (frontend, backend)
-  npm install
+    git clone https://github.com/prgrms-fe-devcourse/NFE1_2_3_ArchiLog
+필요한 패키지를 설치합니다.
+    npm install
+폴더로 이동합니다
+    cd archilog
+필요한 환경 변수를 설정한 후 실행합니다.
+    npm run dev
 
-  npm run dev
+### ✨ 배포
+https://archilog-7b615.web.app/
 
-리포지토리를 클론합니다.
-  git clone https://github.com/prgrms-fe-devcourse/NFE1_2_3_AppleNote.git
-
-  cd NFE1_2_3_AppleNote
-Root 환경에서 필요한 패키지를 설치합니다.
-  npm install
-prepare 스크립트를 실행합니다.
-  npm run prepare
-각 환경에서 작업할 환경으로 이동합니다. (frontend, backend)
-  cd frontend, backend
-각 환경에서 필요한 패키지를 설치합니다. (frontend, backend)
-  npm install
-.env 파일을 생성하고 필요한 환경 변수를 설정합니다.
-Tip
-
-
-설치 및 실행 방법 🚀
-1. 클론하기
-git clone https://github.com/username/clogging.git
-cd clogging
-2. 의존성 설치
-npm install
-3. 로컬 서버 실행
-npm run dev
-4. 배포
-(추가 예정) 통해 배포할 수 있습니다. (추가 예정) 배포 명령어는 다음과 같습니다:
