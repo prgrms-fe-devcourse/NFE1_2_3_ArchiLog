@@ -331,6 +331,7 @@ const PostDetail = () => {
                 ? "bg-gray-800 border-gray-600"
                 : "bg-gray-100 border-gray-300"
             } p-4 mb-6 lg:mb-0`}
+            style={{ minWidth: "190px" }}
           >
             <h2 className="text-xl font-semibold">목차</h2>
             <ul className="space-y-1 mt-4">
