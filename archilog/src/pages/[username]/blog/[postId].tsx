@@ -26,7 +26,7 @@ const PostDetail = () => {
   const [commentText, setCommentText] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [TOCData, setTOCData] = useState<TOCItem[]>([]);
-  const [TOCOffset, setTOCOffset] = useState(0);
+  const [TOCOffset, setTOCOffset] = useState(-120);
 
   const [user] = useAuthState(auth);
   const router = useRouter();
@@ -60,8 +60,7 @@ const PostDetail = () => {
     const handleScroll = () => {
       const postContentTop =
         postContentRef.current?.getBoundingClientRect().top || 0;
-      const viewportHeight = window.innerHeight;
-      setTOCOffset(Math.max(0, -postContentTop + 120));
+      setTOCOffset(Math.max(0, -postContentTop + 300));
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -207,12 +206,12 @@ const PostDetail = () => {
 
   return (
     <div
-      className={`max-w-5xl mx-auto mt-8 p-6 rounded-lg shadow-md ${
+      className={`w-full max-w-5xl mx-auto mt-8 p-4 md:p-6 rounded-lg shadow-md ${
         darkMode ? "bg-black text-gray-100" : "bg-white text-gray-900"
       }`}
     >
       {post && (
-        <div className="flex flex-col lg:flex-row">
+        <div className="grid gap-6 lg:grid-cols-[3fr,1fr] lg:gap-12">
           {/* 목차 for Mobile */}
           <aside
             className={`lg:hidden rounded-lg border ${
@@ -239,8 +238,8 @@ const PostDetail = () => {
             </ul>
           </aside>
 
-          {/* 게시물 수정, 삭제 드롭다운 */}
-          <div className="flex-grow ml-4 mr-8">
+          {/* 게시물 콘텐츠 */}
+          <div className="flex-grow lg:ml-4 lg:mr-8">
             {user?.uid === post.authorId && (
               <div className="flex justify-end mb-2">
                 <div className="relative">
@@ -283,17 +282,15 @@ const PostDetail = () => {
                 </div>
               </div>
             )}
-
-            {/* 게시물 */}
+            {/* 드롭다운 및 게시글 내용 */}
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-
             <div className="flex items-center gap-2 mb-6">
               {post.tags &&
-                post.tags.map((tag: string, index: number) => (
+                post.tags.map((tag, index) => (
                   <span
                     key={index}
                     className={`text-sm font-bold px-2 py-1 rounded-full text-white dark:text-black ${
-                      darkMode ? "bg-[#FDAD00] " : "bg-[#94B9F3]"
+                      darkMode ? "bg-[#FDAD00]" : "bg-[#94B9F3]"
                     }`}
                   >
                     #{tag}
@@ -301,7 +298,6 @@ const PostDetail = () => {
                 ))}
             </div>
 
-            {/* 게시글 내용 */}
             <div
               className={`prose ${
                 darkMode ? "prose-invert" : ""
@@ -311,23 +307,28 @@ const PostDetail = () => {
               <MarkdownPreview
                 source={post.content}
                 rehypePlugins={[rehypeRaw, rehypeSlug, rehypeAutolinkHeadings]}
-                className={`bg-transparent
-              ${darkMode ? "text-gray-400" : "text-gray-700"}`}
+                className={`bg-transparent ${
+                  darkMode ? "text-gray-400" : "text-gray-700"
+                }`}
               />
             </div>
           </div>
 
           {/* 목차 for Desktop */}
           <aside
-            className={`lg:w-80 hidden lg:block fixed right-0 top-24 p-4 overflow-auto border rounded-lg ${
+            className={`hidden lg:block lg:sticky top-24 p-4 border rounded-lg ${
               darkMode
                 ? "bg-gray-800 border-gray-600"
                 : "bg-gray-100 border-gray-300"
             }`}
             style={{
-              right: "50px",
-              maxHeight: "calc(100vh - 120px)",
+              top: `${TOCOffset}px`,
+              height: "auto",
+              maxHeight: `${Math.min(TOCData.length * 3, 55)}rem`,
+              // 아이템 수에 따른 최대 높이 제한
+              minHeight: "7rem",
               minWidth: "240px",
+              overflowY: "hidden",
             }}
           >
             <h2 className="text-xl font-semibold">목차</h2>
