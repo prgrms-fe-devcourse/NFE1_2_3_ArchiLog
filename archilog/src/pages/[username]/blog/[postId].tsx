@@ -30,6 +30,7 @@ const PostDetail = () => {
 
   const [user] = useAuthState(auth);
   const router = useRouter();
+  const username = router.asPath.split('/').slice(1, 2)[0];
   const { postId } = router.query;
   const postContentRef = useRef<HTMLDivElement>(null);
   const { darkMode } = useDarkMode();
@@ -70,11 +71,8 @@ const PostDetail = () => {
   // 게시글, 댓글
   const loadPostDetails = async (postId: string) => {
     try {
-      const user = auth.currentUser;
-      const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
       setPost(postData);
-      console.log(postData);
 
       const comments: Comment[] = Object.values(postData.comments || {});
 
@@ -130,12 +128,7 @@ const PostDetail = () => {
     const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
     if (confirmDelete) {
       try {
-        const user = auth.currentUser;
-        const username = user?.displayName || "";
         const postData = await getPostDetails(username, postId as string);
-
-        console.log(postData);
-        console.log(commentId);
 
         // 댓글이 해당 게시글에 존재하는지 확인
         const commentExists =
@@ -359,7 +352,7 @@ const PostDetail = () => {
 
       {/* 댓글 작성 및 댓글 목록 */}
       <div className="mt-8 space-y-4">
-        {user ? (
+        {(
           <div
             className={`flex items-center rounded-full px-4 py-3 mt-4 ${
               darkMode
@@ -395,8 +388,6 @@ const PostDetail = () => {
               </svg>
             </button>
           </div>
-        ) : (
-          <p className="text-gray-500">로그인 후 댓글 작성이 가능합니다.</p>
         )}
         <ul className="space-y-4">
           {comments.map((comment) => (
