@@ -108,7 +108,7 @@ const AboutUs = () => {
            <div className="relative w-full md:w-[627px] h-[400px] rounded-lg overflow-visible group p-2">
              <div className="absolute inset-0 transition-all duration-300 group-hover:scale-110 group-hover:z-50">
                <Image
-                 src="/images/project.png"
+                 src="/images/Project.png"
                  alt="Project 페이지 미리보기"
                  width={627}
                  height={400}
