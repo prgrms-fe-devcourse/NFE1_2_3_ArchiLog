@@ -74,10 +74,10 @@ const Header: React.FC<HeaderProps> = () => {
           </Link>
         </div>
         
-        { !isLoggedIn && splitUrl[1] !== 'AboutUs' &&
+        { !isLoggedIn && (splitUrl[1] === 'login' || splitUrl[1] === 'register') &&
           <header
           className={`w-screen border-gray-700 ${
-            darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
+            darkMode ? "bg-black text-white" : "bg-white text-black"
           }`}
         >
           <div className="flex justify-between items-center mx-auto" style={{ height: "80px" }}>
@@ -90,13 +90,22 @@ const Header: React.FC<HeaderProps> = () => {
               >
                 AboutUs
               </Link>
+              <Link
+                href="/login"
+                className={`text-sm md:text-base lg:text-lg${
+                  darkMode ? "text-white hover:text-[#FDAD00]" : "text-black hover:text-[#4CAF50]"
+                }`}
+              >
+                Login
+              </Link>
+              
             </nav>
           </div>
         </header>
         }
 
         {/* 로그인 여부에 따른 네비게이션 메뉴 */}
-        {isLoggedIn && (
+        {(isLoggedIn || logo !== 'Archilog') && (basePath !== 'login' && basePath !== 'register') && (
           <nav className="hidden md:flex space-x-5 ml-auto">
             <Link
               href={`/${basePath}`}
@@ -128,7 +137,7 @@ const Header: React.FC<HeaderProps> = () => {
             >
               Blog
             </Link>
-            <button
+           { isLoggedIn && <button
                 onClick={handleLogout}
                 className={`text-sm md:text-lg lg:text-lg ${
                   darkMode
@@ -137,10 +146,22 @@ const Header: React.FC<HeaderProps> = () => {
                 }`}
               >
                 Logout
-              </button>
+              </button>}
+              {
+                 !isLoggedIn && <button
+                 onClick={handleLogout}
+                 className={`text-sm md:text-lg lg:text-lg ${
+                   darkMode
+                     ? "text-white hover:text-[#FDAD00]"
+                     : "text-black hover:text-[#4CAF50]"
+                 }`}
+               >
+                 Login
+               </button>
+               }
           </nav>
         )}
-        {!isLoggedIn && splitUrl[1] !== 'login' && splitUrl[1] !== 'register' && (
+        {/* {!isLoggedIn && splitUrl[1] !== 'login' && splitUrl[1] !== 'register' && (
           <button
             onClick={handleLogin}
             className={`text-sm md:text-base lg:text-lg ml-auto pl-5 ${
@@ -151,7 +172,7 @@ const Header: React.FC<HeaderProps> = () => {
           >
             Login
           </button>
-        )}
+        )} */}
 
         {/* 계정 아이콘 */}
         {/* <div className="hidden md:flex items-center ml-5">
@@ -168,8 +189,8 @@ const Header: React.FC<HeaderProps> = () => {
         </div>
 
         {/* 모바일 햄버거 메뉴 (로그인 후에만 표시) */}
-        {isLoggedIn && (
-          <div className="md:hidden flex items-center ml-auto">
+        { (
+          <div className="md:hidden flex items-center ml-auto pl-4">
             <button onClick={toggleSidebar}>
               <span
                 className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
@@ -182,7 +203,7 @@ const Header: React.FC<HeaderProps> = () => {
       </div>
 
 
-      {isLoggedIn && sidebarOpen && (
+      {sidebarOpen && (logo === 'ArchiLog') && (
         <div
           className={`fixed top-0 right-0 w-64 h-full ${
             darkMode ? "bg-black text-white" : "bg-white text-black"
@@ -194,15 +215,63 @@ const Header: React.FC<HeaderProps> = () => {
           >
             ✕
           </button>
-
-          {/* 계정 아이콘 */}
-          {/* <div className="flex flex-col items-center mt-8">
-            <MdOutlineAccountCircle className="text-5xl" />
-            <span className="mt-2 text-lg">My Account</span>
-          </div> */}
-
-          {/* 구분선 */}
-          {/* <div className="border-b my-4"></div> */}
+          <nav className="flex flex-col p-5 space-y-4">
+            <Link
+              href={'/AboutUs'}
+              className={`${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              About Us
+            </Link>
+            <Link
+              href={'/register'}
+              className={`${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Register
+            </Link>
+            {isLoggedIn && <button
+              onClick={handleLogout}
+              className={`text-left ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Logout
+            </button>}
+            {!isLoggedIn && <button
+              onClick={handleLogout}
+              className={`text-left ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Login
+            </button>}
+          </nav>
+        </div>
+      )}
+      
+      {(sidebarOpen && (logo !== 'ArchiLog')) && (
+        <div
+          className={`fixed top-0 right-0 w-64 h-full ${
+            darkMode ? "bg-black text-white" : "bg-white text-black"
+          } z-50 border ${darkMode ? "border-white" : "border-black"}`}
+        >
+          <button
+            onClick={toggleSidebar}
+            className="absolute top-4 right-4 text-2xl"
+          >
+            ✕
+          </button>
 
           <nav className="flex flex-col p-5 space-y-4">
             <Link
@@ -236,7 +305,7 @@ const Header: React.FC<HeaderProps> = () => {
               Blog
             </Link>
 
-            <button
+            {isLoggedIn && <button
               onClick={handleLogout}
               className={`text-left ${
                 darkMode
@@ -245,7 +314,17 @@ const Header: React.FC<HeaderProps> = () => {
               }`}
             >
               Logout
-            </button>
+            </button>}
+            {!isLoggedIn && <button
+              onClick={handleLogout}
+              className={`text-left ${
+                darkMode
+                  ? "text-white hover:text-[#FDAD00]"
+                  : "text-black hover:text-[#4CAF50]"
+              }`}
+            >
+              Login
+            </button>}
           </nav>
         </div>
       )}

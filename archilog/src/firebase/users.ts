@@ -40,8 +40,8 @@ export const getUserInfo = async (key: string): Promise<User | null> => {
       console.log("No key provided");
       return null;
     }
-
-    const userRef = ref(database, `users/${key}`);
+    const sanitizedKey= key.replace(/[.#$[\]]/g, "");
+    const userRef = ref(database, `users/${sanitizedKey}`);
     const snapshot = await get(userRef);
     
     if (snapshot.exists()) {
