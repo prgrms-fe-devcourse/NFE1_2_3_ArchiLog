@@ -30,6 +30,7 @@ const PostDetail = () => {
 
   const [user] = useAuthState(auth);
   const router = useRouter();
+  const username = router.asPath.split('/').slice(1, 2)[0];
   const { postId } = router.query;
   const postContentRef = useRef<HTMLDivElement>(null);
   const { darkMode } = useDarkMode();
@@ -70,11 +71,8 @@ const PostDetail = () => {
   // 게시글, 댓글
   const loadPostDetails = async (postId: string) => {
     try {
-      const user = auth.currentUser;
-      const username = user?.displayName || "";
       const postData = await getPostDetails(username, postId);
       setPost(postData);
-      console.log(postData);
 
       const comments: Comment[] = Object.values(postData.comments || {});
 
@@ -130,12 +128,7 @@ const PostDetail = () => {
     const confirmDelete = confirm("정말로 댓글을 삭제하시겠습니까?");
     if (confirmDelete) {
       try {
-        const user = auth.currentUser;
-        const username = user?.displayName || "";
         const postData = await getPostDetails(username, postId as string);
-
-        console.log(postData);
-        console.log(commentId);
 
         // 댓글이 해당 게시글에 존재하는지 확인
         const commentExists =

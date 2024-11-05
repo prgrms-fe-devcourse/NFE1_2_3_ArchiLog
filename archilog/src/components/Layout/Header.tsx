@@ -149,7 +149,7 @@ const Header: React.FC<HeaderProps> = () => {
               </button>}
               {
                  !isLoggedIn && <button
-                 onClick={handleLogout}
+                 onClick={handleLogin}
                  className={`text-sm md:text-lg lg:text-lg ${
                    darkMode
                      ? "text-white hover:text-[#FDAD00]"
@@ -161,26 +161,7 @@ const Header: React.FC<HeaderProps> = () => {
                }
           </nav>
         )}
-        {/* {!isLoggedIn && splitUrl[1] !== 'login' && splitUrl[1] !== 'register' && (
-          <button
-            onClick={handleLogin}
-            className={`text-sm md:text-base lg:text-lg ml-auto pl-5 ${
-              darkMode
-                ? "text-white hover:text-[#FDAD00]"
-                : "text-black hover:text-[#4CAF50]"
-            }`}
-          >
-            Login
-          </button>
-        )} */}
-
-        {/* 계정 아이콘 */}
-        {/* <div className="hidden md:flex items-center ml-5">
-          <MdOutlineAccountCircle
-            className={`${darkMode ? "text-white" : "text-black"} text-3xl`}
-          />
-        </div> */}
-
+        
         {/* 다크모드 전환 버튼 */}
         <div className="ml-5 cursor-pointer" onClick={toggleDarkMode}>
           <span className="text-2xl md:text-xl lg:text-3xl">
