@@ -10,7 +10,6 @@ import { useDarkMode } from "../contexts/DarkModeContext";
 import { useRouter } from 'next/router';
 import { auth } from "@/firebase/firebase";
 
-
 const MDEditor = dynamic<MDEditorProps>(() => import("@uiw/react-md-editor"), {
     ssr: false,
 });

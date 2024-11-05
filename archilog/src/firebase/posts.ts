@@ -80,7 +80,7 @@ export const getPostDetails = async (username: string, postId: string) => {
     const snapshot = await get(postRef);
 
     if (!snapshot.exists()) {
-      throw new Error("Post not found");
+     null;
     }
 
     return snapshot.val();
