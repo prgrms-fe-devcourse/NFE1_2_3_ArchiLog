@@ -4,6 +4,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        <link rel="icon" href="/images/favicon.ico"/>
         <link
           rel="stylesheet"
           href="https://unpkg.com/@uiw/react-md-editor/dist/mdeditor.css"
