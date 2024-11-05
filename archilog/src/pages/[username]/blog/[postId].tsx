@@ -352,7 +352,7 @@ const PostDetail = () => {
 
       {/* 댓글 작성 및 댓글 목록 */}
       <div className="mt-8 space-y-4">
-        {user ? (
+        {(
           <div
             className={`flex items-center rounded-full px-4 py-3 mt-4 ${
               darkMode
@@ -388,8 +388,6 @@ const PostDetail = () => {
               </svg>
             </button>
           </div>
-        ) : (
-          <p className="text-gray-500">로그인 후 댓글 작성이 가능합니다.</p>
         )}
         <ul className="space-y-4">
           {comments.map((comment) => (
