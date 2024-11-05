@@ -217,13 +217,13 @@ export const getCurrentUser = () => {
 
 // 현재 사용자 ID
 export const getCurrentUserId = () => {
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<string>((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
       if (user) {
         resolve(user.uid);
       } else {
-        reject(new Error("로그인된 사용자가 없습니다."));
+        return null;
       }
     });
   });

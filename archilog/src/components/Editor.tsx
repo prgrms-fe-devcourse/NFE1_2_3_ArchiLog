@@ -9,8 +9,6 @@ import { editAbout, getUserInfo } from "../firebase/users";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import { useRouter } from 'next/router';
 import { auth } from "@/firebase/firebase";
-import { useState } from 'react';
-import { useAuth } from '@/app/contexts/hook/useAuth';
 
 const MDEditor = dynamic<MDEditorProps>(() => import("@uiw/react-md-editor"), {
     ssr: false,
