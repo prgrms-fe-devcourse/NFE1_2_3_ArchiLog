@@ -144,7 +144,7 @@ export default function ProjectPage() {
 
       setProjects(projectsList.reverse());
     } catch (err) {
-      console.error('Error fetching projects:', err);
+      console.error('프로젝트를 불러오는데 실패했습니다', err);
       setError("프로젝트를 불러오는데 실패했습니다");
     } finally {
       setLoading(false);
@@ -167,7 +167,7 @@ export default function ProjectPage() {
       await addProject(data.repoUrl, data.description, username);
       await fetchProjects();
     } catch (error) {
-      console.error('Error adding project:', error);
+      console.error('프로젝트 데이터 에러', error);
       throw error;
     }
   };
